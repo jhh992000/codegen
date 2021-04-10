@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="$BeanId" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="$JNDIName"/>
+#if($ExternalJNDI)		
+		<property name="jndiTemplate" ref="${BeanId}-jnditemplate"/>
+#end		
+	</bean>
+#if($ExternalJNDI)
+	<bean id="${BeanId}-jnditemplate" class="org.springframework.jndi.JndiTemplate">
+#if($FactoryClass || $JNDIURL || $User || $Password)
+		<property name="environment">
+			<props>
+#if($FactoryClass)		
+				<prop key="java.naming.factory.initial">$FactoryClass</prop>
+#end		
+#if($JNDIURL)
+				<prop key="java.naming.provider.url">$JNDIURL</prop>			
+#end		
+#if($User)
+				<prop key="java.naming.security.principal">$User</prop>		
+#end		
+#if($Password)	
+				<prop key="java.naming.security.credentials">$Password</prop>	
+#end		
+			</props>
+		</property>
+#end		
+	</bean>
+#end
+</beans>

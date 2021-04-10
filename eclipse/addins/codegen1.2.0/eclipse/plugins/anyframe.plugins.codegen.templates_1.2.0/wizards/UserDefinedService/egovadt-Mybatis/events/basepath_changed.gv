@@ -1,0 +1,18 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "egovframework.adt." + components.get("modulePackageName").getUIValue() + ".service";
+String DAO_PACKAGE = "egovframework.adt." + components.get("modulePackageName").getUIValue() + ".service";
+String SERVICE_PACKAGE = "egovframework.adt." + components.get("modulePackageName").getUIValue() + ".service";
+String CONTROLLER_PACKAGE = "egovframework.adt." + components.get("modulePackageName").getUIValue() + ".web";
+String MYBATIS_PATH = "src/main/resources/egovframework/mapper/adt/";
+String JSP_PATH = "src/main/webapp/WEB-INF/jsp/egovframework/" + components.get("modulePackageName").getUIValue().replaceAll("\\.", "/");
+String MESSAGE_RESOURCE_PATH = "src/main/resources/egovframework/message";
+String REQUEST_PATH = "/" + components.get("modulePackageName").getUIValue().replaceAll("\\.", "/");
+
+components.get("domainPackage").setUIValue(basePath+"/src/main/java/"+DOMAIN_PACKAGE);
+components.get("mapperPackage").setUIValue(basePath+"/src/main/java/"+DAO_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/src/main/java/"+SERVICE_PACKAGE);
+components.get("mybatisPath").setUIValue(basePath+"/"+MYBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/src/main/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH);
+components.get("requestPath").setUIValue(REQUEST_PATH);
+components.get("messagePath").setUIValue(basePath+"/"+MESSAGE_RESOURCE_PATH);

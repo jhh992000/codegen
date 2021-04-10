@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Persistence Layer</description>
+			<group>
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+		</output>
+	</wizard>
+</CodeGen>

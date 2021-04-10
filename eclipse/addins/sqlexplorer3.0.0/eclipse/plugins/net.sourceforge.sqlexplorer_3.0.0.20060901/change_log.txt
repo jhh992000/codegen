@@ -1,0 +1,140 @@
+2006.01.xx - 2006.06.xx Enhancements - Davy Vanherbergen
+==========================================================
+General
+* dropped support for hibernate plugin
+* dropped support for schema visualizer
+* dropped experimental edit table data feature
+* sql explorer can now run as a standalone RCP application
+* updated logo & icons
+* connection info view removed, information has been added as detail of database node
+* background processing for dictionary loading
+* removed deprecated methods
+* Connection dialog is now resizable
+* moved all image definitions into properties file
+* database connecting is now cancellable
+* database connection can now run in background
+
+SQL History
+* only successfull queries are stored
+* sql history is now persistent
+* on opening history in editor correct connection is set to editor or created if desired
+* clear all now prompts for confirmation
+* doubleclick on entry in history opens sql in editor
+* DEL key now removes entry from list
+* added multi-line tooltip for sql
+* added icons to context actions
+* added timestamp column to sql history
+* added text search capability to sql history
+* history autosaves based after 15 statements (defined in preferences.ini)
+* added action bar
+
+Database Structure
+* split of database structure view into database structure view and database detail view
+* reimplemented database structure view nodes to support lazy loading and caching
+* new eclipse extension point for database structure view context action
+* new eclipse extension point for database structure view node
+* easy filtering of catalog/schema nodes (right-click and select add to filter)
+* added preference option to select whether columns should be visible in the database structure view
+* improved the generate select action to allow column selection to generate sql
+
+Database Detail
+* new detailtab manager that supports caching and lazy loading of tabs
+* new eclipse extension point for database detail tabs
+* same detail tab remains selected between nodes
+* added 'commit on close' property to connection info tab
+
+DataSet
+* new eclipse extension point for datasettable context menu
+* column find feature in table (CTRL-F) to scroll table to given column name
+* dataset table can be navigated with arrow keys
+* columns in dataset table are moveable
+* when datasettable widget is active, it can be refreshed by pressing F5
+* dates can be formatted based on setting in preferences.ini
+* moved formatting of rows to parent class to reduce numbers of objects created
+* changed table to virtual table to improve rendering performance
+* F5 refreshes table
+* added csv, xls and html export options
+
+SQL Results
+* sql query is displayed on sql result tabs
+* SQL statement is displayed when hovering over the different result tabs (with wrapping)
+* sql result tabs no longer renumber when a tab is closed
+* after an SQL is executed, the results pane now automatically focusses on the last results.
+* sqlCompositeResultViewer replaced by DataSetTable
+* sql statements can now be cancelled
+* background processing for queries
+* when result table is selected, F5 re-executes sql
+
+SQL Editor
+* query/comment delimiters can now be set in preferences
+* sqltable has been dropped and replaced by new datasettable that is used for detail tabs and sql results
+* save as functionality in sql editor has been fixed
+* file open dialog now allows loading of multiple files into editor
+* removed save prompt when sql editor is closed
+* ad-hoc override of sql result set limit in sql editor
+* autowrap is now available and enabled by default. Can be changed in preferences.
+* action bar is now resizable coolbar with extension point for new actions
+
+Connection view
+* when new connection is made, a new SQL editor is automatically opened
+* view merged with Alias View
+
+Driver view
+* view removed
+
+Preferences
+* added driver preferences
+* added option to restore the default drivers
+* added option to set default driver in preferences.ini
+
+Alias view
+* added autologon option in alias
+* merged with connections view
+
+Plugins
+* all plugin extensions are no longer compatible with the new codebase
+
+
+
+2006.01.02 UI enhancements - Davy Vanherbergen
+==========================================================
+- updated alias view to use standard toolbar
+- update some icons
+- moved about action to help menu + updated logo
+
+2005.12.31 Enhancement to SQL History/SQL Panel  -  Davy Vanherbergen
+===========================================================
+- removed linefeed characters from SQL History
+- added wrapping to tooltips on SQL Panel
+
+2005.12.30 Enhancement to SQL Editor
+===========================================================
+- file open dialog now allows loading of multiple files into editor
+
+2005.12.30 Enhancements to driver view  -  Davy Vanherbergen
+===========================================================
+- doubleclick on driver opens 'modify driver' dialog
+- filter to show only loaded drivers
+- option to restore the default drivers
+
+2005.12.27 Bug fix 1391442  -  Davy Vanherbergen
+===========================================================
+- Fixed a focus problem when the connection info and connections view are in the same view pane.
+
+2005.12.16 Implemented Request 1246961  -  Davy Vanherbergen
+===========================================================
+- added filtering of database metadata information.
+- added autologon setting in alias
+
+2005.12.16 Implemented Request 1382429  -  Davy Vanherbergen
+===========================================================
+- sql history remains available between sessions
+
+2005.12.16 Implemented Request 1237618  -  Davy Vanherbergen
+===========================================================
+- removed save prompt when sql editor is closed
+
+2005.12.16 Impemented Request 1277760 / Fixed Bug 1233626  -  Davy Vanherbergen
+===========================================================
+- SQL statement is displayed when hovering over the different result tabs
+- after an SQL is executed, the results pane now automatically focusses on the last results.

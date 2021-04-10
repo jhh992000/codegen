@@ -1,0 +1,13 @@
+String basePath = components.get("basePath").getUIValue();
+String JS_PATH = basePath+"/WebContent/html";
+String jsPath = components.get("jsPath").getUIValue();
+String newJsPath = jspPath.replaceAll(JS_PATH, "");
+String CONTROLLER_PACKAGE = "kr.go.nmsc.web";
+String MODE = components.get("mode").getUIValue();
+
+CONTROLLER_PACKAGE = CONTROLLER_PACKAGE+"."+MODE;
+
+components.get("controllerPackage").setUIValue(basePath+"/src/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+MODE+"/contents/"+tableName);
+components.get("jsPath").setUIValue(basePath+"/"+JS_PATH+"/"+MODE+"/contents/"+tableName);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+MODE+"/"+tableName);

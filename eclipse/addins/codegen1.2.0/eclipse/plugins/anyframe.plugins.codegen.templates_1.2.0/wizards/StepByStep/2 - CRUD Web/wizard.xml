@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>CRUD Application Creation Wizard</title>
+
+		<!-- to access in the Groovy script, use components.get("sqlPage").getUIValue() -->
+		<model-page type="jdbc" required="false" onCreate="/events/table_created.gv">
+			<description>Select a Table to use.</description>
+		</model-page>
+
+		<component-page>
+			<description>Presentation Layer Definition</description>
+			<group label="Struts XML">
+				<container name="strutsPath" label="*Struts xml Path" type="folder" required="true" />
+				<textfield name="strutsFileName" label="*File Name" required="true" extensions="xml" />
+			</group>
+			<group label="Abstract Class">
+				<type name="abstractAction" label="*AbstractDispatchAction" required="true" />
+				<type name="valueObject" label="*ValueObject" required="true" />
+			</group>			
+			<group label="Action">
+				<container name="actionPackage" label="*Action Package" type="srcPackage" required="true"
+					onChange="/events/package_changed.gv" />
+				<textfield name="actionClass" label="*Action Class" required="true" />
+			</group>
+			<group label="Form">
+				<container name="formPackage" label="*Form Package" type="srcPackage" required="true" />
+				<textfield name="formClass" label="*Form Class" required="true" />
+			</group>
+		</component-page>
+		
+		<component-page>
+			<description>Presentation Layer Definition</description>
+			<group label="JSP">
+				<container name="jspPath" label="*jsp Path" type="folder" required="true" />
+				<textfield name="listJSP" label="*listxxx.jsp" required="true" extensions="jsp" />
+				<textfield name="addJSP" label="*addxxx.jsp" required="true" extensions="jsp" />
+				<textfield name="updateJSP" label="*updatexxx.jsp" required="true" extensions="jsp" />
+			</group>
+		</component-page>
+
+		<output>
+			<!-- Presentation Layer Output -->
+			<template component="strutsOut" expression="$strutsFileName" velocity="struts.vm" container="strutsPath" />
+			<template component="actionOut" expression="$actionClass" velocity="action.vm" extension="java"
+				container="actionPackage" />
+			<template component="addJSPOut" expression="$addJSP" velocity="add_jsp.vm" container="jspPath" />
+			<template component="listJSPOut" expression="$listJSP" velocity="list_jsp.vm" container="jspPath" />
+		</output>
+	</wizard>
+</CodeGen>

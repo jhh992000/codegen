@@ -1,0 +1,86 @@
+#if($beanId_cap.lastIndexOf("Service") != -1)
+#set($obj = $beanId_cap.substring(0,$beanId_cap.lastIndexOf("Service")))
+#else
+#set($obj = $beanId_cap)
+#end
+##set($domain_cap = "$obj.substring(2)")
+##set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($mapperClass_uncap = "$mapperClass.substring(0,1).toLowerCase()$mapperClass.substring(1)")
+#set($serviceClass_uncap = "$serviceClass.substring(0,1).toLowerCase()$serviceClass.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${servicePackage_package} != "")
+package ${servicePackage_package};
+#end
+
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import kr.go.ftc.dfc.common.mapper.Criteria;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * 프로그램 파일명 : ${serviceClass}.java
+ *
+ * 프로그램 설명 :
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 ${companyName} Co. Ltd. All rights reserved.
+ */
+@Service
+public class ${serviceClass} {
+
+	@Resource
+	private ${mapperClass} ${mapperClass_uncap};
+
+	public Integer totalCount(Criteria criteria) throws SQLException, Exception {
+		return ${mapperClass_uncap}.totalCount(criteria);
+	}
+
+	public List<${domain_cap}> pagedList(Criteria criteria) throws SQLException, Exception {
+		Integer totalCount = ${mapperClass_uncap}.totalCount(criteria);
+		criteria.setTotalCount(totalCount);
+		return ${mapperClass_uncap}.pagedList(criteria);
+	}
+
+	public List<${domain_cap}> list(Criteria criteria) throws SQLException, Exception {
+		return ${mapperClass_uncap}.list(criteria);
+	}
+
+	public ${domain_cap} create(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+		${mapperClass_uncap}.create(${domain_uncap});
+		return ${domain_uncap};
+	}
+
+	public ${domain_cap} read(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+		return ${mapperClass_uncap}.read(${domain_uncap});
+	}
+
+	public Integer update(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+		return ${mapperClass_uncap}.update(${domain_uncap});
+	}
+
+	public Integer delete(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+		return ${mapperClass_uncap}.delete(${domain_uncap});
+	}
+
+}

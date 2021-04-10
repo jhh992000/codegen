@@ -1,0 +1,165 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><s:message code="${moduleName}.modelName" /> <s:message code="common.edit" /></title>
+<script type="text/javascript">
+$(document).ready(function(){
+#set($existNotNull = false)
+#foreach($col in $cols)
+#if ($col.nullable == false)
+#set($existNotNull = true)
+#end
+#end
+#if ($existNotNull == true)
+	$("#editForm").validate({
+		submitHandler: function(form) {
+			jQuery.showConfirm("<s:message code="common.question.save" />", {
+				yesCallback: function() {
+					form.action="${ pageContext.request.contextPath }${requestPath}/${ editMode }.do";
+					form.submit();
+				},
+				noCallback: function() {
+					return false;
+				}
+			});
+		},
+		rules: {
+#set($loopCount = 0)
+#foreach($col in $cols)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false && $col.nullable == false)
+			#if ($loopCount > 0),#end${col.fieldName}: { required: true#if ($col.type=="INT" || $col.type=="DOUBLE" || $col.type=="FLOAT" || $col.type=="NUMBER" || $col.type=="int" || $col.type=="double" || $col.type=="float" || $col.type=="number"), number: true#end }
+#set($loopCount = $loopCount+1)
+#end
+#end
+		},
+		messages: {
+		},
+		success: function(element) {
+			$(element).closest('.input-group').removeClass('has-error').addClass('has-success');
+		},
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+#end
+});
+</script>
+</head>
+<body>
+
+<div class="col-md-12 col-sm-12 ">
+	<div class="x_panel">
+		<div class="x_title">
+			<h2>
+				<s:message code="role.modelName" /> <s:message code="common.edit" />
+			</h2>
+			<div class="txtRequire text-right" style="line-height: 30px;"><s:message code="common.required" arguments="<em>*</em>" /></div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="x_content">
+			<form:form id="editForm" name="editForm" method="post" commandName="${domain_uncap}" action="${ pageContext.request.contextPath }${requestPath}/${ editMode }.do">
+				<input type="hidden" id="menuNo" name="menuNo" value="${ cri.menuNo }" />
+				<input type="hidden" id="pagerOffset" name="pagerOffset" value="${ cri.pagerOffset }" />
+				<input type="hidden" id="maxPageItems" name="maxPageItems" value="${ cri.maxPageItems }" />
+				<input type="hidden" id="searchKey" name="searchKey" value="${ cri.searchKey }" />
+				<input type="hidden" id="searchValue" name="searchValue" value="${ cri.searchValue }" />
+#foreach($pk in $pks)
+		<form:hidden path="$pk.fieldName"/>
+#end
+				<fieldset>
+					<legend>
+						<s:message code="${moduleName}.modelName" /> <s:message code="common.edit" />
+					</legend>
+
+#foreach($col in $cols)
+#set($isPk = false)
+#set($titleFieldName = "title$col.fieldName.substring(0,1).toUpperCase()$col.fieldName.substring(1)")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+					<!--
+					<div class="item form-group">
+						<s:message var="$titleFieldName" code="${moduleName}.${col.fieldName}" />
+						<label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+							${ $titleFieldName } <span class="required">*</span>
+						</label>
+						<div class="col-md-6 col-sm-6 ">
+							<form:input path="${col.fieldName}" cssClass="form-control" cssStyle="width:200px;" maxlength="${col.size}" title="${ $titleFieldName }" placeholder="${ $titleFieldName }" />
+						</div>
+					</div>
+					-->
+#else
+#if ($col.nullable == false)
+					<div class="item form-group">
+						<s:message var="$titleFieldName" code="${moduleName}.${col.fieldName}" />
+						<label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+							${ $titleFieldName } <span class="required">*</span>
+						</label>
+						<div class="col-md-6 col-sm-6 ">
+#if ($col.fieldName=="useYn")
+							<form:radiobutton id="useYnY" path="useYn" value="Y" /><label for="useYnY"><s:message code="common.use" /></label>&nbsp;
+							<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><s:message code="common.notUse" /></label>
+#else
+							<form:input path="${col.fieldName}" cssClass="form-control" cssStyle="width:200px;" maxlength="${col.size}" title="${ $titleFieldName }" placeholder="${ $titleFieldName }" />
+#end
+						</div>
+					</div>
+#else
+					<div class="item form-group">
+						<s:message var="$titleFieldName" code="${moduleName}.${col.fieldName}" />
+						<label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+							${ $titleFieldName }
+						</label>
+						<div class="col-md-6 col-sm-6 ">
+#if ($col.fieldName=="useYn")
+							<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY"><s:message code="common.yes" /></label>&nbsp;
+							<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><s:message code="common.no" /></label>
+#else
+							<form:input path="${col.fieldName}" cssClass="form-control" cssStyle="width:200px;" maxlength="${col.size}" title="${ $titleFieldName }" placeholder="${ $titleFieldName }" />
+#end
+						</div>
+					</div>
+#end
+#end
+#end
+
+					<div class="ln_solid"></div>
+					<div class="row">
+						<div class="col-md-12 text-center">
+							<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}List.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-secondary"><i class="fa fa-close"></i><span class="ml-1"><s:message code="common.cancel" /></span></a>
+							<button type="submit" class="btn btn-info ml-1"><i class="fa fa-save"></i><span class="ml-1"><s:message code="common.save" /></span></button>
+						</div>
+					</div>
+
+				</fieldset>
+			</form:form>
+
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

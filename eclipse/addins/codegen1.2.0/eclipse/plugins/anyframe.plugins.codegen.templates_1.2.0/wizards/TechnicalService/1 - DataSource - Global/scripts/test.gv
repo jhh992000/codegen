@@ -1,0 +1,1 @@
+components.get("JNDIURL").combo.select( components.get("FactoryClass").combo.getSelectionIndex() );

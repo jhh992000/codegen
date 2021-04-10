@@ -1,0 +1,16 @@
+#set($domain_cap = "$domainClass")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#========================================
+# $tbName.toUpperCase()
+#========================================
+${moduleName}.modelName=${domain_cap}
+#foreach($col in $cols)
+${moduleName}.${col.fieldName}=${col.fieldName}
+#end

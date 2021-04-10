@@ -1,0 +1,59 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.mock.web.MockHttpServletRequest;
+
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.adaptors.IAdaptorManager;
+import anyframe.core.process.IProcessService;
+
+/**
+ * For testing functions what ProcessService supports, there are some test
+ * scenarios in this TestCase.
+ */
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-adaptormanager.xml",
+			"classpath*:${beanPath_dirname}/applicationContext-process.xml", 
+			"classpath*:**/applicationContext-common.xml"};
+	}
+
+	/**
+	 * [Flow #-1] Positive Case : check a result of executing executeProcess()
+	 * which read and execute process definition file based on J-SOFA, and
+	 * return result.
+	 * 
+	 * @throws Exception
+	 *             fail to test
+	 */
+	public void testExecuteProcessInstanceWithFile() throws Exception {
+		IProcessService processService = (IProcessService) applicationContext
+				.getBean("${BeanName}");
+		IAdaptorManager adaptorManager = (IAdaptorManager) applicationContext
+				.getBean("$adaptorManager");	
+							
+		// 1. create a new MockHttpServletRequest that process result is stored
+		// in this instance.
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		// 2. For calling executeProcess() of ProcessService, put process
+		// definition XML, HttpServletAdaptor instance and
+		// MockHttpServletRequest instance.
+		HttpServletRequest results = (HttpServletRequest) processService
+				.executeProcess("test-defaultProcess", adaptorManager
+						.getAdaptor("${adaptorKey}"), request);
+
+		// 3. check a result which ProcessService return.
+		assertEquals("Hello", results.getAttribute("msg"));
+		assertEquals("HongGilDong", results.getAttribute("name"));
+		assertNull(results.getAttribute("address"));
+	}
+
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+		id="messageSource">
+		<property name="basenames"> 
+			<list>
+				<!-- Anyframe 테크니컬 서비스용 메시지 설정 -->
+				<value>classpath:/anyframe/messages/properties</value>
+				<value>classpath:/anyframe/messages/process</value>
+				<value>classpath:/anyframe/messages/adaptormanager</value>
+				<value>classpath:/anyframe/messages/query</value>
+				<value>classpath:/anyframe/messages/idgeneration</value>		
+				<!-- 유저 정의 서비스용 메시지 위치 설정  -->		
+			</list>
+		</property>
+	</bean>		
+	<bean id="configurableCallBack" scope="prototype" class="anyframe.common.config.ConfigurableCallback"/>	
+</beans>
+
+
+

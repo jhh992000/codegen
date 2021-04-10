@@ -1,0 +1,50 @@
+#set($pk = $listTool.get($model.primaryKeys,0))
+#if(${daoPackage_package})
+package ${daoPackage_package};
+#end
+
+import java.util.Map;
+import java.util.List;
+
+import anyframe.common.Page;
+import anyframe.common.exception.BaseException;
+import anyframe.services.queryservice.IQueryService;
+
+#if($daoPackage != $voPackage)
+import ${voPackage_package}.${voClass};
+
+#end
+public class $daoClass {
+
+	private IQueryService queryService;
+
+	public void setQueryService(IQueryService queryService) {
+		this.queryService = queryService;
+	}
+
+	public Page select${beanName_cap}List($voClass $voClass_uncap) throws BaseException{
+		int pageIndex = ${voClass_uncap}.getPageIndex();
+		int pageSize = ${voClass_uncap}.getPageSize();
+		int pageUnit = ${voClass_uncap}.getPageUnit();
+		
+		Map ${beanName_cap}Map = queryService.findWithRowCount("select${beanName_cap}",
+				new Object[] {new Object[]{"$voClass_uncap", $voClass_uncap}}, pageIndex, pageSize);
+		List resultList = (List) ${beanName_cap}Map.get(IQueryService.LIST);
+		int totalSize = ((Long) ${beanName_cap}Map.get(IQueryService.COUNT)).intValue();
+		Page resultPage = new Page(resultList, pageIndex, totalSize, pageUnit, pageSize);
+		
+		return resultPage;
+	}
+
+	public void insert${beanName_cap}($voClass $voClass_uncap) throws BaseException {
+		queryService.create("insert${beanName_cap}", new Object[]{"$voClass_uncap", $voClass_uncap});
+	}
+		
+	public void update${beanName_cap}($voClass $voClass_uncap) throws BaseException {
+		queryService.update("update${beanName_cap}", new Object[]{"$voClass_uncap", $voClass_uncap});
+	}
+
+	public void delete${beanName_cap}($voClass $voClass_uncap) throws BaseException {
+		queryService.remove("delete${beanName_cap}", new Object[]{"$voClass_uncap", $voClass_uncap});
+	}
+}

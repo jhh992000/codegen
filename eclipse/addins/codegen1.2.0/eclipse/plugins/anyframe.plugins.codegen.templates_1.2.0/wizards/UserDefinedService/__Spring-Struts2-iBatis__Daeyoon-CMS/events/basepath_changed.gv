@@ -1,0 +1,17 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "daeyoon.common.model";
+String DAO_PACKAGE = "daeyoon.common.dao";
+String ACTION_PACKAGE = "daeyoon.actions";
+String SQLMAP_PATH = "daeyoon/common/sqlmap";
+String JSP_PATH = "WebContent";
+String STRUTS_CONFIG_PATH = "daeyoon/common/strutsXML";
+String REQUEST_PATH = "";
+
+components.get("domainPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+DAO_PACKAGE);
+components.get("sqlmapPath").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+SQLMAP_PATH);
+components.get("actionsPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+ACTION_PACKAGE);
+components.get("tilesPath").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/conf/tiles");
+components.get("strutsConfigPath").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+STRUTS_CONFIG_PATH);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+jspFolderName);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+jspFolderName);

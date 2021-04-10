@@ -1,0 +1,22 @@
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+
+	protected String[] getConfigLocations() {
+		return new String[] { "classpath*:${beanPath_dirname}/applicationContext-scheduling.xml"};
+	}
+
+	public void testScheduling() throws Exception {
+#if($isGenerate == "true")		
+		Thread.sleep($interval);
+		$jobPackage_package.$className job = ($jobPackage_package.$className)applicationContext.getBean("$jobName");
+		assertEquals(2, job.getCnt());
+#else
+		assertTrue(true);
+#end			
+	}
+}

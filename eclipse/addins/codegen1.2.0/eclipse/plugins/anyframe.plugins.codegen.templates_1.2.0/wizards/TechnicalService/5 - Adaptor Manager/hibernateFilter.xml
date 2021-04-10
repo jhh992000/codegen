@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Adaptor Manager</title>
+		<component-page>
+			<description>Adaptor Manager Configuration</description>
+			<group label="Adaptor Manager">
+				<container name="beanPath" label="*Bean Path" type="srcPackage" required="true" />
+				<textfield name="BeanName" label="*Bean Id" value="adaptorManager" required="true" />
+			</group>
+			<group label="Adaptor">
+				<textfield name="ref_id" label="*Bean Id" required="true" />
+				<type name="refclass" label="*Class" required="true"
+					value="anyframe.core.adaptors.impl.httprequest.HttpRequestAdaptor" />
+			</group>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="AdaptorManagerTestCase" />
+			</group>
+		</component-page>
+		<output>
+			<template component="out1" expression="applicationContext-adaptormanager.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="out2" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

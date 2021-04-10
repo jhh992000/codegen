@@ -1,0 +1,196 @@
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#if ($domainPackage_package != "")
+package $domainPackage_package;
+#end
+#set($dateCount = 0)
+#foreach($column in $columns)
+#if ($column.type == "DATE" || $column.type == "DATETIME")
+#set($dateCount = $dateCount+1)
+#end
+#end
+##===================================
+#set($varcharCount = 0)
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+#set($varcharCount = $varcharCount+1)
+#end
+#end
+##===================================
+#set($notEmptyCount = 0)
+#set($notNullCount = 0)
+#foreach($column in $columns)
+#if ($column.nullable == false)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE")
+#set($notNullCount = $notNullCount+1)
+#else
+#set($notEmptyCount = $notEmptyCount+1)
+#end
+#end
+#end
+
+#if ($dateCount > 0)
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+#end
+import egovframework.adt.cmm.util.PaginationVO;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+/**
+ * 프로그램 설명 :
+ *
+ * @author ${companyName} ${writerName}
+ * @version 1.0
+ * @since ${writeDate}
+ * @see none
+ *
+ * <pre>
+ * << 개정이력(Modification Information) >>
+ *
+ *	 수정일		수정자		   수정내용
+ *  -------------	--------	---------------------------
+ *   ${writeDate}	 ${writerName}		  최초 생성
+ * </pre>
+ */
+public class $domainClass extends PaginationVO {
+
+	private static final long serialVersionUID = 1L;
+
+
+	/* ************************  검색어 *************************** */
+	/** 검색조건 */
+	private String searchCondition = "";
+
+	/** 검색Keyword */
+	private String searchKeyword = "";
+
+	/* ************************  도메인 *************************** */
+#foreach($column in $columns)
+
+#if ($column.nullable == false)
+#set($isPk = "false")
+#foreach($primaryKey in $primaryKeys)
+#if ($column.fieldName==$primaryKey.fieldName)
+#set($isPk = "true")
+#end
+#end
+#end
+#if ($column.javaType == "java.lang.String")
+	private String $column.fieldName;
+#elseif ($column.javaType == "java.lang.Integer")
+	private Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Long")
+	public Long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+	private Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+	private Float $column.fieldName;
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date $column.fieldName;
+#else
+	private String $column.fieldName;
+#end
+#end
+
+	public String getSearchCondition() {
+		return searchCondition;
+	}
+
+	public void setSearchCondition(String searchCondition) {
+		this.searchCondition = searchCondition;
+	}
+
+	public String getSearchKeyword() {
+		return searchKeyword;
+	}
+
+	public void setSearchKeyword(String searchKeyword) {
+		this.searchKeyword = searchKeyword;
+	}
+
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Integer")
+	public Integer get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Long")
+	public Long get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Double")
+	public Double get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Float")
+	public Float get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+	public Date get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#else
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#end
+#if ($column.javaType == "java.lang.String")
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Integer")
+	public void set${column.javaName}(Integer $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Long")
+	public void set${column.javaName}(Long $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Double")
+	public void set${column.javaName}(Double $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Float")
+	public void set${column.javaName}(Float $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+	public void set${column.javaName}(Date $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#else
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#end
+#end
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
+}

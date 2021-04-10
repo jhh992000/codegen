@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>CRUD Application Creation Wizard</title>
+
+		<!-- to access in the Groovy script, use components.get("sqlPage").getUIValue() -->
+		<model-page type="jdbc" required="false" onCreate="/events/table_created.gv">
+			<description>Select a Table to use.</description>
+		</model-page>
+
+		<component-page>
+			<description>Business Layer Definition</description>
+			<group label="Bean">
+				<textfield name="beanName" label="*Bean Name" required="true" onChange="/events/bean_changed.gv" />
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="beanFileName" label="*File Name" required="true" extensions="xml" />
+				<textfield name="txParent" label="Parent Tranx ID" />
+			</group>
+			<group label="Interface">
+				<container name="iPackage" label="*Package" type="srcPackage" required="true"
+					onChange="/events/package_changed.gv" />
+				<textfield name="iClass" label="*Class" required="true" />
+			</group>
+			<group label="Impl Class">
+				<container name="implPackage" label="*Package" type="srcPackage" required="true" />
+				<textfield name="implClass" label="*Class" required="true" />
+			</group>
+		</component-page>
+		
+		<component-page>
+			<description>Persistence Layer Definition</description>
+			<group label="DAO Class">
+				<container name="daoPackage" label="*Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Class" required="true" />
+				<textfield name="queryServiceId" label="*Query Service Id" required="true" value="queryService" />
+			</group>
+			<group label="VO Class">
+				<container name="voPackage" label="*Package" type="srcPackage" required="true" />
+				<textfield name="voClass" label="*Class" required="true" />
+			</group>
+			<group label="Query Mapping XML">
+				<container name="mappingPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="mappingFile" label="*Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<output>
+			<!-- Business Layer Output-->
+			<template component="beanOut" expression="$beanFileName" velocity="bean.vm" container="beanPath" />
+			<template component="iOut" expression="$iClass" velocity="interface.vm" extension="java"
+				container="iPackage" />
+			<template component="implOut" expression="$implClass" velocity="impl.vm" extension="java"
+				container="implPackage" />
+				
+			<!-- Persistence Layer Output-->
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java"
+				container="daoPackage" />
+			<template component="voOut" expression="$voClass" velocity="vo.vm" extension="java" container="voPackage" />
+			<template component="mappingOut" expression="$mappingFile" velocity="mapping.vm" container="mappingPath" />
+		</output>
+	</wizard>
+</CodeGen>

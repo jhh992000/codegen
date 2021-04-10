@@ -1,0 +1,36 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.properties.IPropertiesService;
+
+/**
+ * For testing functions what Properties Service supports, there are some test
+ * scenarios in this TestCase.
+ */
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-properties.xml", 
+			"classpath*:**/applicationContext-common.xml"};
+	}
+
+	public void testPropertiesService() throws Exception {
+		IPropertiesService ${BeanName} = (IPropertiesService) applicationContext
+			.getBean("${BeanName}");
+			
+#if( $radio == "true" && $table0.itemCount > 0)
+#foreach($row in $table0.items)
+		assertEquals("${row.getText(1)}", ${BeanName}.getString("${row.getText(0)}"));
+#end	
+#else
+		assertTrue(true);
+#end
+	}
+
+	
+}

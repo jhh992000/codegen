@@ -1,0 +1,32 @@
+String VO_POSTFIX = "VO";
+String VO_PREFIX = "";
+String DAO_POSTFIX = "DAO";
+String DAO_IMPL_POSTFIX = "DAOImpl";
+String SERVICE_POSTFIX = "Service";
+String SERVICE_IMPL_POSTFIX = "ServiceImpl";
+String CONTROLLER_CPOSTFIX = "Controller";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String writerName = "jeong hoon hee";
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX.toLowerCase()+"_", "");
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+
+components.get("basePath").setUIValue("/test");
+components.get("writerName").setUIValue(writerName);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("daoImplClass").setUIValue(beanName+DAO_IMPL_POSTFIX);
+components.get("serviceClass").setUIValue(beanName+SERVICE_POSTFIX);
+components.get("serviceImplClass").setUIValue(beanName+SERVICE_IMPL_POSTFIX);
+components.get("sqlmapFile").setUIValue(beanName+XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("listJSP").setUIValue("list"+JSP_EXTENSION);
+components.get("formJSP").setUIValue("form"+JSP_EXTENSION);
+components.get("viewJSP").setUIValue("view"+JSP_EXTENSION);
+components.get("writeDate").setUIValue(today);

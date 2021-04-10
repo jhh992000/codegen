@@ -1,0 +1,154 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("Vo"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ include file="../../common/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${domainName_uncap}.modelName" /> <spring:message code="button.list" /></title>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		jQuery.showConfirm("<spring:message code="common.delete.msg" />", {
+			yesCallback: function() {
+				$("#progressBarDiv").show();
+				window.location = deleteUrl;
+			},
+			noCallback: function() {
+				return;
+			}
+		});
+		return false;
+	});
+});
+//-->
+</script>
+</head>
+<body>
+
+<div class="searchTb">
+	<form:form id="listForm" name="listForm" method="post" commandName="criteria" action="${pageContext.request.contextPath}${requestPath}/list.do">
+		<input type="hidden" id="menuNo" name="menuNo" value="<c:out value="${ criteria.menuNo }" />" />
+		<fieldset>
+			<legend><spring:message code="${domainName_uncap}.modelName" /> <spring:message code="button.search" /></legend>
+			<ul>
+				<li class="title"><spring:message code="search.constraint" /></li>
+				<li class="conTd">
+					<form:select path="searchCondition">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+						<form:option value="$column.fieldName"><spring:message code="${domainName_uncap}.$column.fieldName" /></form:option>
+#end#end
+					</form:select>
+					<form:input path="searchKeyword" cssClass="inputLeft" />
+				</li>
+				<li class="floatR mgR10">
+					<button type="submit" class="btnSearch"><spring:message code="button.search" /></button>
+				</li>
+			</ul>
+			<div class="searchMaxPageItems">
+				<spring:message code="search.pageItems" />
+				<form:select path="pageUnit">
+					<form:option value="10">10</form:option>
+					<form:option value="20">20</form:option>
+					<form:option value="30">30</form:option>
+					<form:option value="40">40</form:option>
+					<form:option value="50">50</form:option>
+				</form:select>
+				<spring:message code="search.pageItems.count" />
+			</div>
+		</fieldset>
+	</form:form>
+</div>
+
+<div class="boardListInfo">
+	<pg:page export="firstItem, lastItem">
+		<span class="total"><em><spring:message code="search.pageInfo" arguments="${ paginationInfo.currentPageNo },${ paginationInfo.totalPageCount }" /></em></span>
+	</pg:page>
+</div>
+
+	<table class="boardListTb">
+		<colgroup>
+			<col style="width:5%;" />
+#foreach($col in $cols)
+			<col style="" />
+#end
+			<col style="width:15%;" />
+		</colgroup>
+		<tr>
+			<th><spring:message code="common.sortNum" /></th>
+#foreach($col in $cols)
+			<th><spring:message code="${domainName_uncap}.${col.fieldName}" /></th>
+#end
+			<th><spring:message code="common.manage" /></th>
+		</tr>
+
+		<c:forEach var="item" items="${ ${domainName_uncap}List }" varStatus="status">
+			<tr>
+				<td><fmt:formatNumber value="${ paginationInfo.totalRecordCount-((paginationInfo.currentPageNo-1)*criteria.pageUnit)-(status.index) }" type="number"/></td>
+#foreach($col in $cols)
+#if ($col.type == "DATE")
+				<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#elseif ($col.type == "NUMBER")
+				<td><fmt:formatNumber value="${ item.${col.fieldName} }" type="number"/></td>
+#else
+				<td><c:out value="${ item.${col.fieldName} }" /></td>
+#end
+#end
+				<td>
+					<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="updateForm.do?${ criteria.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton updateButton"><span class="ui-icon-gear"><spring:message code="button.update" /></span></a>
+					<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="delete.do?${ criteria.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton deleteButton"><span class="ui-icon-trash"><spring:message code="button.delete" /></span></a>
+				</td>
+			</tr>
+		</c:forEach>
+		<c:if test="${ empty ${domainName_uncap}List }">
+			<tr>
+				<td colspan="${colspan}">
+					<c:choose>
+						<c:when test="${ empty criteria.searchKeyword }">
+							<spring:message code="common.listEmpty" />
+						</c:when>
+						<c:otherwise>
+							<spring:message code="search.not_match_data" arguments="${ criteria.searchKeyword }" />
+						</c:otherwise>
+					</c:choose>
+				</td>
+			</tr>
+		</c:if>
+	</table>
+
+	<div class="boardNavigation">
+		<div id="paging_div">
+			<c:if test="${ !empty ${domainName_uncap}List }">
+			<div class="pagination">
+				<ul class="paging_align">
+					<ui:pagination paginationInfo = "${paginationInfo}" type="ext" />
+				</ul>
+			</div>
+			</c:if>
+			<div class="buttonRight">
+				<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="insertForm.do?${ criteria.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-document"><spring:message code="button.create" /></span></a>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+if(components.get("UUID").combo.getSelectionIndex() == 1
+&& components.get("Sequence").combo.getSelectionIndex() == 1
+&& components.get("chTable").combo.getSelectionIndex() == 1)
+  components.get("CreateTestCase").combo.select(1);
+
+  

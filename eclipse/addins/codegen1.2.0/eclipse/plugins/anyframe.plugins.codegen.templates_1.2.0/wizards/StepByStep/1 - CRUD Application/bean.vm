@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+#if($txParent)
+	<bean id="$beanName" parent="$txParent">
+		<property name="target">
+			<bean 
+				class="${implPackage_package}.${implClass}">
+				<property name="$daoClass">
+					<bean 
+						class="${daoPackage_package}.${daoClass}">
+						<property name="queryService" ref="queryService"/>
+					</bean>
+				</property>
+			</bean>
+		</property>
+#else
+	<bean id="$beanName" 
+		class="${implPackage_package}.${implClass}">
+		<property name="$daoClass">
+			<bean 
+				class="${daoPackage_package}.${daoClass}">
+				<property name="queryService" ref="queryService"/>
+			</bean>
+		</property>
+#end
+		<property name="proxyInterfaces"
+			value="anyframe.templates.emp.general.product.service.ProductService" />
+	</bean>
+</beans>
+  
+

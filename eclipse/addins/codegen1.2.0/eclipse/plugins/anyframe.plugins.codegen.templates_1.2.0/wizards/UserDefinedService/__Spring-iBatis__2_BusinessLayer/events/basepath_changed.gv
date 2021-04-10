@@ -1,0 +1,13 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "com.ubalhae.domain";
+String DAO_PACKAGE = "com.ubalhae.dao";
+String DAO_IMPL_PACKAGE = "com.ubalhae.dao.ibatis.impl";
+String SERVICE_PACKAGE = "com.ubalhae.service";
+String CONTROLLER_PACKAGE = "com.ubalhae.web";
+String SQLMAP_PATH = "com/ubalhae/dao/ibatis/sqlmap";
+String JSP_PATH = "WebContent/WEB-INF/jsp";
+String REQUEST_PATH = "";
+
+components.get("servicePackage").setUIValue(basePath+"/src/"+SERVICE_PACKAGE);
+components.get("domainPackage").setUIValue(basePath+"/src/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/src/"+DAO_PACKAGE);

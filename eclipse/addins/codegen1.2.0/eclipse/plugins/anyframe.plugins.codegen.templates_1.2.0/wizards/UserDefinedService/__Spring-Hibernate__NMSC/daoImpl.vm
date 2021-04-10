@@ -1,0 +1,103 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($columns = $model.fields)
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${daoImplPackage_package} != "")
+package ${daoImplPackage_package};
+#end
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * File Name    : ${daoImplClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2010 NMSC Co., Ltd. All rights reserved.
+ */
+
+@Repository("$daoClass_uncap")
+public class ${daoImplClass} extends HibernateDaoSupport implements ${daoClass} {
+
+	@Autowired
+	public ${daoImplClass}(SessionFactory sessionFactory) {
+		this.setSessionFactory(sessionFactory);
+	}
+
+	public int getCount(DetachedCriteria criteria) throws DataAccessException {
+		return (Integer) getHibernateTemplate().findByCriteria(criteria).get(0);
+	}
+
+	public List<${domain_cap}> getList(DetachedCriteria criteria) throws DataAccessException {
+		return getHibernateTemplate().findByCriteria(criteria);
+	}
+
+	public List<${domain_cap}> getPagedList(DetachedCriteria criteria, int firstResult, int maxResults) throws DataAccessException {
+		return getHibernateTemplate().findByCriteria(criteria, firstResult, maxResults);
+	}
+
+#if ($pk.javaType == "java.lang.Double")
+	public ${domain_cap} getInfoBySeq(Integer $pk.name) throws DataAccessException {
+#else
+	public ${domain_cap} getInfoBySeq($pk.javaType $pk.name) throws DataAccessException {
+#end	
+		return (${domain_cap}) getHibernateTemplate().get(${domain_cap}.class, $pk.name);
+	}
+
+	public Serializable insert(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getHibernateTemplate().save(${domain_uncap});
+	}
+
+	public boolean update(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		${domain_cap} persist = (${domain_cap}) getHibernateTemplate().get(${domain_cap}.class, ${domain_uncap}.get${pk.name}());
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+		persist.set${col.name}(${domain_uncap}.get${col.name}());
+#end
+#end
+		return true;
+	}
+
+#if ($pk.javaType == "java.lang.Double")
+	public boolean delete(Integer $pk.name) throws DataAccessException {
+#else
+	public boolean delete($pk.javaType $pk.name) throws DataAccessException {
+#end	
+		Object object = getHibernateTemplate().get(${domain_cap}.class, $pk.name);
+		if (object != null) {
+			getHibernateTemplate().delete(object);
+		}
+		return true;
+	}
+
+}

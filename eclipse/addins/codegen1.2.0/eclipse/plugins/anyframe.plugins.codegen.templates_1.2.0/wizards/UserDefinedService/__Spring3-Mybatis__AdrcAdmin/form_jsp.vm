@@ -1,0 +1,107 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" /></title>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	
+});
+//-->
+</script>
+</head>
+<body>
+
+<h4><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" /></h4>
+
+<form:form id="editForm" name="editForm" method="post" commandName="${domain_uncap}" action="${ currentSite.siteContext }${requestPath}/${ editMode }.do">
+	<input type="hidden" id="menuId" name="menuId" value="${ cri.menuId }" />
+	<input type="hidden" id="pagerOffset" name="pagerOffset" value="${ cri.pagerOffset }" />
+	<input type="hidden" id="searchKey" name="searchKey" value="${ cri.searchKey }" />
+	<input type="hidden" id="searchValue" name="searchValue" value="${ cri.searchValue }" />
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName"/>
+#end
+	<fieldset>
+		<legend>
+			<spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" />
+		</legend>
+
+			<table class="boardWriteTb">
+			<colgroup>
+				<col style="width:20%;" />
+				<col style="width:80%;" />
+			</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+			<!--
+			<tr>
+				<th class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" titleMessageKey="${domain_uncap}.${col.fieldName}" />
+					<div class="validatorError"><form:errors path="${col.fieldName}" /></div>
+				</td>
+			</tr>
+			-->
+#else
+#if ($col.nullable == false)
+			<tr>
+				<th class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.fieldName=="useYn")
+					<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY"><spring:message code="common.yes" /></label>&nbsp;
+					<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><spring:message code="common.no" /></label>
+#else
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" titleMessageKey="${domain_uncap}.${col.fieldName}" />
+#end
+					<div class="validatorError"><form:errors path="${col.fieldName}" /></div>
+				</td>
+			</tr>
+#else
+			<tr>
+				<th class="blt_ness"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.fieldName=="useYn")
+					<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY"><spring:message code="common.yes" /></label>&nbsp;
+					<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><spring:message code="common.no" /></label>
+#else
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" titleMessageKey="${domain_uncap}.${col.fieldName}" />
+#end
+					<div class="validatorError"><form:errors path="${col.fieldName}" /></div>
+				</td>
+			</tr>
+#end
+#end
+#end
+		</table>
+		<div class="boardNavigation">
+			<div class="buttonRight">
+				<button type="submit" class="jButton"><span class="ui-icon-disk"><spring:message code="common.save" /></span></button>
+				<a href="${ currentSite.siteContext }${requestPath}/<spring:url value="list.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-cancel"><spring:message code="common.cancel" /></span></a>
+			</div>
+		</div>
+	</fieldset>
+</form:form>
+
+</body>
+</html>

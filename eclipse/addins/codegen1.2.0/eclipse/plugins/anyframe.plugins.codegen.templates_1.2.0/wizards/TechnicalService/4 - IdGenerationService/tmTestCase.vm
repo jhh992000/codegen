@@ -1,0 +1,143 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+#if( $chTable == "true" )
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+#end
+#if( $Sequence =="true" )	
+import anyframe.common.exception.BaseException;
+#end
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+
+import anyframe.core.idgen.IIdGenerationService;
+
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-idgeneration.xml", 
+			"classpath*:${beanPath_dirname}/applicationContext-datasource.xml", 
+			"classpath*:**/applicationContext-common.xml"};
+	}
+	
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+#if( $chTable =="true" )		
+		DataSource dataSource = (DataSource) applicationContext
+				.getBean("${DataSourceTab}");
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				// 1. Try to drop the table. It may not exist and throw an
+				// exception.
+				try {
+					statement.executeUpdate("DROP TABLE ${Table}");
+				}
+				catch (SQLException e) {
+					// The table was probably just not there. Ignore this.
+				}
+				
+				// 2. Create the table that we will use in this test.
+				// Different depending on the db. Please add new statements as
+				// new databases are
+				// tested.
+				statement.executeUpdate("CREATE TABLE ${Table} ( "
+						+ "table_name varchar(16) NOT NULL, "
+						+ "next_id DECIMAL(30) NOT NULL, "
+						+ "PRIMARY KEY (table_name))");
+				statement.executeUpdate("INSERT INTO ${Table} VALUES('${KeyTable}',0)");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.err.println("Unable to initialize database for test." + e);
+			fail("Unable to initialize database for test. " + e);
+		}
+#end		
+	}
+	
+	public void onTearDown() throws Exception {
+#if( $chTable =="true" )		
+		DataSource dataSource = (DataSource) applicationContext
+				.getBean("${DataSourceTab}");
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				// 1. Delete the table that we will use in this test.
+				statement.executeUpdate("DROP TABLE ${Table}");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("Unable to cleanup database after test." + e);
+			// Want to continue
+		}
+#end	
+		super.onTearDown();
+	}
+#if($UUID =="true")
+
+	public void testUUIdGeneration() throws Exception {
+		IIdGenerationService ${BeanName} = (IIdGenerationService) applicationContext
+				.getBean("${BeanName}");
+				
+		// 1. get next String id
+		for (int i = 0; i < 10; i++) {
+			assertNotNull(${BeanName}.getNextStringId());
+		}
+		// 2. get next BigDecimal id
+		for (int i = 0; i < 10; i++) {
+			assertNotNull(${BeanName}.getNextBigDecimalId());
+		}
+	}
+#end
+#if($Sequence =="true")
+
+	public void testSequenceIdGeneration() throws Exception {
+		IIdGenerationService ${BeanNameSeq} = (IIdGenerationService) applicationContext
+				.getBean("${BeanNameSeq}");
+		try {
+			// 1. get next String id
+			String _id = ${BeanNameSeq}.getNextStringId();
+			assertTrue(_id.equals("0"));
+		}
+		catch (Exception e) {
+			assertTrue(e instanceof BaseException);
+		}
+	}
+#end
+#if($chTable =="true")
+	
+	public void testTableIdGeneration() throws Exception {
+		IIdGenerationService ${BeanNameTab} = (IIdGenerationService) applicationContext
+				.getBean("${BeanNameTab}");
+
+		// 1. get next integer id until 99
+		int testCount = 100;
+		for (int i = 0; i < testCount; i++) {
+			int id = ${BeanNameTab}.getNextIntegerId();
+			assertEquals("fail to get TableIdGeneration", i, id);
+		}
+	}
+#end
+
+}
+					
+							

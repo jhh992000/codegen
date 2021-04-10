@@ -1,0 +1,150 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" /></title>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+#set($existNotNull = false)
+#foreach($col in $cols)
+#if ($col.nullable == false)
+#set($existNotNull = true)
+#end
+#end
+#if ($existNotNull == true)
+	$("#editForm").validate({
+		submitHandler: function(form) {
+			jQuery.showConfirm("<spring:message code="common.question.save" />", {
+				yesCallback: function() {
+					form.action="${ pageContext.request.contextPath }${requestPath}/${ editMode }.do";
+					form.submit();
+				},
+				noCallback: function() {
+					return false;
+				}
+			});
+		},
+		rules: {
+#set($loopCount = 0)
+#foreach($col in $cols)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false && $col.nullable == false)
+			#if ($loopCount > 0),#end${col.fieldName}: { required: true#if ($col.type=="INT" || $col.type=="DOUBLE" || $col.type=="FLOAT" || $col.type=="NUMBER" || $col.type=="int" || $col.type=="double" || $col.type=="float" || $col.type=="number"), number: true#end }
+#set($loopCount = $loopCount+1)
+#end
+#end
+		},
+		messages: {
+		},
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+#end
+});
+//]]>
+</script>
+</head>
+<body>
+
+<div class="board_write">
+	<h3 class="sub_title"><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" /></h3>
+	<form:form id="editForm" name="editForm" method="post" commandName="${domain_uncap}" action="${ pageContext.request.contextPath }${requestPath}/${ editMode }.do">
+		<input type="hidden" id="menucode" name="menucode" value="${ cri.menucode }" />
+		<input type="hidden" id="pagerOffset" name="pagerOffset" value="${ cri.pagerOffset }" />
+		<input type="hidden" id="searchKey" name="searchKey" value="${ cri.searchKey }" />
+		<input type="hidden" id="searchValue" name="searchValue" value="${ cri.searchValue }" />
+#foreach($pk in $pks)
+		<form:hidden path="$pk.fieldName"/>
+#end
+		<fieldset>
+			<legend>
+				<spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.edit" />
+			</legend>
+
+				<table class="" summary="">
+				<caption class="skip"></caption>
+				<colgroup>
+					<col style="width:20%;" />
+					<col style="width:80%;" />
+				</colgroup>
+				<tbody>
+#foreach($col in $cols)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+				<!--
+				<tr>
+					<th scope="row" class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+					<td>
+						<label for="${col.fieldName}" class="skip"><spring:message code="${domain_uncap}.${col.fieldName}" /></label>
+						<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" />
+					</td>
+				</tr>
+				-->
+#else
+#if ($col.nullable == false)
+				<tr>
+					<th scope="row" class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+					<td>
+#if ($col.fieldName=="useYn")
+						<form:radiobutton id="useYnY" path="useYn" value="Y" /><label for="useYnY"><spring:message code="common.use" /></label>&nbsp;
+						<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><spring:message code="common.notUse" /></label>
+#else
+						<label for="${col.fieldName}" class="skip"><spring:message code="${domain_uncap}.${col.fieldName}" /></label>
+						<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+					</td>
+				</tr>
+#else
+				<tr>
+					<th scope="row" class="blt_ness"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+					<td>
+#if ($col.fieldName=="useYn")
+						<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY"><spring:message code="common.yes" /></label>&nbsp;
+						<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><spring:message code="common.no" /></label>
+#else
+						<label for="${col.fieldName}" class="skip"><spring:message code="${domain_uncap}.${col.fieldName}" /></label>
+						<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+					</td>
+				</tr>
+#end
+#end
+#end
+				</tbody>
+			</table>
+			<div class="boardNavigation">
+				<div class="buttonRight">
+					<button type="submit" class="jButton"><span class="ui-icon-disk"><spring:message code="common.save" /></span></button>
+					<a href="${ pageContext.request.contextPath }${requestPath}/<spring:url value="${moduleName}List.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-cancel"><spring:message code="common.cancel" /></span></a>
+				</div>
+			</div>
+		</fieldset>
+	</form:form>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.cache.ICacheService;
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-cache.xml",
+			"classpath*:**/applicationContext-common.xml"};
+	}
+
+	/**
+	 * Positive Case : Using CacheService, put one value and get a
+	 * value by key.
+	 * 
+	 * @throws Exception
+	 *             fail to test
+	 */
+	public void testGetFromCache() throws Exception {
+		ICacheService cacheService = (ICacheService) applicationContext
+			.getBean("$beanName");
+			
+		// 1. Put a content in cache.
+		cacheService.putInCache("KEY-1", "VALUE-1");
+		// 2. Get that item from Cache.
+		Object value = cacheService.getFromCache("KEY-1");
+		assertEquals("VALUE-1", value.toString());
+	}
+}

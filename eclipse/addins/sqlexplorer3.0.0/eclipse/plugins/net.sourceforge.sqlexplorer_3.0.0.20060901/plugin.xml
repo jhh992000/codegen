@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="SQL Explorer"
+            id="SQLExplorerPlugin">
+      </category>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView"
+            icon="icons/tree_mode.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView"
+            name="Database Structure"/>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView"
+            icon="icons/app_obj.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView"
+            name="Database Detail"/>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            icon="icons/alias.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            name="Connections">
+      </view>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
+            icon="icons/common_tab.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
+            name="SQL Results">
+      </view>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
+            icon="icons/sql_history.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
+            name="SQL History">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
+            fixed="false"
+            icon="icons/logo16.gif"
+            id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
+            name="SQL Explorer">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="SQL Explorer"
+            class="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
+            id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage">
+      </page>
+      
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page class="net.sourceforge.sqlexplorer.preferences.DriverPreferencePage" 
+      		category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage" 
+      		name="JDBC Drivers" 
+      		id="net.sourceforge.sqlexplorer.preferences.DriverPreferencePage"/>
+      <page
+            name="SQL Editor"
+            category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
+            class="net.sourceforge.sqlexplorer.preferences.SQLPreferencePage"
+            id="net.sourceforge.sqlexplorer.preferences.SQLPreferencePage">
+      </page>
+   </extension>
+   <extension
+         id="editors"
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            name="Sql Editor"
+            extensions="sql"
+            icon="icons/editor.gif"
+            class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
+            id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
+      </editor>
+   </extension>
+   <extension point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.commit"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               class="net.sourceforge.sqlexplorer.connections.actions.CommitAction"
+               enablesFor="1"
+               icon="icons/commit.gif"
+               id="net.sourceforge.sqlexplorer.actions.commit"
+               label="Commit"
+               toolbarPath="additions"
+               tooltip="Commit">
+         </action>
+      </viewContribution>     
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.rollback"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               class="net.sourceforge.sqlexplorer.connections.actions.RollbackAction"
+               enablesFor="1"
+               icon="icons/rollback.gif"
+               id="net.sourceforge.sqlexplorer.actions.rollback"
+               label="Roll Back"
+               toolbarPath="additions"
+               tooltip="Rollback">
+         </action>
+      </viewContribution>
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.closeAll"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               class="net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction"
+               disabledIcon="icons/removeall_dis.gif"
+               enablesFor="*"
+               icon="icons/removeAll_co.gif"
+               id="net.sourceforge.sqlexplorer.actions.closeAll"
+               label="Close All Connections"
+               toolbarPath="additions"
+               tooltip="Close All Connections">
+         </action>
+      </viewContribution>
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.close"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               class="net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction"
+               disabledIcon="icons/remove_dis.gif"
+               enablesFor="*"
+               icon="icons/remove_att.gif"
+               id="net.sourceforge.sqlexplorer.actions.close"
+               label="Close Connection"
+               toolbarPath="additions"
+               tooltip="Close Connection">
+         </action>
+      </viewContribution>
+
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.NewEditor"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               label="New SQL Editor"
+               icon="icons/new_editor.gif"
+               class="net.sourceforge.sqlexplorer.connections.actions.NewEditorAction"
+               tooltip="New SQL Editor"
+               enablesFor="*"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.newEditor">
+         </action>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="SQLExplorer"
+            id="net.sourceforge.sqlexplorer.new">
+      </category>
+      <wizard
+            name="SQLExplorer SQL Editor"
+            icon="icons/edittsk_tsk.gif"
+            category="net.sourceforge.sqlexplorer.new"
+            class="net.sourceforge.sqlexplorer.plugin.wizards.NewSQLEditorWizard"
+            id="net.sourceforge.sqlexplorer.plugin.wizards.sqleditor">
+         <description>
+            Create a new empty SQL file
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+	<actionSet
+		label="About SQL Explorer"
+		visible="true"
+		id="net.sourceforge.sqlexplorer.about">
+		<action
+        class="net.sourceforge.sqlexplorer.plugin.actions.About"
+        icon="icons/logo16.gif"
+        id="org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction"
+        label="About SQL Explorer"
+        menubarPath="help/about">
+		</action>
+	</actionSet>
+   </extension>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
+      </application>
+   </extension>
+
+   <extension-point id="nodeContextAction" name="Database Structure Node Context Menu Action" schema="schema/nodeContextAction.exsd"/>
+   <extension-point id="node" name="Database Structure Node" schema="schema/node.exsd"/>
+   <extension-point id="nodeDetailTab" name="Database Structure Node Detail Tab" schema="schema/nodeDetailTab.exsd"/>
+   <extension-point id="dataSetTableContextAction" name="Table Context Menu Action" schema="schema/dataSetTableContextAction.exsd"/>
+   <extension-point id="editorAction" name="SQL Editor Action" schema="schema/editorAction.exsd"/>
+
+   <extension
+         id="nodeContextAction"
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.RefreshNodeAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.RefreshNodeAction"
+            name="Refresh Node"
+            node-type="*"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.CopyNodeNameAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.CopyNodeNameAction"
+            name="Copy Node Name"
+            node-type="*"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
+            name="Generate SELECT Statement"
+            node-type="table,column"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.CreateTableScriptAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.CreateTableScriptAction"
+            name="Generate TABLE Script"
+            node-type="table"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"
+            name="Remove Node Filter"
+            node-type="database"/>
+   </extension>
+   <extension
+         id="dataSetTableContextAction"
+         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.CopyCellAction"
+            id="sqlexplorer.dataset.actions.CopyCellAction"
+            name="Copy Cell Action"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.CopyColumnNameAction"
+            id="sqlexplorer.dataset.actions.CopyColumnNameAction"
+            name="Copy Column Name Action"/>            
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportCSVAction"
+            group="export"
+            id="sqlexplorer.dataset.actions.ExportCSVAction"
+            name="Export\CSV File"/>            
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportXLSAction"
+            group="export"
+            id="sqlexplorer.dataset.actions.ExportXLSAction"
+            name="Export\XLS File"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportHTMLAction"
+            group="export"
+            id="sqlexplorer.dataset.actions.ExportHTMLAction"
+            name="Export\HTML File"/>
+
+   </extension>
+   <extension
+         id="product"
+         name="SQL Explorer"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="net.sourceforge.sqlexplorer.application"
+            name="SQL Explorer">
+         <property
+               name="windowImages"
+               value="icons/logo16.gif,icons/logo32.gif"/>
+      </product>
+   </extension>
+</plugin>

@@ -1,0 +1,51 @@
+#if(${Package_package})
+package ${Package_package};
+#end
+
+import org.springframework.transaction.support.TransactionSynchronization;
+
+public class TransactionSynchronizationSample implements TransactionSynchronization{
+
+    private int rollbackCount;
+    private int commitCount;
+    public void afterCommit() {
+    }
+
+    public void afterCompletion(int status) {
+	switch (status) {
+	case STATUS_COMMITTED:
+	    commitCount++;
+	    break;
+	case STATUS_ROLLED_BACK:
+	    rollbackCount++;
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    public void beforeCommit(boolean arg0) {
+	
+    }
+
+    public void beforeCompletion() {
+	
+    }
+
+    public void resume() {
+	
+    }
+
+    public void suspend() {
+	
+    }
+
+    public int getCommitCount() {
+        return commitCount;
+    }
+
+    public int getRollbackCount() {
+        return rollbackCount;
+    }
+
+}

@@ -1,0 +1,21 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "kr.go.carmileage.home." + components.get("moduleName").getUIValue() + ".service";
+String DAO_PACKAGE = "kr.go.carmileage.home." + components.get("moduleName").getUIValue() + ".service";
+String SERVICE_PACKAGE = "kr.go.carmileage.home." + components.get("moduleName").getUIValue() + ".service";
+String CONTROLLER_PACKAGE = "kr.go.carmileage.home." + components.get("moduleName").getUIValue() + ".web";
+String MYBATIS_PATH = "mybatis";
+String JSP_PATH = "WebContent/WEB-INF/jsp/home";
+String MESSAGE_RESOURCE_PATH = "WebContent/WEB-INF/src/resources/messages";
+String REQUEST_PATH = "/home";
+String JSP_FOLDER = tableName.replaceAll("_", "");
+String JSP_FOLDER_PREFIX = "tb";
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX, "");
+
+components.get("domainPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DAO_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+SERVICE_PACKAGE);
+components.get("mybatisPath").setUIValue(basePath+"/WebContent/WEB-INF/src/resources/"+MYBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+JSP_FOLDER);
+components.get("messagePath").setUIValue(basePath+"/"+MESSAGE_RESOURCE_PATH);

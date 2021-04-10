@@ -1,0 +1,5 @@
+String actionPackage = components.get("actionPackage").text.getText();
+
+components.get("formPackage").text.setText(actionPackage);
+
+

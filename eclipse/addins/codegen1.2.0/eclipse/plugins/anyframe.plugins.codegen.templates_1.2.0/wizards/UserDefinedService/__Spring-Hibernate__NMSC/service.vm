@@ -1,0 +1,94 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${servicePackage_package} != "")
+package ${servicePackage_package};
+#end
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * File Name    : ${serviceClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2010 NMSC Co., Ltd. All rights reserved.
+ */
+
+@Service
+public class ${serviceClass} {
+	private final Log logger = LogFactory.getLog(${serviceClass}.class);
+	
+	@Autowired
+	private ${daoClass} ${daoClass_uncap};
+
+	public int getTotalCount() throws Exception {
+		DetachedCriteria criteria = DetachedCriteria.forClass(${domain_cap}.class);
+		criteria.setProjection(Projections.rowCount());
+		return ${daoClass_uncap}.getCount(criteria);
+	}
+	
+	public int getCount(DetachedCriteria criteria) throws Exception {
+		criteria.setProjection(Projections.rowCount());
+		int count = ${daoClass_uncap}.getCount(criteria);
+		criteria.setProjection(null);
+		criteria.setResultTransformer(Criteria.ROOT_ENTITY);
+		return count;
+	}
+
+	public List<${domain_cap}> getPagedList(DetachedCriteria criteria, int firstResult, int maxResults) throws Exception {
+		return ${daoClass_uncap}.getPagedList(criteria, firstResult, maxResults);
+	}
+
+	public List<${domain_cap}> getList(DetachedCriteria criteria) throws Exception {
+		return ${daoClass_uncap}.getList(criteria);
+	}
+#if ($pk.javaType == "java.lang.Double")
+	public ${domain_cap} getInfoBySeq(Integer $pk.name) throws Exception {
+#else
+	public ${domain_cap} getInfoBySeq($pk.javaType $pk.name) throws Exception {
+#end	
+		return ${daoClass_uncap}.getInfoBySeq($pk.name);
+	}
+
+	public Serializable insert(${domain_cap} ${domain_uncap}) throws Exception {
+		return ${daoClass_uncap}.insert(${domain_uncap});
+	}
+
+	public boolean update(${domain_cap} ${domain_uncap}) throws Exception {
+		return ${daoClass_uncap}.update(${domain_uncap});
+	}
+
+#if ($pk.javaType == "java.lang.Double")
+	public boolean delete(Integer $pk.name) throws Exception {
+#else
+	public boolean delete($pk.javaType $pk.name) throws Exception {
+#end	
+		return ${daoClass_uncap}.delete($pk.name);
+	}
+
+}

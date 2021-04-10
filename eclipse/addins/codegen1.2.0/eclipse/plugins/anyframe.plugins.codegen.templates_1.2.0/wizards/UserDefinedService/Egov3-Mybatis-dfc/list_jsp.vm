@@ -1,0 +1,169 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><s:message code="${moduleName}.modelName" /> <s:message code="common.list" /></title>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		jQuery.showConfirm("<s:message code="common.question.delete" />", {
+			yesCallback: function() {
+				 window.location = deleteUrl;
+			},
+			noCallback: function() {
+				return;
+			}
+		});
+		return false;
+	});
+});
+</script>
+</head>
+<body>
+
+<div class="board_list">
+
+	<pg:pager
+		url="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do"
+		items="${ cri.totalCount }"
+		maxPageItems="${ cri.maxPageItems }"
+		maxIndexPages="${ cri.maxIndexPages }"
+		isOffset="${ true }"
+		index="center"
+		export="offset,currentPageNumber=pageNumber"
+		scope="request">
+		<pg:param name="maxPageItems" value="${ cri.maxPageItems }" />
+		<pg:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+		<pg:param name="searchKey" value="${ cri.searchKey }" />
+		<pg:param name="searchValue" value="${ cri.searchValue }" />
+		<pg:param name="menuNo" value="${ cri.menuNo }" />
+
+		<form:form id="searchForm" name="searchForm" method="post" commandName="cri" action="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do">
+			<fieldset>
+				<input type="hidden" name="menuNo" value="${ currentMenu.menuNo }" />
+				<legend><s:message code="${moduleName}.modelName" /> <s:message code="common.search" /></legend>
+
+				<div class="boardSearch">
+					<div class="searchCn">
+						<label for="searchKey"  class="sch_ttl"><s:message code="search.searchKey" /></label>
+						<form:select path="searchKey" id="searchKey" cssClass="select">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+							<form:option value="$column.fieldName"><s:message code="${moduleName}.$column.fieldName" /></form:option>
+#end#end
+						</form:select>
+						<label for="searchValue" class="skip"><s:message code="search.searchValue" /></label>
+						<c:set var="txtSearchValue"><s:message code="search.searchValue" /></c:set>
+						<form:input path="searchValue" id="searchValue" cssClass="txt" cssStyle="width:200px;" placeholder="${ txtSearchValue }" />
+						<input type="submit" class="btnSearch" value="search" />
+					</div>
+				</div>
+				<div class="boardInformation">
+					<div class="infoLeft" style="float: left;">
+						<pg:page export="firstItem, lastItem">
+							<span class="totalCount"><s:message code="common.list.totalCount" arguments="<em>${ cri.totalCount }</em>" /></span>
+							|
+							<span class="pageScope"><s:message code="common.list.scope" /> <span class="pageScopeValue">${ firstItem }-${ lastItem }</span></span>
+						</pg:page>
+					</div>
+					<div class="infoRight">
+						<label for="maxPageItems"><s:message code="pager.maxPageItems" /></label>
+						<form:select path="maxPageItems" cssClass="select">
+							<form:option value="10"><s:message code="search.maxPageItems" arguments="10" /></form:option>
+							<form:option value="20"><s:message code="search.maxPageItems" arguments="20" /></form:option>
+							<form:option value="30"><s:message code="search.maxPageItems" arguments="30" /></form:option>
+							<form:option value="40"><s:message code="search.maxPageItems" arguments="40" /></form:option>
+							<form:option value="50"><s:message code="search.maxPageItems" arguments="50" /></form:option>
+						</form:select>
+						[전체 <strong><font color="#fb9400"><c:out value="${ cri.totalCount }"/></font></strong> 개]
+					</div>
+				</div>
+
+			</fieldset>
+		</form:form>
+
+		<table class="boardList" summary="">
+			<caption class="skip"></caption>
+			<colgroup>
+				<col style="width:5%;" />
+#foreach($col in $cols)
+				<col style="" />
+#end
+				<col style="width:17%;" />
+			</colgroup>
+			<thead>
+			<tr>
+				<th scope="col"><s:message code="common.sortNum" /></th>
+#foreach($col in $cols)
+				<th scope="col"><s:message code="${moduleName}.${col.fieldName}" /></th>
+#end
+				<th scope="col"><s:message code="common.manage" /></th>
+			</tr>
+			</thead>
+
+			<tbody>
+			<c:forEach var="item" items="${ list }" varStatus="status">
+				<tr>
+					<td>${ cri.totalCount-((currentPageNumber-1)*cri.maxPageItems)-(status.index) }</td>
+#foreach($col in $cols)
+#if ($col.type == "DATE")
+					<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#else
+					<td>${ item.${col.fieldName} }</td>
+#end
+#end
+					<td>
+						<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}UpdateForm.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton jSmall updateButton"><span class="ui-icon-gear"><s:message code="common.update" /></span></a>
+						<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}Delete.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton jSmall deleteButton"><span class="ui-icon-trash"><s:message code="common.delete" /></span></a>
+					</td>
+				</tr>
+			</c:forEach>
+			<c:if test="${ empty list }">
+				<tr>
+					<td colspan="${colspan}">
+						<c:choose>
+							<c:when test="${ empty cri.searchValue }">
+								<s:message code="common.listEmpty" />
+							</c:when>
+							<c:otherwise>
+								<s:message code="search.not_match_data" arguments="${ cri.searchValue }" />
+							</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
+			</c:if>
+			</tbody>
+		</table>
+
+		<div class="boardNavigation">
+			<div class="pagination">
+				<pg:index>
+					<c:import url="../../common/include/pager.jsp">
+						<c:param name="contextPath" value="" />
+						<c:param name="totalItemCount" value="${ cri.totalCount }" />
+						<c:param name="pagerOffset" value="${ cri.pagerOffset }" />
+						<c:param name="maxPageItems" value="${ cri.maxPageItems }" />
+						<c:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+					</c:import>
+				</pg:index>
+			</div>
+			<div class="buttonRight">
+				<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}CreateForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-plus"><s:message code="common.create" /></span></a>
+			</div>
+		</div>
+	</pg:pager>
+</div>
+</body>
+</html>

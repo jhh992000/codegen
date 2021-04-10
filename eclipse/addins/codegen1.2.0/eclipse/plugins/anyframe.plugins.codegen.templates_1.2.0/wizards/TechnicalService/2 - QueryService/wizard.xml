@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>QueryService</title>
+
+		<component-page>
+			<description>QueryService Configuration.</description>
+			<container name="beanPath" label="*Bean Path" type="srcPackage" required="true" />
+			<group label="jdbcTemplate">
+				<textfield name="g1_id" label="*ID" required="true" value="jdbcTemplate" />
+				<textfield name="g1_dataSource" label="*DataSource" value="dataSource" required="true" />
+			</group>
+			<group checkbox="pagingSQLGenerator">
+				<checkbox name="pagingSQLGenerator" label="pagingSQLGenerator" />
+				<textfield name="g2_id" label="*ID" required="false" value="pagingSQLGenerator" />
+				<type name="g2_class" label="*Class"
+					value="anyframe.core.query.impl.util.OraclePagingSQLGenerator" required="false" />
+			</group>
+			<group label="mapping File">
+				<container name="g3Path" label="*mapping Path" type="srcPackage" required="true" />
+				<textfield name="g3_frequency" label="SQL Reload Frequency" check="number" />
+				<checkbox name="g3_skipError" label="Skip error?" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="QueryServiceTestCase" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="o1" expression="applicationContext-query.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="o3" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

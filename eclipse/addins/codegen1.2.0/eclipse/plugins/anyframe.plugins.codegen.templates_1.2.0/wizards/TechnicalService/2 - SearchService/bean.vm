@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+
+	<bean id="searchService" 
+		class="anyframe.core.query.impl.SearchServiceImpl">
+		<property name="searchDAO">
+			<bean
+				class="anyframe.core.query.impl.SearchDAO">
+				<property name="iqueryService" ref="$extQueryService" />
+			</bean>
+		</property>
+	</bean>
+</beans>
+

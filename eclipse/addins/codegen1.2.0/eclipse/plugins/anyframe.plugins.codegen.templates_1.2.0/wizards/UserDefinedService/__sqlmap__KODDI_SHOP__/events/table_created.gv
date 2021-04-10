@@ -1,0 +1,2 @@
+String DEFAULT_BASE_PATH = "/ppms_mng";
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);

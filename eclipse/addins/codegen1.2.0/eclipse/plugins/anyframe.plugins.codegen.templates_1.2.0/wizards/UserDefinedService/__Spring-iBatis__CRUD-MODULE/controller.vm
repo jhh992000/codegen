@@ -1,0 +1,156 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.util.List;
+import java.util.Calendar;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+import com.ubalhae.common.util.Token;
+import org.apache.commons.lang.time.FastDateFormat;
+
+/**
+ * File Name    : ${controllerClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2008 BALHAE Co., Ltd. All rights reserved.
+ */
+
+@Controller
+public class ${controllerClass} {
+	
+	private static final Log logger = LogFactory.getLog(${controllerClass}.class);
+	private static final FastDateFormat fdf = FastDateFormat.getInstance("yyyyMMddHHmmss");
+	
+	private ${service_cap} ${service_uncap};
+
+	@Autowired
+	public void set${service_cap}(${service_cap} ${service_uncap}) {
+		this.${service_uncap} = ${service_uncap};
+	}
+	
+	
+	@RequestMapping("${requestPath}/list.do")
+	public ModelAndView listHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		Token.set(request);
+		${domain_cap} searchVO = new ${domain_cap}();
+		searchVO.setSiteId(${domain_uncap}.getSiteId());
+		searchVO.setPagerOffset(${domain_uncap}.getPagerOffset());
+		searchVO.setSc(${domain_uncap}.getSc());
+		searchVO.setSw(${domain_uncap}.getSw());
+		
+		Integer itemCount = ${service_uncap}.getCount(searchVO);
+		${domain_uncap}.setItemCount(itemCount);
+
+		List<${domain_cap}> list = ${service_uncap}.getPagedList(searchVO);
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("${domain_uncap}List", list);
+		mav.addObject("model", ${domain_uncap});
+		mav.setViewName("${requestPath.substring(1)}/list");
+
+		return mav;
+	}
+
+	@RequestMapping("${requestPath}/insertForm.do")
+	public ModelAndView insertFormHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		Token.set(request);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("formType", "insertForm");
+		mav.addObject("model", ${domain_uncap});
+		mav.setViewName("${requestPath.substring(1)}/form");
+		return mav;
+	}
+
+	@RequestMapping("${requestPath}/insert.do")
+	public ModelAndView insertHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		/*
+		//키제너레이트는 다음키를 직접조회한후 셋팅해도 되고 sqlmap의 selectKey를 이용해 생성해도 된다.
+		int next_key = ${service_uncap}.getNextKey(${domain_uncap});
+		${domain_uncap}.set$pk_cap(next_key);
+		
+		${domain_uncap}.setWdate(fdf.format(Calendar.getInstance()));
+		${domain_uncap}.setUdate(fdf.format(Calendar.getInstance()));
+		*/
+		//TODO - 기초값들 셋팅할것
+		${service_uncap}.insertInfo(${domain_uncap});
+
+		return new ModelAndView("redirect:${requestPath}/list.do");
+	}
+
+	@RequestMapping("${requestPath}/view.do")
+	public ModelAndView viewHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		Token.set(request);
+		${domain_cap} model = ${service_uncap}.getInfo(${domain_uncap});
+		model.setPagerOffset(${domain_uncap}.getPagerOffset());
+		model.setSc(${domain_uncap}.getSc());
+		model.setSw(${domain_uncap}.getSw());
+
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("${requestPath.substring(1)}/view");
+		mav.addObject("model", model);
+		return mav;
+	}
+
+	@RequestMapping("${requestPath}/updateForm.do")
+	public ModelAndView updateFormHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		Token.set(request);
+		${domain_cap} model = ${service_uncap}.getInfo(${domain_uncap});
+		model.setPagerOffset(${domain_uncap}.getPagerOffset());
+		model.setSc(${domain_uncap}.getSc());
+		model.setSw(${domain_uncap}.getSw());
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("formType", "updateForm");
+		mav.addObject("model", model);
+		mav.setViewName("${requestPath.substring(1)}/form");
+		return mav;
+	}
+
+	@RequestMapping("${requestPath}/update.do")
+	public ModelAndView updateHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		if (!Token.isValid(request)) {
+			return new ModelAndView("forward:${requestPath}/list.do");
+		}
+		${service_uncap}.updateInfo(${domain_uncap});
+		return new ModelAndView("forward:${requestPath}/list.do");
+	}
+
+	@RequestMapping("${requestPath}/delete.do")
+	public ModelAndView deleteHandler(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}) throws Exception {
+		if (!Token.isValid(request)) {
+			return new ModelAndView("forward:${requestPath}/list.do");
+		}
+		${service_uncap}.deleteInfoByKey(${domain_uncap});
+		return new ModelAndView("forward:${requestPath}/list.do");
+	}
+}

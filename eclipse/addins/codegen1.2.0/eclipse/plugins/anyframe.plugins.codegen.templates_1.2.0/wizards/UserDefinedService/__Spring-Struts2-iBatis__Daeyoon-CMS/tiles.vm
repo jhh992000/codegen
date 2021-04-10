@@ -1,0 +1,28 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       
+<tiles-definitions>
+	<!-- ${domain_uncap} -->
+	<definition name="${domain_uncap}.list" extends="DefaultLayout">
+		<put-attribute name="body" value="${requestPath}/list.jsp" />
+	</definition>
+    
+	<definition name="${domain_uncap}.form" extends="DefaultLayout">
+		<put-attribute name="body" value="${requestPath}/form.jsp" />
+	</definition>
+</tiles-definitions>

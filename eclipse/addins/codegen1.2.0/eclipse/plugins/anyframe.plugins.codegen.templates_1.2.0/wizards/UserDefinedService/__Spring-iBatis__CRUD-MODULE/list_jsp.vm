@@ -1,0 +1,190 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/adm/inc/incTop.jsp"%>
+<script type="text/javascript">
+<!--
+function goView(#foreach($pk in $pks)$pk.fieldName#if($velocityCount<$pks.size()), #end#end) {
+	var f = document.forms['${formName}'];
+	f.action="${requestPath}/view.do";
+#foreach($pk in $pks)
+	f.${pk.fieldName}.value = $pk.fieldName;
+#end	
+	f.submit();
+}
+function goInsertForm(#foreach($pk in $pks)$pk.fieldName#if($velocityCount<$pks.size()), #end#end) {
+	var f = document.forms['${formName}'];
+	f.action="${requestPath}/insertForm.do";
+#foreach($pk in $pks)
+	f.${pk.fieldName}.value = $pk.fieldName;
+#end	
+	f.submit();
+}
+function goUpdateForm(#foreach($pk in $pks)$pk.fieldName#if($velocityCount<$pks.size()), #end#end) {
+	var f = document.forms['${formName}'];
+	f.action="${requestPath}/updateForm.do";
+#foreach($pk in $pks)
+	f.${pk.fieldName}.value = $pk.fieldName;
+#end	
+	f.submit();
+}
+function goDelete(#foreach($pk in $pks)$pk.fieldName#if($velocityCount<$pks.size()), #end#end) {
+	if (confirm("<spring:message code="common.doYouWantDelete" />")) {
+		var f = document.forms['${formName}'];
+		f.action="${requestPath}/delete.do";
+#foreach($pk in $pks)
+		f.${pk.fieldName}.value = $pk.fieldName;
+#end	
+		f.submit();
+	}
+}
+function goFind() {
+	var f = document.forms['frm'];	
+	f.pagerOffset.value=0;
+	f.action="${requestPath}/list.do";
+	f.submit();
+}
+//-->
+</script>
+<form:form name="${formName}" commandName="model" method="post">
+
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName" />
+#end
+	<form:hidden path="pagerOffset" />
+	<form:hidden path="maxPageItems" />
+	<form:hidden path="maxIndexPages" />
+	<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" value="<%=session.getAttribute("org.apache.struts.action.TOKEN")%>">
+
+	<pg:pager
+		items="${model.itemCount}"
+		index="center"
+		maxPageItems="${model.maxPageItems}"
+		maxIndexPages="${model.maxIndexPages}" 
+		isOffset="<%= true %>"
+		url="${requestPath}/list.do"
+		export="offset,currentPageNumber=pageNumber" 
+		scope="request">
+		<%-- keep track of preference --%>
+		<pg:param name="siteId" value="${ model.siteId }" />
+		<pg:param name="maxPageItems" value="${ model.maxPageItems }" />
+		<pg:param name="maxIndexPages" value="${ model.maxIndexPages }" />
+		<pg:param name="sc" value="${ model.sc }" />
+		<pg:param name="sw" value="${ model.sw }" />
+
+		<!-- title table -->
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+					<table width="100%" border="0" bordercolor="#dddddd" bgcolor="#dddddd" cellspacing="1" cellpadding="0">
+						<tr>
+							<td height="32" bgcolor="#eeeeee" style="padding-left:10px;"><strong><spring:message code="${domain_uncap}.pageTitle" /></strong></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td height="20"></td>
+			</tr>
+		</table>
+		<!-- title table -->
+		
+		<!-- search table -->
+		<table border="0" bordercolor="#dddddd" cellspacing="0" cellpadding="0" width="100%">
+			<tr><td colspan="10" height="1" bgcolor="#dddddd"></td></tr>
+			<tr><td colspan="10" height="1" bgcolor=""></td></tr>
+			<tr>
+				<td bgcolor="#eeeeee">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td>
+								<form:select path="sc">
+									<form:option value="subject"><spring:message code="search.sc_subject" /></form:option>
+									<form:option value="content"><spring:message code="search.sc_content" /></form:option>
+								</form:select>
+								<form:input path="sw" cssStyle="width:100px;" onkeypress="if(event.keyCode==13){goFind();}" />
+								<a href="javascript:goFind();"><img src="/images/adm/btn_style1/btn_search.gif" align="absmiddle" border="0" alt="<spring:message code="common.search" />" /></a>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr><td colspan="10" height="1" bgcolor="#dddddd"></td></tr>
+			<tr><td colspan="10" height="1" bgcolor=""></td></tr>
+		</table>
+		<!-- search table -->
+
+		<!-- data table -->
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td align="left" style="height: 10; font-family: Tahoma; font-size: 8pt; color: #A1917C; padding-top: 2px; padding-right: 5px;">
+				<pg:page export="firstItem, lastItem">${firstItem}-${lastItem}/total:${ model.itemCount }</pg:page>
+			</td>
+		</tr>
+		</table>
+		<table width="100%" border="0" cellpadding="2" cellspacing="1" bgcolor="#CCCCCC">
+			<tr height="30" align="center">
+				<td bgcolor="#eeeeee"><b><spring:message code="${domain_uncap}.num" /></b></td>
+#foreach($col in $cols)	
+				<td bgcolor="#eeeeee"><b><spring:message code="${domain_uncap}.${col.fieldName}" /></b></td>
+#end		
+				<td bgcolor="#eeeeee"><b><spring:message code="${domain_uncap}.control" /></b></td>
+			</tr>
+			<c:set var="i" value="${0}" />
+			<c:forEach var="item" items="${ ${domain_uncap}List }">
+				<c:set var="i" value="${ i+1 }" />
+				<pg:item>
+					<tr align="center" height="20">
+						<td bgcolor="#FFFFFF">${ model.itemCount-((currentPageNumber-1)*model.maxPageItems)-(i-1) }</td>
+#foreach($col in $cols)			
+#if($col.isPK())
+						<td bgcolor="#FFFFFF"><a href="javascript:goView(#foreach($pk in $pks)'<c:out value="${ item.${pk.fieldName} }"/>'#if($velocityCount<$pks.size()), #end#end);">${ item.${col.fieldName} }</a></td>
+#else
+						<td bgcolor="#FFFFFF">
+							${ item.${col.fieldName} }
+						</td>
+#end			
+#end			
+						<td bgcolor="#FFFFFF" align="center">
+							<a href="javascript:goView(#foreach($pk in $pks)'<c:out value="${ item.${pk.fieldName} }"/>'#if($velocityCount<$pks.size()), #end#end);"><img src="/images/adm/btn_style1/btn_view.gif" align="absmiddle" border="0" alt="<spring:message code="common.view" />" /></a>
+							<a href="javascript:goUpdateForm(#foreach($pk in $pks)'<c:out value="${ item.${pk.fieldName} }"/>'#if($velocityCount<$pks.size()), #end#end);"><img src="/images/adm/btn_style1/btn_modify.gif" align="absmiddle" border="0" alt="<spring:message code="common.modify" />" /></a>
+							<a href="javascript:goDelete(#foreach($pk in $pks)'<c:out value="${ item.${pk.fieldName} }"/>'#if($velocityCount<$pks.size()), #end#end);"><img src="/images/adm/btn_style1/btn_delete.gif" align="absmiddle" border="0" alt="<spring:message code="common.delete" />" /></a>
+						</td>
+					</tr>
+				</pg:item>
+			</c:forEach>
+			<c:if test="${ empty ${domain_uncap}List }">
+					<tr align="center">
+						<td bgcolor="#FFFFFF" colspan="${colspan}" height="25"><spring:message code="common.listEmpty" /></td>
+					</tr>
+			</c:if>
+		</table>
+		<!-- data table -->
+		
+		<!-- button table -->
+		<table width="100%" border="0" cellpadding="2" cellspacing="1">
+			<tr>
+				<td bgcolor="#FFFFFF" align="right">
+					<a href="javascript:goInsertForm(#foreach($pk in $pks)'<c:out value="${ model.${pk.fieldName} }"/>'#if($velocityCount<$pks.size()), #end#end);"><img src="/images/adm/btn_style1/btn_add_long.gif" align="absmiddle" border="0" alt="<spring:message code="common.add" />" /></a>
+				</td>
+			</tr>
+		</table>
+		<!-- button table -->
+		
+		<!-- page navi -->
+		<pg:index>
+			<c:import url="/inc/defaultPager.jsp"></c:import>
+		</pg:index>
+		<!-- page navi -->
+	</pg:pager>
+</form:form>
+

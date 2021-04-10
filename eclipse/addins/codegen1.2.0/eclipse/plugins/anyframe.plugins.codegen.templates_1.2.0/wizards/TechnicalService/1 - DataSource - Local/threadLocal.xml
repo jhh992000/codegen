@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+<wizard>
+	<title>Add DataSource - Local</title>
+
+	<component-page>
+	
+		<description>Local Data Source Configuration.</description>
+		
+		<group label="applicationContext-datasource.xml 설정입니다.">
+			<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+			<textfield name="BeanId" label="*Bean Id" value="dataSource" required="true" />
+			<combo name="BeanClass" label="*Bean Class" value="org.apache.commons.dbcp.BasicDataSource">
+				<elements>
+					<option>org.apache.commons.dbcp.BasicDataSource</option>
+					<option>com.mchange.v2.c3p0.ComboPooledDataSource</option>
+					<option>org.springframework.jdbc.datasource.DriverManagerDataSource</option>
+				</elements>
+			</combo>
+		</group>
+		<group>
+			<combo name="DriverClass" label="*DriverClass" value="oracle.jdbc.driver.OracleDriver" edit="true" onChange="/scripts/test.gv" >
+				<elements>
+					<option>org.hsqldb.jdbcDriver</option>
+					<option>com.mysql.jdbc.Driver</option>
+					<option>oracle.jdbc.driver.OracleDriver</option>
+					<option>org.postgresql.Driver</option>
+					<option>COM.ibm.db2.jdbc.app.DB2Driver</option>
+					<option>com.sybase.jdbc2.jdbc.SybDriver</option>
+					<option>com.pointbase.jdbc.jdbcUniversalDriver</option>
+				</elements>
+			</combo>
+			<combo name="URL" label="*URL" value="jdbc:oracle:thin:@localhost:1521:db" edit="true" >
+				<elements>
+					<option>jdbc:hsqldb:hsql://localhost</option>
+					<option>jdbc:mysql:///db</option>
+					<option>jdbc:oracle:thin:@localhost:1521:db</option>
+					<option>jdbc:postgresql:db</option>
+					<option>jdbc:db2:db</option>
+					<option>jdbc:sybase:Tds:co3061835-a:5000/tempdb</option>
+					<option>jdbc:pointbase:embedded:db</option>
+				</elements>
+			</combo>
+			<textfield name="User" label="*User" required="true" />
+			<textfield name="Password" label="Password" required="false" />
+		</group>
+		
+	</component-page>
+	
+	<component-page>
+	
+		<description>Local Data Source Configuration.</description>
+		<!-- 
+		<group>
+			<textfield name="MaxActive" label="MaxActive" required="false" value="100" check="number" />
+			<textfield name="MaxIdle" label="Max Idle" required="false" value="100" check="number" />
+			<textfield name="MaxWait" label="Max Wait" required="false" value="100" check="number" />
+			<checkbox name="DefaultAutoCommit" label="DefaultAutoCommit" value="true"/>
+		</group>
+		-->
+		<group checkbox="CreateTestCase" >
+			<checkbox name="CreateTestCase" label="Create TestCase" />
+			<container name="Package" label="*Package" type="srcpackage" required="true" />
+			<textfield name="Class" label="*Class" required="true" value="DataSourceLocalTestCase" />
+		</group>	
+	</component-page>
+	<output>
+		<template component="." expression="applicationContext-datasource.xml" velocity="template.vm" container="beanPath" />
+		<template component="${Class}" expression="${Class}" velocity="tmTestCase.vm" extension="java" container="Package">
+			<condition variable="CreateTestCase" value="true" />
+		</template>
+	</output>
+</wizard>
+</CodeGen>

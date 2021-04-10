@@ -1,0 +1,235 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import javax.annotation.Resource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.SessionStatus;
+import egovframework.cmmn.util.PaginationVO;
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 : $tableName 테이블과 관련된 업무 요청을 받아 처리하는 Controller 클래스
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2013 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Controller
+public class ${controllerClass} {
+
+	protected static final Log logger = LogFactory.getLog(${controllerClass}.class);
+
+	@Resource(name = "${service_uncap}")
+	private ${service_cap} ${service_uncap};
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}List.do")
+	public String ${domainName_uncap}List(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}) throws Exception {
+
+    	/** pagination vo */
+    	PaginationVO paginationVO = (PaginationVO) ${domain_uncap};
+    	//${domainName_uncap}.setPageUnit(10);
+    	//${domainName_uncap}.setPageSize(10);
+
+    	/** paging setting */
+    	PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(paginationVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(paginationVO.getPageUnit());
+		paginationInfo.setPageSize(paginationVO.getPageSize());
+		paginationVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		paginationVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		paginationVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		/** count */
+        int totCnt = ${service_uncap}.select${domainName}TotCnt(${domain_uncap});
+		paginationInfo.setTotalRecordCount(totCnt);
+
+		/** list */
+		List<${domain_cap}> ${domainName_uncap}List = ${service_uncap}.select${domainName}List(${domain_uncap});
+		model.addAttribute("${domainName_uncap}List", ${domainName_uncap}List);
+        model.addAttribute("paginationInfo", paginationInfo);
+
+		return "${requestPath}/${domainName_uncap}List";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}View.do")
+	public String ${domainName_uncap}View(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}) throws Exception {
+
+		${domain_cap} data${domain_cap} = ${service_uncap}.select${domainName}(${domain_uncap});
+
+		model.addAttribute("data${domain_cap}", data${domain_cap});
+
+		return "${requestPath}/${domainName_uncap}View";
+	}
+
+	/**
+	 * 생성화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}CreateForm.do")
+	public String ${domainName_uncap}CreateForm(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}) throws Exception {
+
+		model.addAttribute("editMode", "Create");
+        model.addAttribute("data${domain_cap}", new ${domain_cap}());
+		return "${requestPath}/${domainName_uncap}Form";
+	}
+
+	/**
+	 * 등록
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Create.do")
+	public String ${domainName_uncap}Create(ModelMap model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}, ${domain_cap} data${domain_cap}, SessionStatus status) throws Exception {
+
+#if($primaryKeys.size() == 1)
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+		int nextId = ${service_uncap}.select${domainName}NextId();
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+#elseif($primaryKeys.size() > 1)
+		int nextId = ${service_uncap}.select${domainName}NextId(data${domain_cap});
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+		${service_uncap}.insert${domainName}(data${domain_cap});
+
+		status.setComplete();
+
+		return "redirect:${requestPath}/${domainName_uncap}List.do";
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}ModifyForm.do")
+	public String ${domainName_uncap}ModifyForm(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}) throws Exception {
+
+		${domain_cap} data${domain_cap} = ${service_uncap}.select${domainName}(search${domain_cap});
+
+		model.addAttribute("editMode", "Modify");
+		model.addAttribute("data${domain_cap}", data${domain_cap});
+		return "${requestPath}/${domainName_uncap}Form";
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Modify.do")
+	public String ${domainName_uncap}Modify(ModelMap model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, ${domain_cap} data${domain_cap}, SessionStatus status) throws Exception {
+
+		${service_uncap}.update${domainName}(data${domain_cap});
+
+		status.setComplete();
+
+        return "redirect:${requestPath}/${domainName_uncap}View.do" + addRedirectUrl(search${domain_cap});
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Remove.do")
+	public String ${domainName_uncap}Remove(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, SessionStatus status) throws Exception {
+
+		${service_uncap}.delete${domainName}(search${domain_cap});
+
+		status.setComplete();
+
+        return "redirect:${requestPath}/${domainName_uncap}List.do" + addRedirectUrl(search${domain_cap});
+	}
+
+    /**
+     * 페이지 이동시 검색 파라미터
+     * @param ${domainName_uncap}
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private String addRedirectUrl(${domain_cap} ${domain_uncap}) throws UnsupportedEncodingException {
+    	return "?pageIndex=" + ${domain_uncap}.getPageIndex()
+#foreach($pk in $pks)
+				+ "&${pk.fieldName}=" + ${domain_uncap}.get${pk.javaName}()
+#end
+    			+ "&searchCondition=" + URLEncoder.encode(${domain_uncap}.getSearchCondition(), "UTF-8")
+    			+ "&searchKeyword=" + URLEncoder.encode(${domain_uncap}.getSearchKeyword(), "UTF-8");
+    }
+}

@@ -1,0 +1,205 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><s:message code="${moduleName}.modelName" /> <s:message code="common.list" /></title>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		com.confirm("<s:message code="common.question.delete" />", function(r) {
+			if (r == true) {
+				 window.location = deleteUrl;
+			}
+		});
+		return false;
+	});
+});
+</script>
+</head>
+<body>
+<div class="col-md-12 col-sm-12">
+	<div class="x_panel">
+		<div class="x_title">
+			<h2>
+				<s:message code="${moduleName}.modelName" /> <s:message code="common.search" />
+			</h2>
+			<div class="clearfix"></div>
+		</div>
+
+		<div class="x_content">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="list_wrapper">
+
+						<pg:pager
+							url="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do"
+							items="${ cri.totalCount }"
+							maxPageItems="${ cri.maxPageItems }"
+							maxIndexPages="${ cri.maxIndexPages }"
+							isOffset="${ true }"
+							index="center"
+							export="offset,currentPageNumber=pageNumber"
+							scope="request">
+							<pg:param name="maxPageItems" value="${ cri.maxPageItems }" />
+							<pg:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+							<pg:param name="searchKey" value="${ cri.searchKey }" />
+							<pg:param name="searchValue" value="${ cri.searchValue }" />
+							<pg:param name="menuNo" value="${ cri.menuNo }" />
+
+							<div id="datatable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap no-footer searchBox">
+								<div class="row">
+									<form:form id="searchForm" name="searchForm" method="post" commandName="cri" action="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do">
+										<fieldset>
+											<input type="hidden" name="menuNo" value="${ currentMenu.menuNo }" />
+											<legend><s:message code="${moduleName}.modelName" /> <s:message code="common.search" /></legend>
+
+											<div class="col-sm-4 d-none d-sm-block">
+												<div class="dataTables_length" id="datatable_length">
+													<label>
+														Show
+														<form:select path="maxPageItems" aria-controls="datatable" class="form-control input-sm">
+															<form:option value="10"><s:message code="search.maxPageItems" arguments="10" /></form:option>
+															<form:option value="20"><s:message code="search.maxPageItems" arguments="20" /></form:option>
+															<form:option value="30"><s:message code="search.maxPageItems" arguments="30" /></form:option>
+															<form:option value="40"><s:message code="search.maxPageItems" arguments="40" /></form:option>
+															<form:option value="50"><s:message code="search.maxPageItems" arguments="50" /></form:option>
+														</form:select>
+														entries
+													</label>
+												</div>
+											</div>
+											<div class="col-sm-8 float-right">
+												<div id="datatable_filter" class="dataTables_filter">
+
+													<div class="input-group">
+														<div class="input-group-btn search-panel d-none d-sm-block mr-1">
+															<label for="searchKey"  class="skip"><s:message code="search.searchKey" /></label>
+															<form:select path="searchKey" id="searchKey" cssClass="form-control input-sm">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+																<form:option value="$column.fieldName"><s:message code="${moduleName}.$column.fieldName" /></form:option>
+#end#end
+															</form:select>
+														</div>
+														<label for="searchValue" class="skip">
+															<s:message code="search.searchValue" />
+															<s:message code="search.searchValue" var="txtSearchValue" />
+														</label>
+														<form:input path="searchValue" id="searchValue" cssClass="form-control ml-0" cssStyle="" placeholder="${ txtSearchValue }" />
+														<span class="input-group-btn ml-1">
+															<button class="btn btn-dark btn-sm" type="submit">
+																<span class="glyphicon glyphicon-search"></span>
+															</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</fieldset>
+									</form:form>
+								</div>
+								<div class="row">
+									<div class="col-sm-12">
+
+										<table class="listTable table-striped table-hover bulk_action">
+											<colgroup>
+												<col style="width: 5%;" />
+#foreach($col in $cols)
+												<col style="" />
+#end
+												<col style="width: 15%;" />
+											</colgroup>
+											<thead>
+												<tr>
+													<th scope="col"><s:message code="common.sortNum" /></th>
+#foreach($col in $cols)
+													<th scope="col"><s:message code="${moduleName}.${col.fieldName}" /></th>
+#end
+													<th scope="col"><s:message code="common.manage" /></th>
+												</tr>
+											</thead>
+											<tbody>
+												<c:forEach var="item" items="${ list }" varStatus="status">
+													<tr>
+														<td>${ cri.totalCount-((currentPageNumber-1)*cri.maxPageItems)-(status.index) }</td>
+#foreach($col in $cols)
+#if ($col.type == "DATE")
+														<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#else
+														<td>${ item.${col.fieldName} }</td>
+#end
+#end
+														<td class="center">
+															<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}UpdateForm.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-secondary btn-sm updateButton"><i class="fa fa-gear mr-1"></i><s:message code="common.update" /></a>
+															<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}Delete.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-danger btn-sm deleteButton"><i class="fa fa-trash mr-1"></i><s:message code="common.delete" /></a>
+														</td>
+													</tr>
+												</c:forEach>
+												<c:if test="${ empty list }">
+													<tr>
+														<td colspan="${colspan}" class="empty">
+															<c:choose>
+																<c:when test="${ empty cri.searchValue }">
+																	<s:message code="common.listEmpty" />
+																</c:when>
+																<c:otherwise>
+																	<s:message code="search.not_match_data" arguments="${ cri.searchValue }" />
+																</c:otherwise>
+															</c:choose>
+														</td>
+													</tr>
+												</c:if>
+											</tbody>
+										</table>
+
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-4">
+										<div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+											<pg:page export="firstItem, lastItem">
+												Showing <span class="bold">${ firstItem }</span> to <span class="bold">${ lastItem }</span> of <span class="bold"><c:out value="${ cri.totalCount }"/></span> entries
+											</pg:page>
+										</div>
+									</div>
+									<div class="col-sm-8">
+										<div class="dataTables_paginate paging_simple_numbers" id="datatable_paginate">
+											<pg:index>
+												<c:import url="../../common/include/pager.jsp">
+													<c:param name="contextPath" value="" />
+													<c:param name="totalItemCount" value="${ cri.totalCount }" />
+													<c:param name="pagerOffset" value="${ cri.pagerOffset }" />
+													<c:param name="maxPageItems" value="${ cri.maxPageItems }" />
+													<c:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+												</c:import>
+											</pg:index>
+										</div>
+									</div>
+								</div>
+							</div>
+						</pg:pager>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 text-right">
+					<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}CreateForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-info btn-sm mr-3 mt-1" style="min-width: 64px;"><i class="fa fa-pencil"></i><s:message code="common.create" /></a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+</body>
+</html>

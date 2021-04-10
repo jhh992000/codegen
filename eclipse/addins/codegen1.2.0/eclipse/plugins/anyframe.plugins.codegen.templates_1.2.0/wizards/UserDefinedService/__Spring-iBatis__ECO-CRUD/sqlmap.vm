@@ -1,0 +1,112 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($namespace = $domainClass.replaceAll("VO",""))
+#set($namespace = "$namespace.toLowerCase()")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="${namespace}">
+
+	<typeAlias alias="${domain_uncap}" type="${domainPackage_package}.${namespace}.${domain_cap}" />
+	
+	<resultMap id="${domain_uncap}-defaultResult" class="${domain_uncap}">
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+		<result property="$column.fieldName" column="$column.name" nullValue="0" />
+#elseif ($column.type == "DATE")
+		<result property="$column.fieldName" column="$column.name" javaType="date" jdbcType="DATETIME" />
+#else
+		<result property="$column.fieldName" column="$column.name" nullValue="" />
+#end
+#end
+	</resultMap>
+	
+	<select id="totalCount" resultClass="int" parameterClass="com.eco.dao.common.SimpleCriteria">
+		SELECT COUNT(*) FROM $tableName
+	</select>
+	
+	<select id="list" resultMap="${domain_uncap}-defaultResult" parameterClass="com.eco.dao.common.SimpleCriteria">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT ROWNUM RN, T1.* FROM (
+				SELECT
+					#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+				
+					#end#set($i = $i + 1)#end
+
+				FROM
+					$tableName
+			) T1
+		) WHERE (RN <= ${bind_char}pageNum${bind_char} * ${bind_char}pageCnt${bind_char}) and (RN >= ((${bind_char}pageNum${bind_char} - 1) * ${bind_char}pageCnt${bind_char})+1)
+		ORDER BY RN
+		]]>
+	</select>
+	
+	<select id="read"  resultMap="${domain_uncap}-defaultResult" parameterClass="map">
+		SELECT
+			#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+			
+			#end#set($i = $i + 1)#end 
+		
+		FROM $tableName
+		#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+		AND #end#set($i = $i + 1)#end#end
+
+	</select>
+	
+	<insert id="insert" parameterClass="${domain_uncap}">
+		<selectKey resultClass="long" keyProperty="${pk_uncap}">
+			SELECT NVL(MAX(${pk_column.name}),0)+1 as ${pk_uncap} FROM $tableName
+			#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name=${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+	
+		</selectKey>
+		INSERT INTO $tableName ( #set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#set($i = $i + 1)#end )
+		VALUES ( #set($i = 1)#foreach($column in $columns)${bind_char}$column.fieldName${bind_char}#if( $i < $columns.size() ), #end#set($i = $i + 1)#end  )
+	</insert>
+	
+	<update id="update" parameterClass="${domain_uncap}">
+		UPDATE $tableName 
+		<dynamic prepend="SET">
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			<isGreaterThan prepend="," property="$column.fieldName" removeFirstPrepend="true" compareValue="0">
+				$column.name = ${bind_char}$column.fieldName${bind_char}
+			</isGreaterThan>
+#else
+			<isNotEmpty prepend="," property="$column.fieldName" removeFirstPrepend="true">
+				$column.name = ${bind_char}$column.fieldName${bind_char}
+			</isNotEmpty>
+#end
+#end
+#end
+		</dynamic>
+		#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+	
+	</update>
+	
+	<delete id="delete" parameterClass="map">
+		DELETE FROM $tableName 
+		#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+		AND #end#set($i = $i + 1)#end#end
+		
+	</delete>
+
+</sqlMap>

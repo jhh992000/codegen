@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EclipseWork>
+    <wizard>
+        <title>The component-page + Velocity condition</title>
+
+		<!-- First Page -->
+        <component-page >
+        	<description>The second page will open only if you check the checkbox</description>
+
+			<!-- the type can be package or folder -->
+			<container name="folder" label="Folder Output: " type="folder" />
+			<container type="source" name="name" label="Name: " />
+
+			<textfield name="message" label="Type some message" />
+
+			<group label="Check to enable the second page">
+				<checkbox name="checkSecondPage" label="Open the Second Page ? " />
+			</group>
+
+		</component-page>
+
+		<!-- Second Page. The checkbox must be checked to enter here -->
+        <component-page condition="$checkSecondPage">
+        	<description>The second page</description>
+
+			<textfield name="message2" label="The second Message: " />
+
+		</component-page>
+
+		<!-- Templates -->
+        <output>
+        	<template component="." expression="$name" velocity="template.vm" extension="txt" />
+	</output>
+    </wizard>
+</EclipseWork>

@@ -1,0 +1,56 @@
+String DEFAULT_BASE_PATH = "/dfc2017";
+String TABLE_PREFIX = "tst_";
+String TABLE_PREFIX2 = "tot_";
+String TABLE_PREFIX3 = "let_tn_";
+String TABLE_PREFIX4 = "let_";
+String VO_POSTFIX = "Vo";
+String VO_PREFIX = "";
+String DAO_POSTFIX = "Mapper";
+String SERVICE_POSTFIX = "Service";
+String CONTROLLER_CPOSTFIX = "Controller";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+String companyName = "DAEYOON";
+String writerName = "jeong hoon hee";
+String moduleName = "";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+tableName = tableName.replaceAll(TABLE_PREFIX, "");
+tableName = tableName.replaceAll(TABLE_PREFIX2, "");
+tableName = tableName.replaceAll(TABLE_PREFIX3, "");
+tableName = tableName.replaceAll(TABLE_PREFIX4, "");
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX.toLowerCase()+"_", "");
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.substring(0,1).toUpperCase() + beanName.substring(1).toLowerCase();
+beanName = beanName.replaceAll(VO_PREFIX, "");
+moduleName = beanName.toLowerCase();
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("moduleName").setUIValue(moduleName);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("mapperClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("serviceClass").setUIValue(beanName+SERVICE_POSTFIX);
+components.get("mybatisFile").setUIValue(beanName+DAO_POSTFIX+XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("listJSP").setUIValue(components.get("moduleName").getUIValue() + "List"+JSP_EXTENSION);
+components.get("formJSP").setUIValue(components.get("moduleName").getUIValue() + "Form"+JSP_EXTENSION);
+components.get("readJSP").setUIValue(components.get("moduleName").getUIValue() + "Read"+JSP_EXTENSION);
+components.get("messageFile").setUIValue("message-"+beanName+PROPERTIES_EXTENSION);
+components.get("companyName").setUIValue(companyName);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+
+String DOMAIN_PACKAGE = "kr.go.ftc.dfc.biz." + components.get("moduleName").getUIValue() + ".service";
+String DAO_PACKAGE = "kr.go.ftc.dfc.biz." + components.get("moduleName").getUIValue() + ".service";
+String SERVICE_PACKAGE = "kr.go.ftc.dfc.biz." + components.get("moduleName").getUIValue() + ".service";
+String CONTROLLER_PACKAGE = "kr.go.ftc.dfc.biz." + components.get("moduleName").getUIValue() + ".web";
+
+components.get("domainPackage").setUIValue(basePath+"/src/main/java/"+DOMAIN_PACKAGE);
+components.get("mapperPackage").setUIValue(basePath+"/src/main/java/"+DAO_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/src/main/java/"+SERVICE_PACKAGE);
+components.get("controllerPackage").setUIValue(basePath+"/src/main/java/"+CONTROLLER_PACKAGE);

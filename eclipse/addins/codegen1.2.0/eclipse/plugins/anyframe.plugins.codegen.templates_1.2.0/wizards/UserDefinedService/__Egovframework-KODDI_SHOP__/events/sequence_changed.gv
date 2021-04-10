@@ -1,0 +1,20 @@
+
+String FORM_JSP_POSTFIX = "F";
+String LIST_JSP_POSTFIX = "L";
+String VIEW_JSP_POSTFIX = "S";
+String JSP_EXTENSION= ".jsp";
+String XML_PREFIX = "sqlmap-";
+String XML_EXTENSION = ".xml";
+
+String basePath = components.get("basePath").getUIValue();
+String masterBizCode = components.get("masterBizCode").getUIValue();
+String bizCode = components.get("bizCode").getUIValue();
+String detailBizCode = components.get("detailBizCode").getUIValue();
+String sequence = components.get("sequence").getUIValue();
+
+String className = masterBizCode.toUpperCase()+bizCode.toUpperCase();
+
+components.get("ibatisFile").setUIValue(XML_PREFIX + className + sequence + XML_EXTENSION);
+components.get("listJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +LIST_JSP_POSTFIX+JSP_EXTENSION);
+components.get("formJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +FORM_JSP_POSTFIX+JSP_EXTENSION);
+components.get("viewJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +VIEW_JSP_POSTFIX+JSP_EXTENSION);

@@ -1,0 +1,209 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($daoClass_uncap = "$daoClass.substring(0,1).toLowerCase()$daoClass.substring(1)")
+#set($sqlmapid = "$masterBizCode.toLowerCase()$bizCode.toLowerCase()$sequence")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($detailBizCode_cap = "$detailBizCode.substring(0,1).toUpperCase()$detailBizCode.substring(1)")
+#set($detailBizCode_uncap = "$detailBizCode.substring(0,1).toLowerCase()$detailBizCode.substring(1)")
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="${sqlmapid}">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="cri" type="koddi.cmm.dto.Criteria" />
+	<typeAlias alias="${detailBizCode_uncap}" type="${domainPackage_package}.${domain_cap}" />
+
+	<resultMap id="${detailBizCode_uncap}-resultMap" class="${detailBizCode_uncap}">
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+		<result property="$column.fieldName" column="$column.name" nullValue="0" />
+#elseif ($column.type == "DATE")
+		<result property="$column.fieldName" column="$column.name" javaType="java.util.Date" />
+#else
+		<result property="$column.fieldName" column="$column.name" nullValue="" />
+#end
+#end
+	</resultMap>
+
+	<sql id="WHERE_FRAGMENT">
+		<dynamic prepend="WHERE">
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			<isNotEmpty prepend="AND" property="condition.$column.fieldName">
+				<isGreaterThan prepend="AND" property="condition.$column.fieldName" compareValue="0">
+					$column.name = ${bind_char}condition.${column.fieldName}${bind_char}
+				</isGreaterThan>
+			</isNotEmpty>
+#elseif ($column.type == "DATE")
+			<isNotEmpty prepend="AND" property="condition.$column.fieldName">
+				TO_CHAR(A.$column.name, 'YYYY-MM-DD') = TO_CHAR(TO_DATE(${bind_char}condition.${column.fieldName}${bind_char}, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+			</isNotEmpty>
+#else
+			<isNotEmpty prepend="AND" property="condition.$column.fieldName">
+#if ($column.size == 1)
+				$column.name = ${bind_char}condition.${column.fieldName}${bind_char}
+#else
+				$column.name LIKE '%' || ${bind_char}condition.${column.fieldName}${bind_char} || '%'
+#end
+			</isNotEmpty>
+#end
+#end
+			<isNotEmpty property="searchKey">
+				<isNotEmpty property="searchValue">
+#foreach($column in $columns)
+					<isEqual prepend="AND" property="searchKey" compareValue="$column.fieldName">
+						$column.name LIKE '%' || ${bind_char}searchValue${bind_char} || '%'
+					</isEqual>
+#end
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+#if($primaryKeys.size() == 1)
+
+	<select id="select${detailBizCode_cap}NextId" resultClass="int">
+		SELECT NVL(MAX(${pk_column.name}),0)+1 FROM $tableName
+	</select>
+#elseif($primaryKeys.size() > 1)
+
+	<select id="select${detailBizCode_cap}NextId" parameterClass="${detailBizCode_uncap}" resultClass="int">
+		SELECT
+			NVL(MAX(A.${pk_column.name}),0)+1
+		FROM
+			$tableName A
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</select>
+#end
+
+	<select id="select${detailBizCode_cap}ListTotCnt" parameterClass="cri" resultClass="int">
+		SELECT
+			COUNT(*) totcnt
+		FROM
+			$tableName A
+		<include refid="WHERE_FRAGMENT" />
+	</select>
+
+	<select id="select${detailBizCode_cap}List" parameterClass="cri" resultMap="${detailBizCode_uncap}-resultMap">
+		SELECT
+			*
+		FROM
+		(
+			SELECT
+				ROWNUM RN, ALL_LIST.*
+			FROM
+			(
+				SELECT
+					#set($i = 1)#foreach($column in $columns)A.$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+
+					#end#set($i = $i + 1)#end
+
+				FROM
+					$tableName A
+				<include refid="WHERE_FRAGMENT" />
+				#if($primaryKeys.size() > 0)ORDER BY
+					#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end
+
+			) ALL_LIST
+			WHERE  ROWNUM <![CDATA[ <= ]]> ${bind_char}end${bind_char}
+		) WHERE RN <![CDATA[ >= ]]> ${bind_char}start${bind_char}
+	</select>
+
+	<select id="select${detailBizCode_cap}AllList" parameterClass="cri" resultMap="${detailBizCode_uncap}-resultMap">
+		SELECT
+			#set($i = 1)#foreach($column in $columns)A.$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+
+			#end#set($i = $i + 1)#end
+
+		FROM
+			$tableName A
+		<include refid="WHERE_FRAGMENT" />
+		#if($primaryKeys.size() > 0)ORDER BY
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end
+
+	</select>
+
+	<select id="select${detailBizCode_cap}" parameterClass="${detailBizCode_uncap}" resultMap="${detailBizCode_uncap}-resultMap">
+		SELECT
+			#set($i = 1)#foreach($column in $columns)A.$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+
+			#end#set($i = $i + 1)#end
+
+		FROM
+			$tableName A
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</select>
+
+	<insert id="insert${detailBizCode_cap}" parameterClass="${detailBizCode_uncap}">
+		INSERT INTO $tableName (
+		#set($i = 1)#foreach($column in $columns)	$column.name#if( $i < $columns.size() ),
+		#end#set($i = $i + 1)#end )
+		VALUES (
+		#set($i = 1)#foreach($column in $columns)	${bind_char}$column.fieldName${bind_char}#if( $i < $columns.size() ),
+		#end#set($i = $i + 1)#end  )
+	</insert>
+
+	<update id="update${detailBizCode_cap}" parameterClass="${detailBizCode_uncap}">
+		UPDATE
+			$tableName
+		SET
+#set($nPKCount = ($columns.size()-$pks.size()))
+#set($i = 1)#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+			$column.name = ${bind_char}$column.fieldName${bind_char}#if( $i < $nPKCount ),
+#end#set($i = $i + 1)#end#end
+
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</update>
+
+	<delete id="delete${detailBizCode_cap}" parameterClass="${detailBizCode_uncap}">
+		DELETE FROM
+			$tableName
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.fieldName${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</delete>
+
+</sqlMap>

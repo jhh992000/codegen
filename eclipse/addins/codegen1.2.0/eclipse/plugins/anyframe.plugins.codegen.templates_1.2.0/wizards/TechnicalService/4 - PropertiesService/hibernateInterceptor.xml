@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Util-Properties</title>
+
+		<component-page>
+
+			<description>Properties Configuration</description>
+
+			<group>
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="BeanName" label="*Bean Id" value="propertiesService" required="true" />
+				<combo name="radio" label="Generate property file?" value="false" required="true " listener="true">
+					<elements>
+						<option>true</option>
+						<option>false</option>
+					</elements>
+				</combo>
+				<container name="propPath" label="*.properties Path" type="srcPackage" required="true" />
+				<textfield name="name" label="*Name" required="true" radio="true" extensions="properties" />
+			</group>
+
+		</component-page>
+
+		<table-page required="false" condition="$radio">
+			<description>Properties Configuration</description>
+
+			<columns>
+				<column>Key</column>
+				<column>Value</column>
+			</columns>
+			<lines></lines>
+		</table-page>
+
+		<component-page>
+			<description>Properties Configuration</description>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="PropertiesTestCase" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="out1" expression="applicationContext-properties.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="out2" expression="${name}" velocity="templateProperties.vm" container="propPath">
+				<condition variable="radio" value="true" />
+			</template>
+			<template component="out3" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

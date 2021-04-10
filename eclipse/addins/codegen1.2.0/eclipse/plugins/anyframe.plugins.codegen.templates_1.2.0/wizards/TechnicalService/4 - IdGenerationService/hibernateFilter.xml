@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Util-IdGenerator</title>
+
+		<component-page>
+
+			<description>ID Generator Configuration</description>
+			<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+			<group label="ID Generation using UUID">
+				<combo name="UUID" label="using UUID" value="true" onChange="event.gv" listener="true">
+					<elements>
+						<option>true</option>
+						<option>false</option>
+					</elements>
+				</combo>
+				<textfield name="BeanName" label="*Bean Id" value="uuid" radio="true" required="true" />
+				<textfield name="Address" label="*Address" value="00:00:F0:79:19:5B" radio="true" required="true" />
+			</group>
+
+			<group label="ID Generation using Sequence">
+				<combo name="Sequence" label="using Sequence" value="false" onChange="event.gv" listener="true">
+					<elements>
+						<option>true</option>
+						<option>false</option>
+					</elements>
+				</combo>
+				<textfield name="BeanNameSeq" label="*Bean Id" value="sequenceID" radio="true" required="true" />
+				<textfield name="DataSourceSeq" label="*DataSource" value="dataSource" radio="true" required="true" />
+				<textfield name="Query" label="*Query" required="true" radio="true" />
+			</group>
+			<group label="ID Generation using Table">
+				<combo name="chTable" label="using Table" value="false" onChange="event.gv" listener="true">
+					<elements>
+						<option>true</option>
+						<option>false</option>
+					</elements>
+				</combo>
+				<textfield name="BeanNameTab" label="*Bean Id" value="tableID" radio="true" required="true" />
+				<textfield name="DataSourceTab" label="*DataSource" value="dataSource" radio="true" required="true" />
+				<textfield name="BlockSize" label="*BlockSize" value="10" check="number" radio="true" required="true" />
+				<textfield name="Table" label="*Table" required="true" radio="true" />
+				<textfield name="KeyTable" label="*KeyTable" required="true" radio="true" />
+			</group>
+			<combo name="CreateTestCase" label="Create TestCase" value="false" onChange="event.gv">
+				<elements>
+					<option>true</option>
+					<option>false</option>
+				</elements>
+			</combo>
+		</component-page>
+
+
+		<component-page required="false" condition="$CreateTestCase">
+			<description>ID Generator Configuration</description>
+			<group label="CreateTestCase">
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="IDGenerationTestCase" />
+			</group>
+		</component-page>
+
+
+		<output>
+			<template component="." expression="applicationContext-idgeneration.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="${Class}" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

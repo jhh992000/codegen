@@ -1,0 +1,42 @@
+String basePath = components.get("basePath").getUIValue();
+String moduleName = components.get("moduleName").getUIValue();
+String DOMAIN_PACKAGE = "egovframework.eco.service";
+String DAO_PACKAGE = "egovframework.eco.service";
+String SERVICE_PACKAGE = "egovframework.eco.service";
+String CONTROLLER_PACKAGE = "egovframework.eco.controller";
+String IBATIS_PATH = "egovframework/sqlmap/eco";
+String JSP_PATH = "WebContent/WEB-INF/jsp/eco";
+String MESSAGE_RESOURCE_PATH = "WebContent/WEB-INF/src/resources/egovframework/message/eco";
+String REQUEST_PATH = "";
+String JSP_FOLDER = tableName;
+String JSP_FOLDER_PREFIX1 = "c_";
+String JSP_FOLDER_PREFIX2 = "tb_";
+String JSP_FOLDER_PREFIX3 = "eco_";
+String JSP_FOLDER_PREFIX4 = "tbt_";
+String JSP_FOLDER_PREFIX5 = "tbl_";
+String JSP_FOLDER_PREFIX6 = "tst_";
+String JSP_FOLDER_PREFIX7 = "eco_";
+
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX1, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX2, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX3, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX4, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX5, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX6, "");
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX7, "");
+
+
+if (moduleName != null && !moduleName.equals("")) {
+	DOMAIN_PACKAGE += "." + moduleName;
+	DAO_PACKAGE += "." + moduleName;
+	SERVICE_PACKAGE += "." + moduleName;
+}
+
+components.get("servicePackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+SERVICE_PACKAGE);
+components.get("domainPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/WebContent/WEB-INF/src/resources/"+IBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue("/eco" + REQUEST_PATH+"/"+JSP_FOLDER);
+components.get("messagePath").setUIValue(basePath+"/"+MESSAGE_RESOURCE_PATH);

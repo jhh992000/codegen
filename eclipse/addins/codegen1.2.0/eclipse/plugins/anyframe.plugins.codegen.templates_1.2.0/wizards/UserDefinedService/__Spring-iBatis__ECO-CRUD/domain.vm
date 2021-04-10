@@ -1,0 +1,103 @@
+#set($columns = $model.fields)
+#set($tableName = $model.name)
+#if ($domainPackage_package != "")
+package $domainPackage_package;
+#end
+
+
+import java.util.Date;
+
+/**
+ * 업   무   명 :
+ * 프로그램 ID : ${domainClass}.java
+ * 프로그램 명 : ${tableName} 테이블을 자바객체로 표현한 클래스 (VO)
+ * 개       요 :
+ * 작   성   자 : ${writerName}
+ * 작   성   일 : ${writeDate}
+ *
+ *   수정일       수정자                              수정내용
+ * ---------   --------   --------------------------------------------------------
+ *
+ * Copyright(c) 2012 DAEYOON Co. Ltd. All rights reserved.
+ */
+
+public class $domainClass {
+	
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+	private String $column.fieldName;
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	private long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+	private long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+	private float $column.fieldName;
+#elseif ($column.type == "DATE")
+	private Date $column.fieldName;
+#else
+	private String $column.fieldName;
+#end
+#end
+
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	public long get${column.javaName}() {
+		return $column.fieldName;
+	}
+#elseif ($column.type == "DATE")
+	public Date get${column.javaName}() {
+		return $column.fieldName;
+	}
+#elseif ($column.javaType == "java.lang.Float")
+	public float get${column.javaName}() {
+		return $column.fieldName;
+	}
+#else
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+#end
+#if ($column.javaType == "java.lang.String")
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	public void set${column.javaName}(long $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#elseif ($column.type == "DATE")
+	public void set${column.javaName}(Date $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#elseif ($column.javaType == "java.lang.Float")
+	public void set${column.javaName}(float $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#else
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#end
+#end
+
+	public String toString() {
+		final String TAB = "    ";
+		StringBuffer retValue = new StringBuffer();
+		retValue.append("$domainClass ( ");
+		retValue.append(TAB);
+		retValue.append(super.toString());
+		retValue.append(TAB);
+#foreach($column in $columns)
+		retValue.append("$column.fieldName = ");
+		retValue.append(this.$column.fieldName);
+		retValue.append(TAB);
+#end
+		retValue.append(" )");
+
+		return retValue.toString();
+	}
+}

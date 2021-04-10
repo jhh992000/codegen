@@ -1,0 +1,145 @@
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#if ($domainPackage_package != "")
+package $domainPackage_package;
+#end
+#set($dateCount = 0)
+#foreach($column in $columns)
+#if ($column.type == "DATE")
+#set($dateCount = $dateCount+1)
+#end
+#end
+##===================================
+#set($varcharCount = 0)
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+#set($varcharCount = $varcharCount+1)
+#end
+#end
+##===================================
+#set($notEmptyCount = 0)
+#set($notNullCount = 0)
+#foreach($column in $columns)
+#if ($column.nullable == false)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE")
+#set($notNullCount = $notNullCount+1)
+#else
+#set($notEmptyCount = $notEmptyCount+1)
+#end
+#end
+#end
+
+import java.io.Serializable;
+import com.daeyoon.cms.aop.Domain;
+#if ($dateCount > 0)
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+#end
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+/**
+ * 프로그램 파일명 : ${domainClass}.java
+ *
+ * 프로그램 설명 :
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 DAEYOON Co. Ltd. All rights reserved.
+ */
+ @Domain
+public class $domainClass implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+#foreach($column in $columns)
+
+#if ($column.nullable == false)
+#set($isPk = "false")
+#foreach($primaryKey in $primaryKeys)
+#if ($column.fieldName==$primaryKey.fieldName)
+#set($isPk = "true")
+#end
+#end
+#end
+#if ($column.javaType == "java.lang.String")
+	private String $column.fieldName;
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	private Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+	private Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+	private Float $column.fieldName;
+#elseif ($column.type == "DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date $column.fieldName;
+#else
+	private String $column.fieldName;
+#end
+#end
+
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	public Integer get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.type == "DATE")
+	public Date get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Float")
+	public Float get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#else
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+
+#end
+#if ($column.javaType == "java.lang.String")
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="number")
+	public void set${column.javaName}(Integer $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.type == "DATE")
+	public void set${column.javaName}(Date $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#elseif ($column.javaType == "java.lang.Float")
+	public void set${column.javaName}(Float $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#else
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+
+#end
+#end
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
+}

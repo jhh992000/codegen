@@ -1,0 +1,79 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($columns = $model.fields)
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/jsp/manager/include_files/common_jsp/common.jsp"%>
+<html>
+<head>
+<script type="text/javascript" src="/html/${mode}/contents/${tbName_uncap}/form.js"></script>
+<script type="text/javascript" src="/dwr/interface/${dwrClass}.js"></script>
+</head>
+<body>
+<form:form name="${formName}" method="post" commandName="model">
+	<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" value="<%=session.getAttribute("org.apache.struts.action.TOKEN")%>">
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+	<form:hidden path="$column.fieldName" />
+#else
+	<html:hidden name="searchVO" property="sc_$column.fieldName" />
+#end
+#end
+	<html:hidden name="searchVO" property="menuKey" />
+	<html:hidden name="searchVO" property="pagerOffset" />
+	<html:hidden name="searchVO" property="maxPageItems" />
+	<html:hidden name="searchVO" property="maxIndexPages" />
+	<html:hidden name="searchVO" property="sc" />
+	<html:hidden name="searchVO" property="sw" />
+	<html:hidden name="searchVO" property="order" />
+	<input type="hidden" name="formType" id="formType" value="${formType}" />
+	
+	<div style="width: 100%;overflow: visible;">
+		<div style="float: right;">* 표시항목은 필수입력항목입니다.</div>
+		<table width="100%" border="0" cellpadding="2" cellspacing="1" style="border-top: 1px solid #D1D1D1;">
+			<col width="150"></col>
+			<col width=""></col>
+			<tbody>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+				<tr>
+					<th>${col.fieldName} *</th>
+					<td>
+						<form:input path="${col.fieldName}" cssStyle="width:200px;" maxlength="${col.size}" />
+					</td>
+				</tr>
+#end
+#end
+			</tbody>
+		</table>
+	</div>
+	<div class="btn_area_center">
+		<input type="submit" value="저장" />
+		<input type="button" value="닫기" class="btn" onclick="javascript:parent.tb_remove();" />
+	</div>
+</form:form>
+
+</body>
+</html>

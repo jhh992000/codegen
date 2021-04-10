@@ -1,0 +1,50 @@
+#if(${Package_package})
+package ${Package_package};
+#end
+
+import java.util.Collection;
+
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import anyframe.core.query.IQueryService;
+import anyframe.core.query.QueryServiceException;
+
+public class TransactionTestSampleServiceImpl implements
+	TransactionTestSampleService {
+    IQueryService queryService = null;
+    TransactionSynchronizationSample transactionSynchronization = new TransactionSynchronizationSample();
+    public void insertData(TransactionVO vo) throws QueryServiceException {
+	TransactionSynchronizationManager.registerSynchronization(transactionSynchronization);
+	if(queryService.find(vo).size() >0) throw new QueryServiceException("Duplicate Data");
+	queryService.create(vo);
+    }
+
+    public TransactionVO[] listData(TransactionVO vo) throws QueryServiceException {
+	Collection collection =  queryService.find(vo);
+	TransactionVO[] rtArray = (TransactionVO[])collection.toArray(new TransactionVO[collection.size()]);
+	return rtArray;
+    }
+
+    public void removeData(TransactionVO vo) throws QueryServiceException {
+	TransactionSynchronizationManager.registerSynchronization(transactionSynchronization);
+	queryService.remove(vo);
+    }
+
+    public void updateData(TransactionVO vo) throws QueryServiceException {
+	TransactionSynchronizationManager.registerSynchronization(transactionSynchronization);
+	queryService.update(vo);
+    }
+
+    public void setQueryService(IQueryService queryService) {
+        this.queryService = queryService;
+    }
+
+    public int getCommitCount() {
+        return transactionSynchronization.getCommitCount();
+    }
+
+    public int getRollbackCount() {
+        return transactionSynchronization.getRollbackCount();
+    }
+
+}

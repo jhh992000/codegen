@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>테이블 기본정보입니다.</description>
+		</model-page>
+
+		<component-page>
+			<description>Business Layer</description>
+			<group>
+				<container name="basePath" label="*프로젝트선택 (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+				
+				<combo name="mode" label="*모드선택" edit="false" required="true" value="manager" onChange="/events/mode_changed.gv">
+					<elements>
+						<option>manager</option>
+						<option>homepage</option>
+						<option>intranet</option>
+					</elements>
+				</combo>
+			</group>
+			<group>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Persistence Layer</description>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+				<container name="domainSearchVoPackage" label="*Domain SearchVO Package" type="srcPackage" required="true" />
+				<textfield name="domainSearchVoClass" label="*Domain SearchVO ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+			<group>
+				<container name="daoImplPackage" label="*Dao Impl Package" type="srcPackage" required="true" />
+				<textfield name="daoImplClass" label="*Dao Impl Class Name" required="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Presentation Layer</description>
+			<group>
+				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
+				<textfield name="controllerClass" label="*Controller Class Name" required="true" />
+			</group>
+			<group>
+				<container name="dwrPackage" label="*Dwr Package" type="srcPackage" required="true" />
+				<textfield name="dwrClass" label="*Dwr Class Name" required="true" />
+			</group>
+			<group>
+				<container name="jspPath" label="*jsp Path" type="folder" required="true" onChange="/events/jsppath_changed.gv" />
+				<textfield name="requestPath" label="*request Path" required="true" />
+				<textfield name="selectJSP" label="*목록JSP" required="true" extensions="jsp" />
+				<textfield name="infoJSP" label="*내용보기JSP" required="true" extensions="jsp" />
+				<textfield name="insertJSP" label="*입력폼JSP" required="true" extensions="jsp" />
+				<textfield name="updateJSP" label="*수정폼JSP" required="true" extensions="jsp" />
+			</group>
+			<group>
+				<container name="jsPath" label="*js Path" type="folder" required="true" onChange="/events/js_path_changed.gv" />
+				<textfield name="selectJS" label="*목록JS" required="true" extensions="js" />
+				<textfield name="infoJS" label="*내용보기JS" required="true" extensions="js" />
+				<textfield name="insertJS" label="*입력폼JS" required="true" extensions="js" />
+				<textfield name="updateJS" label="*수정폼JS" required="true" extensions="js" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="domainSearchVoOut" expression="$domainSearchVoClass" velocity="domainSearchVo.vm" extension="java" container="domainSearchVoPackage"></template>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+			<template component="daoImplOut" expression="$daoImplClass" velocity="daoImpl.vm" extension="java" container="daoImplPackage"></template>
+			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
+			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
+			<template component="dwrOut" expression="$dwrClass" velocity="dwr.vm" extension="java" container="dwrPackage"></template>
+			<template component="selectjspOut" expression="$selectJSP" velocity="select_jsp.vm" container="jspPath"></template>
+			<template component="infojspOut" expression="$infoJSP" velocity="info_jsp.vm" container="jspPath"></template>
+			<template component="insertjspOut" expression="$insertJSP" velocity="insert_jsp.vm" container="jspPath"></template>
+			<template component="updatejspOut" expression="$updateJSP" velocity="update_jsp.vm" container="jspPath"></template>
+			<template component="selectJsOut" expression="$selectJS" velocity="select_js.vm" container="jsPath"></template>
+			<template component="infoJsOut" expression="$infoJS" velocity="info_js.vm" container="jsPath"></template>
+			<template component="insertJsOut" expression="$insertJS" velocity="insert_js.vm" container="jsPath"></template>
+			<template component="updateJsOut" expression="$updateJS" velocity="update_js.vm" container="jsPath"></template>
+		</output>
+	</wizard>
+</CodeGen>

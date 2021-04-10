@@ -1,0 +1,16 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "com.eco.domain";
+String DAO_PACKAGE = "com.eco.dao";
+String SERVICE_PACKAGE = "com.eco.service";
+String CONTROLLER_PACKAGE = "com.eco.controller";
+String SQLMAP_PATH = "com/eco/ibatis";
+String JSP_PATH = "WebContent";
+String REQUEST_PATH = "";
+
+components.get("domainPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+DAO_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+SERVICE_PACKAGE);
+components.get("sqlmapPath").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+SQLMAP_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/"+JSP_PATH+"/WEB-INF/src/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+jspFolderName);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+jspFolderName);

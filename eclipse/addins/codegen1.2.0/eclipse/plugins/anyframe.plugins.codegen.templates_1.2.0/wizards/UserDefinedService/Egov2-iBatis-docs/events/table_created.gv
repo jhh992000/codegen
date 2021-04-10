@@ -1,0 +1,46 @@
+String DEFAULT_BASE_PATH = "/docs";
+String SERVICE_POSTFIX = "Service";
+String SERVICE_IMPL_POSTFIX = "ServiceImpl";
+String DOMAIN_POSTFIX = "";
+String DOMAIN_PREFIX1 = "";
+String DOMAIN_PREFIX2 = "Tb";
+String DAO_POSTFIX = "DAO";
+String CONTROLLER_POSTFIX = "Controller";
+String FORM_JSP_POSTFIX = "Form";
+String LIST_JSP_POSTFIX = "List";
+String VIEW_JSP_POSTFIX = "View";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String writerName = "jeong hoon hee";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String table_prefix = tableName.substring(0, 1);
+if (table_prefix.equalsIgnoreCase("C") && tableName.toLowerCase().substring(0, 2).equalsIgnoreCase("c_")) {
+	tableName = tableName.substring(2, tableName.length());
+}
+
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(DOMAIN_PREFIX1.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(DOMAIN_PREFIX2.toLowerCase()+"_", "");
+
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(DOMAIN_PREFIX1, "");
+beanName = beanName.replaceAll(DOMAIN_PREFIX2, "");
+
+String beanNameUncap = beanName.substring(0, 1).toLowerCase() + beanName.substring(1, beanName.length());
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("serviceClass").setUIValue(beanName+SERVICE_POSTFIX);
+components.get("serviceImplClass").setUIValue(beanName+SERVICE_IMPL_POSTFIX);
+components.get("domainClass").setUIValue(beanName+DOMAIN_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("ibatisFile").setUIValue(beanName + XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName + CONTROLLER_POSTFIX);
+components.get("listJSP").setUIValue(beanNameUncap+LIST_JSP_POSTFIX+JSP_EXTENSION);
+components.get("formJSP").setUIValue(beanNameUncap+FORM_JSP_POSTFIX+JSP_EXTENSION);
+components.get("viewJSP").setUIValue(beanNameUncap+VIEW_JSP_POSTFIX+JSP_EXTENSION);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+components.get("moduleName").setUIValue(beanName.toLowerCase());
+components.get("moduleKorName").setUIValue(beanName);

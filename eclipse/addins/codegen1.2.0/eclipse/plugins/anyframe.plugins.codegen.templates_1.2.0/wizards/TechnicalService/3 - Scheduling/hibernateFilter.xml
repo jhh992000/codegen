@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>SchedulingService</title>
+
+		<component-page>
+			<description>SchedulingService Definition</description>
+			<group label="Bean Definition">
+				<container name="beanPath" label="*Bean Path" type="srcPackage" required="true" />
+				<textfield name="schedulerId" label="*Bean Id" required="true" value="schedulerFactoryBean" />
+			</group>
+			<group label="Job Definition">
+				<textfield name="jobName" label="*Job ID" required="true" />
+				<combo name="isGenerate" label="Generate Job Class" value="false" listener="true">
+					<elements>
+						<option>true</option>
+						<option>false</option>
+					</elements>
+				</combo>
+				<type name="jobClass" label="*Job Class" required="true" radio="false" />
+				<container name="jobPackage" label="*Package" type="srcpackage" required="true" radio="true" />
+				<textfield name="className" label="*Class Name" required="true" radio="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Job Definition</description>
+			<group>
+				<textfield name="triggerId" label="*Trigger ID" required="true" />
+				<textfield name="method" label="*Target Method" required="true" />
+				<textfield name="group" label="Group" />
+				<textfield name="interval" label="*Repeat Interval" value="1000" required="true" check="number" />
+				<textfield name="count" label="*Repeat Count" value="1" required="true" check="number" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>TestCase Definition</description>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" value="SchedulingTestCase" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="out1" expression="applicationContext-scheduling.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="out2" expression="$className" velocity="tmJobClass.vm" extension="java"
+				container="jobPackage">
+				<condition variable="isGenerate" value="true" />
+			</template>
+			<template component="out3" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+
+	</wizard>
+</CodeGen>

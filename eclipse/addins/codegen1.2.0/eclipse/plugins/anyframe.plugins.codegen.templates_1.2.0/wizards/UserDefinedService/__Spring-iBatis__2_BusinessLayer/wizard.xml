@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>Set Tables to use.</description>
+		</model-page>
+
+		<component-page>
+			<description>Business Layer</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+			<group>
+			</group>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
+		</output>
+	</wizard>
+</CodeGen>

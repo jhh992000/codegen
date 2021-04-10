@@ -1,0 +1,21 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "kr.go.ftc.dfc.let." + components.get("moduleName").getUIValue() + ".service";
+String DAO_PACKAGE = "kr.go.ftc.dfc.let." + components.get("moduleName").getUIValue() + ".service";
+String SERVICE_PACKAGE = "kr.go.ftc.dfc.let." + components.get("moduleName").getUIValue() + ".service";
+String CONTROLLER_PACKAGE = "kr.go.ftc.dfc.let." + components.get("moduleName").getUIValue() + ".web";
+String MYBATIS_PATH = "src/main/resources/egovframework/mapper/let/";
+String JSP_PATH = "src/main/webapp/WEB-INF/jsp/let";
+String MESSAGE_RESOURCE_PATH = "src/main/resources/egovframework/message";
+String REQUEST_PATH = "/let";
+String JSP_FOLDER = tableName.replaceAll("_", "");
+String JSP_FOLDER_PREFIX = "let";
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX, "");
+
+components.get("domainPackage").setUIValue(basePath+"/src/main/java/"+DOMAIN_PACKAGE);
+components.get("mapperPackage").setUIValue(basePath+"/src/main/java/"+DAO_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/src/main/java/"+SERVICE_PACKAGE);
+components.get("mybatisPath").setUIValue(basePath+"/"+MYBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/src/main/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+JSP_FOLDER);
+components.get("messagePath").setUIValue(basePath+"/"+MESSAGE_RESOURCE_PATH);

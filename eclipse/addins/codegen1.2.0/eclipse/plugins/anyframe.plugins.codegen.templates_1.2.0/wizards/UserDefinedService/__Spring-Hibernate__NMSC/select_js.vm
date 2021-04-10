@@ -1,0 +1,103 @@
+#set($columns = $model.fields)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+
+function goFindByPageNumber() {
+	if (new Number($("#movePageNumber").val()) > new Number($("#totalPage").val())) {
+		jQuery.showAlert("범위내에 페이지번호를 입력해주세요.",{type:'notice',callback:function(){
+			$("#movePageNumber").select();
+		}});
+		return;
+	}
+	var newPagerOffset = ($("#movePageNumber").val()-1) * $("#MAX_PAGE_ITEMS").val();
+	$("#PAGER_OFFSET").val(newPagerOffset);
+	reloadList();
+}
+function goFind(oc, order) {
+	var f = document.forms['frm'];	
+	f.PAGER_OFFSET.value=0;
+	if (oc) { f.OC.value=oc; }
+	if (order) { f.ORDER.value=order; }
+	reloadList();
+}
+function reloadList() {
+	getList($("#PAGER_OFFSET").val());
+}
+function getList(PAGER_OFFSET) {
+	jQuery.ajax({
+		url : "${requestPath}/dialog/select.do",
+		type : "POST",
+		data : {
+#set($i = 1)#foreach($column in $columns)			"SC_$column.name" : $("#SC_$column.name").val()#if( $i < $columns.size() ),
+#end#set($i = $i + 1)#end
+,
+			"PAGER_OFFSET":PAGER_OFFSET,
+			"MAX_PAGE_ITEMS":$("#MAX_PAGE_ITEMS").val(),
+			"MAX_INDEX_PAGES":$("#MAX_INDEX_PAGES").val(),
+			"SC":$("#SC").val(),
+			"SW":$("#SW").val(),
+			"OC":$("#OC").val(),
+			"ORDER":$("#ORDER").val()
+		},
+		async: true,
+		beforeSend:function() {
+			sendBefore();
+		},
+		success : function(data) {
+			$("#contentsBody").empty().append(data);
+		},
+		complete : function() {
+			completeProcess();
+		}
+	});
+}
+function goList() {
+	window.location="${requestPath}/select.do";
+}
+
+function toggleCheck() {
+	var f = document.forms['frm'];
+	var param = "";
+	
+	param = f.choice.checked;
+	if (f.CHK_${pk.name}) {
+		if (!f.CHK_${pk.name}.length) {
+			f.CHK_${pk.name}.checked=param;
+		} else {
+			for ( var i=0; i< f.CHK_${pk.name}.length; i++) {
+				var e = f.CHK_${pk.name}[i];
+				if(e.name == 'CHK_${pk.name}')
+				e.checked = param;
+			}
+		}
+	}
+	return;
+}
+
+function goDeleteForList() {
+	if ($(":input:checkbox[name=CHK_${pk.name}]:checked").length==0) {
+		jQuery.showAlert("삭제할 항목을 1개이상 선택해주십시오.");
+		return;
+	}
+	jQuery.showConfirm("선택된 항목을 삭제하시겠습니까?", { 
+		yesCallback: function() {
+			var ${pk.name}_LIST = new Array();
+			var len = $(":input:checkbox[name=CHK_${pk.name}]:checked").length;
+			
+			for (var i=0; i<len; i++) {
+				var ${pk.name} = $($(":input:checkbox[name=CHK_${pk.name}]:checked")[i]).val();
+				${pk.name}_LIST[i] = ${pk.name};
+			}
+			
+			${dwrClass}.deleteForList(${pk.name}_LIST, function(bool) {
+				reloadList();
+			});
+		}, 
+		noCallback: function() {
+		}
+	});
+}

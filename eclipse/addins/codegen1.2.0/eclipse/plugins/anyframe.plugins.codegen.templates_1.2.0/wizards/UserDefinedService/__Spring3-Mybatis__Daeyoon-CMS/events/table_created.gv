@@ -1,0 +1,33 @@
+String DEFAULT_BASE_PATH = "/dyportal3";
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String VO_POSTFIX = "";
+String VO_PREFIX = "Tbl";
+String DAO_POSTFIX = "Dao";
+String CONTROLLER_CPOSTFIX = "Controller";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+String writerName = "jeong hoon hee";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX.toLowerCase()+"_", "");
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(VO_PREFIX, "");
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("serviceClass").setUIValue(beanName+SERVICE_CPOSTFIX);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("mybatisFile").setUIValue(beanName+DAO_POSTFIX+XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("listJSP").setUIValue("list"+JSP_EXTENSION);
+components.get("formJSP").setUIValue("form"+JSP_EXTENSION);
+components.get("readJSP").setUIValue("read"+JSP_EXTENSION);
+components.get("messageFile").setUIValue("message-"+beanName+PROPERTIES_EXTENSION);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);

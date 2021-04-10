@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>Set Tables to use.</description>
+		</model-page>
+
+		<component-page>
+			<description>Presentation Layer</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+			<group>
+				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
+				<textfield name="controllerClass" label="*Controller Class Name" required="true" />
+			</group>
+			<group>
+				<container name="jspPath" label="*jsp Path" type="folder" required="true" onChange="/events/jsppath_changed.gv" />
+				<textfield name="requestPath" label="*request Path" required="true" />
+				<textfield name="listJSP" label="*list.jsp" required="true" extensions="jsp" />
+				<textfield name="formJSP" label="*form.jsp" required="true" extensions="jsp" />
+				<textfield name="viewJSP" label="*view.jsp" required="true" extensions="jsp" />
+			</group>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="messagePath" label="*Message Path" type="folder" required="true" />
+				<textfield name="messageFile" label="*Message Name" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
+			<template component="listjspOut" expression="$listJSP" velocity="list_jsp.vm" container="jspPath"></template>
+			<template component="viewjspOut" expression="$viewJSP" velocity="view_jsp.vm" container="jspPath"></template>
+			<template component="formjspOut" expression="$formJSP" velocity="form_jsp.vm" container="jspPath"></template>
+			<template component="messageOut" expression="$messageFile" velocity="message.vm" container="messagePath"></template>
+		</output>
+	</wizard>
+</CodeGen>

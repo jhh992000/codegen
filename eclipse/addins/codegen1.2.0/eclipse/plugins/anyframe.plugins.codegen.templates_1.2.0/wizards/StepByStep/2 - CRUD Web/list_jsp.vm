@@ -1,0 +1,145 @@
+<%@ page language="java" contentType="text/html; charset=euc-kr"
+    pageEncoding="euc-kr"%>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
+<%@ taglib uri='/WEB-INF/anyframe-page.tld' prefix='emp' %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="anyframe.common.Page" %>
+<%@ page import="anyframe.templates.emp.general.product.service.ProductVO" %>
+<%@ page import="anyframe.templates.emp.web.common.util.TemplateUtil" %>
+<html>
+<head>
+<title>List Product</title>
+<link rel="stylesheet" href="<html:rewrite page='/template/css/admin.css'/>" type="text/css">
+<%
+	Page resultPage = (Page)request.getAttribute("page");
+	ArrayList resultList = (ArrayList)resultPage.getList();	
+	int pageSize = ((Integer)request.getAttribute("pageSize")).intValue();
+%>
+<script language="JavaScript">
+<!--
+function fncAddProductView() {
+    document.listForm.action="<html:rewrite page='/ProductDispatchAction.do?method=addForward'/>";
+    document.listForm.submit();
+}
+function fncUpdateProducts(){
+	document.listForm.target="mainFrame";
+	document.listForm.action="<html:rewrite page='/ProductUpdateAction.do?method=updateProducts'/>";
+	document.listForm.submit();
+} 
+
+function fncDeleteProducts(){
+	document.listForm.target="mainFrame";
+	document.listForm.action="<html:rewrite page='/ProductUpdateAction.do?method=deleteProducts'/>";
+	document.listForm.submit();
+}
+-->
+</script>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<form name="listForm"  method="post" action="<html:rewrite page='/ProductDispatchActon.do?method=selectProductList'/>">
+<!-- begin of title -->
+<table width="100%" height="37" border="0" cellpadding="0"
+	cellspacing="0">
+	<tr>
+		<td width="15" height="37"><img src="<html:rewrite page='/template/images/ct_ttl_img01.gif'/>" width="15" height="37"></td>
+		<td background="<html:rewrite page='/template/images/ct_ttl_img02.gif'/>" width="100%" style="padding-left:10px;">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="93%" class="ct_ttl01">List of Product</td>
+				</tr>
+			</table>
+		</td>
+		<td width="12" height="37"><img src="<html:rewrite page='/template/images/ct_ttl_img03.gif'/>" width="12" height="37"></td>
+	</tr>
+</table>
+<!-- end of title -->
+<!-- begin of list -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+	<tr>
+		<td class="ct_list_b" width="50">Check</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="50">No</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="150">Product No.</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="150">Product Name</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="100">Price</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="100">Seller ID</td>
+		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="150">Registered Date</td>
+	</tr>
+	<tr>
+		<td colspan="13" bgcolor="808285" height="1"></td>
+	</tr>
+	<% 
+	int currentPageIndex = resultPage.getCurrentPage();
+	int no = (currentPageIndex - 1) * pageSize;
+	for(int i=0; i<resultList.size(); i++) {
+	ProductVO productVO = (ProductVO)resultList.get(i);
+	%>
+		<tr class="ct_list_pop">
+		<td align="center"><input type="checkbox" name="checkYn" value="<%= productVO.getProdNo() %>"></td> 
+		<td></td>
+		<td align="center"><%=++no%></td> 
+		<td></td>
+		<td align="center"><%= productVO.getProdNo() %></td>
+		<input type="hidden" name="prodNo" value="<%= productVO.getProdNo() %>">
+		<td></td>
+		<td align="center"><input type="text" name="prodName" value="<%= productVO.getProdName() %>"></td>
+		<td></td>
+		<td align="center" style="padding-right:3px;"><input type="text" name="sellAmount" value="<%= productVO.getSellAmount() %>"></td>
+		<td></td>
+		<td align="center"><input type="text" name="sellerId" value="<%= TemplateUtil.null2str(productVO.getSellerId()) %>"></td> 
+		<td></td>
+		<td align="center"><%= TemplateUtil.toDateStr(productVO.getRegDate()) %></td>
+	</tr>
+	<tr>
+		<td colspan="13" bgcolor="D6D7D6" height="1"></td>
+	</tr>
+	<% } %>
+</table>
+<!--  begin of page Navigator -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0"
+	style="margin-top:10px;">
+	<tr>
+		<td align="center">
+             <input type="hidden" name="pageIndex" value="<%=resultPage.getCurrentPage()%>">
+             <emp:pagenavigator linkUrl="javascript:fncGetSaleList(2);" 
+             	pages="<%=resultPage%>" 
+             	formName="listForm"
+              firstImg="template/images/ct_btn_pre.gif" 
+              prevImg="template/images/ct_btn_pre01.gif" 
+              lastImg="template/images/ct_btn_next.gif" 
+              nextImg="template/images/ct_btn_next01.gif" />				
+    	</td>
+	</tr>
+</table>
+<!--  end of page Navigator -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0"
+	style="margin-top:10px;">
+	<tr>
+		<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				
+					<td width="17" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg01.gif'/>" width="17" height="23"></td>
+					<td background="<html:rewrite page='/template/images/ct_btnbg02.gif'/>" class="ct_btn01" style="padding-top:3px;"><a href="javascript:fncAddProductView();">Add</a></td>
+					<td width="14" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg03.gif'/>" width="14" height="23"></td>
+					<td width="10"></td>
+					<td width="17" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg01.gif'/>" width="17" height="23"></td>
+					<td background="<html:rewrite page='/template/images/ct_btnbg02.gif'/>" class="ct_btn01" style="padding-top:3px;"><a href="javascript:fncDeleteProducts();">Selected Delete</a></td>
+					<td width="14" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg03.gif'/>" width="14" height="23"></td>
+					<td width="10"></td>	
+					<td width="17" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg01.gif'/>" width="17" height="23"></td>
+					<td background="<html:rewrite page='/template/images/ct_btnbg02.gif'/>" class="ct_btn01" style="padding-top:3px;"><a href="javascript:fncUpdateProducts();">Update</a></td>
+					<td width="14" height="23"><img src="<html:rewrite page='/template/images/ct_btnbg03.gif'/>" width="14" height="23"></td>
+				</tr>
+			</table>
+		</td> 
+	</tr>
+</table>
+</form>
+</body>
+</html>

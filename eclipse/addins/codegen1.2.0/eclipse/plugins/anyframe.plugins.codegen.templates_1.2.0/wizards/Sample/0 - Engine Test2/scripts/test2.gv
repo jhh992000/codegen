@@ -1,0 +1,2 @@
+System.out.println(components.get("DriverClass").combo.getText());
+components.get("BeanName2").text.setText(components.get("DriverClass").combo.getText() );

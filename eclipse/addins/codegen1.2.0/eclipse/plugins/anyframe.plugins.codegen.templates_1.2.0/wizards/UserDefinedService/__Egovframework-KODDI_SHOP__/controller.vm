@@ -1,0 +1,228 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$masterBizCode.toLowerCase()$bizCode.toLowerCase()$detailBizCode.substring(0,1).toUpperCase()$detailBizCode.substring(1)Service")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+#set($detailBizCode_cap = "$detailBizCode.substring(0,1).toUpperCase()$detailBizCode.substring(1)")
+#set($detailBizCode_uncap = "$detailBizCode.substring(0,1).toLowerCase()$detailBizCode.substring(1)VO")
+#set($detailBizCode_uncap_lower = "$detailBizCode.toLowerCase()")
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.util.List;
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import koddi.cmm.dto.Criteria;
+import koddi.cmm.aop.MenuLoad;
+import koddi.cmm.util.FlashMessage;
+import koddi.cmm.util.RedirectUrlMaker;
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 : $tableName 테이블과 관련된 업무 요청을 받아 처리하는 Controller 클래스입니다.
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+  * Copyright(c) 2015 ORDER COMMUNICATIONS Co. Ltd. All rights reserved.
+ */
+@Controller
+@SessionAttributes("${detailBizCode_uncap}")
+public class ${controllerClass} {
+
+	private static Logger logger = Logger.getLogger(${controllerClass}.class);
+
+	@Resource(name = "${service_uncap}")
+	private ${service_cap} ${service_uncap};
+	@Resource(name = "messageSourceAccessor")
+	private MessageSourceAccessor messageSourceAccessor;
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/list.do")
+	@MenuLoad
+	public String list(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}) throws Exception {
+
+		/** count */
+		int totalCount = ${service_uncap}.select${detailBizCode_cap}TotCnt(cri);
+		cri.setTotalCount(totalCount);
+
+		/** list */
+		List<${domain_cap}> list = ${service_uncap}.select${detailBizCode_cap}List(cri);
+
+		model.addAttribute("list", list);
+		model.addAttribute("cri", cri);
+		model.addAttribute("${detailBizCode_uncap}", ${detailBizCode_uncap});
+
+		return "${requestPath}/${detailBizCode_uncap_lower}/$masterBizCode.toUpperCase()$bizCode.toUpperCase()$sequence.toUpperCase()01L";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/view.do")
+	@MenuLoad
+	public String view(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}) throws Exception {
+
+		${detailBizCode_uncap} = ${service_uncap}.select${detailBizCode_cap}(${detailBizCode_uncap});
+
+		model.addAttribute("${detailBizCode_uncap}", ${detailBizCode_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${detailBizCode_uncap_lower}/$masterBizCode.toUpperCase()$bizCode.toUpperCase()$sequence.toUpperCase()01S";
+	}
+
+	/**
+	 * 생성화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/createForm.do")
+	@MenuLoad
+	public String createForm(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}) throws Exception {
+
+		model.addAttribute("editMode", "create");
+		model.addAttribute("${detailBizCode_uncap}", ${detailBizCode_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${detailBizCode_uncap_lower}/$masterBizCode.toUpperCase()$bizCode.toUpperCase()$sequence.toUpperCase()01F";
+	}
+
+	/**
+	 * 생성
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @param redirectAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/create.do")
+	@MenuLoad
+	public String create(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}, RedirectAttributes redirectAttributes) throws Exception {
+
+#if($primaryKeys.size() == 1)
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+		int nextId = ${service_uncap}.select${detailBizCode_cap}NextId();
+		${detailBizCode_uncap}.set$pk_cap(nextId);
+#end
+#elseif($primaryKeys.size() > 1)
+		int nextId = ${service_uncap}.select${detailBizCode_cap}NextId(${detailBizCode_uncap});
+		${detailBizCode_uncap}.set$pk_cap(nextId);
+#end
+		${service_uncap}.insert${detailBizCode_cap}(${detailBizCode_uncap});
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.create.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${detailBizCode_uncap_lower}/list.do", cri, true).getRedirectUrl();
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/updateForm.do")
+	@MenuLoad
+	public String updateForm(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}) throws Exception {
+
+		${detailBizCode_uncap} = ${service_uncap}.select${detailBizCode_cap}(${detailBizCode_uncap});
+
+		model.addAttribute("editMode", "update");
+		model.addAttribute("${detailBizCode_uncap}", ${detailBizCode_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${detailBizCode_uncap_lower}/$masterBizCode.toUpperCase()$bizCode.toUpperCase()$sequence.toUpperCase()01F";
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @param redirectAttributes
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/update.do")
+	@MenuLoad
+	public String update(Model model, Criteria cri, @ModelAttribute("${detailBizCode_uncap}") ${domainClass} ${detailBizCode_uncap}, RedirectAttributes redirectAttributes, SessionStatus status) throws Exception {
+
+		${service_uncap}.update${detailBizCode_cap}(${detailBizCode_uncap});
+
+		status.setComplete();
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.update.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${detailBizCode_uncap_lower}/list.do", cri).getRedirectUrl();
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${detailBizCode_uncap}
+	 * @param redirectAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${detailBizCode_uncap_lower}/delete.do")
+	@MenuLoad
+	public String delete(Model model, Criteria cri, ${domainClass} ${detailBizCode_uncap}, RedirectAttributes redirectAttributes) throws Exception {
+
+		${service_uncap}.delete${detailBizCode_cap}(${detailBizCode_uncap});
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.delete.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${detailBizCode_uncap_lower}/list.do", cri).getRedirectUrl();
+	}
+
+}

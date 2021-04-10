@@ -1,0 +1,245 @@
+package anyframe.templates.emp.web.common.framework;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.validator.Validator;
+import org.apache.commons.validator.ValidatorException;
+import org.apache.commons.validator.ValidatorResults;
+import org.apache.struts.Globals;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.validator.Resources;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValues;
+import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.multipart.cos.CosMultipartResolver;
+
+import anyframe.templates.emp.common.ValueObject;
+import anyframe.templates.emp.common.ValueObjectList;
+import anyframe.templates.emp.common.util.LogFactory;
+import anyframe.web.action.DefaultDispatchActionSupport;
+
+public abstract class AbstractDispatchAction extends DefaultDispatchActionSupport {
+	Log log = LogFactory.TEMPLATE_LOG_DEF;
+
+	protected HashMap methods = new HashMap();
+
+	protected Class[] types = { ActionMapping.class, ValueObject.class,
+			HttpServletRequest.class, HttpServletResponse.class };
+
+	protected Object getService(String name) {
+		return getWebApplicationContext().getBean(name);
+	}
+
+	public ActionForward process(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		String name = getMethodName(mapping, form, request, response, mapping.getParameter());		
+		getLogger().debug(this.getClass().getName() + "." + name + " Started!");
+		ActionForward actionForward = super.process(mapping, form, request,
+				response);
+		getLogger().debug(this.getClass().getName() + "." + name + " Ended!");
+		return actionForward;
+	}
+
+	protected Method getMethod(String name) throws NoSuchMethodException {
+
+		synchronized (methods) {
+			Method method = (Method) methods.get(name);
+			if (method == null) {
+				method = clazz.getMethod(name, types);
+				methods.put(name, method);
+			}
+			return (method);
+		}
+
+	}
+
+	protected ActionForward dispatchMethod(ActionMapping mapping,
+			ActionForm form, HttpServletRequest request,
+			HttpServletResponse response, String name) throws Exception {
+
+		if (name == null) {
+			return this.unspecified(mapping, form, request, response);
+		}
+
+		Method method = null;
+		try {
+			method = getMethod(name);
+
+		} catch (NoSuchMethodException e) {
+			String message = messages.getMessage("dispatch.method", mapping
+					.getPath(), name);
+			getLogger().error(message, e);
+			throw e;
+		}
+
+		ActionForward forward = null;
+		try {
+			ValueObject vo = getValueObject();
+			CosMultipartResolver multipartResolver = new CosMultipartResolver(
+					getServletContext());
+			if (vo != null) {
+				if (multipartResolver.isMultipart(request)) {
+					try {
+						request = multipartResolver.resolveMultipart(request);
+					} catch (Exception e) {
+						// e.printStackTrace();
+					}
+				}
+				if(vo instanceof ValueObjectList){
+					ValueObjectList voList = (ValueObjectList)vo;
+					String keyParam = voList.getKeyParamName();
+					Iterator pmvs = convertRequestToPropertyValues(request,keyParam).iterator();
+					while(pmvs.hasNext()){
+						Object _valueObject = voList.getValueObject();
+						DataBinder binder = new DataBinder(_valueObject,"");
+						binder.bind((PropertyValues)pmvs.next());
+						voList.add(_valueObject);
+					}
+					vo = voList;
+					
+				} else {
+					ServletRequestDataBinder binder = new ServletRequestDataBinder(
+							vo, "ValueObject");
+					binder.bind(request);
+				}
+			}
+			Object args[] = { mapping, vo, request, response };
+			forward = (ActionForward) method.invoke(this, args);
+
+		} catch (ClassCastException e) {
+			String message = messages.getMessage("dispatch.return", mapping
+					.getPath(), name);
+			getLogger().error(message, e);
+			throw e;
+
+		} catch (IllegalAccessException e) {
+			String message = messages.getMessage("dispatch.error", mapping
+					.getPath(), name);
+			getLogger().error(message, e);
+			throw e;
+
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getTargetException();
+			if (t instanceof Exception) {
+				throw ((Exception) t);
+			} else {
+				String message = messages.getMessage("dispatch.error", mapping
+						.getPath(), name);
+				getLogger().error(message, t);
+				throw new ServletException(t);
+			}
+		}
+		return (forward);
+	}
+
+	private Collection convertRequestToPropertyValues(HttpServletRequest request, String keyParam) {
+		String[] keyValues = request.getParameterValues(keyParam);
+		if(keyValues == null) return null;
+		int keyValueCount = keyValues.length;		
+		Map _mutablePropertyValuesMap = new HashMap();
+		for(int i=0;i<keyValueCount;i++){
+			_mutablePropertyValuesMap.put(String.valueOf(i), new MutablePropertyValues());
+		}
+		Enumeration keys = request.getParameterNames();
+		String key = null;
+		String[] values = null;
+		MutablePropertyValues mpv = null;
+
+		while(keys.hasMoreElements()){
+			key = (String)keys.nextElement();
+			values = request.getParameterValues(key);
+			int valuesCount = values.length;
+			for(int i=0;i<valuesCount && i<keyValueCount;i++){
+				mpv = (MutablePropertyValues)_mutablePropertyValuesMap.get(String.valueOf(i));
+				mpv.addPropertyValue(key, values[i]);				
+			}
+		}
+		
+		return _mutablePropertyValuesMap.values();
+		
+	}
+
+	public Log getLogger() throws Exception {
+		return log;
+	}
+
+	public abstract ValueObject getValueObject();
+
+	protected boolean validate(HttpServletRequest request, ValueObject vo,
+			String validationKey) {
+		return validate(request, vo, validationKey, 0);
+	}
+
+	protected boolean validate(HttpServletRequest request, ValueObject vo,
+			String validationKey, int page) {
+		ActionErrors errors = new ActionErrors();
+		ValidatorResults validatorResults = null;
+		Validator validator = Resources.initValidator(validationKey, vo,
+				getServletContext(), request, errors, page);
+
+		try {
+			validatorResults = validator.validate();
+		} catch (ValidatorException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		if ((errors == null) || errors.isEmpty()) {
+			if (log.isTraceEnabled()) {
+				log.trace("  No errors detected, accepting input");
+			}
+			return (true);
+		}
+		request.setAttribute(Globals.ERROR_KEY, errors);
+		System.out.println(errors);
+		return false;
+	}
+
+	protected void populateParameter(HttpServletRequest request, Map param)
+			throws Exception {
+
+		Enumeration en = request.getParameterNames();
+		String tmpKey = null;
+		String tmpParam = null;
+		while (en.hasMoreElements()) {
+			tmpKey = (String) en.nextElement();
+			tmpParam = request.getParameter(tmpKey);
+			if (tmpParam != null && !"".equals(tmpParam)) {
+				if ("SortColumn".equals(tmpKey))
+					param.put(tmpKey, convertToUnderScore(tmpParam));
+				else
+					param.put(tmpKey, tmpParam);
+			}
+		}
+	}
+
+	public static String convertToUnderScore(String camelCase) {
+		String result = "";
+		for (int i = 0; i < camelCase.length(); i++) {
+			char currentChar = camelCase.charAt(i);
+			// This is starting at 1 so the result does not end up with an
+			// underscore at the begin of the value
+			if (i > 0 && Character.isUpperCase(currentChar)) {
+				result = result.concat("_");
+			}
+			result = result.concat(Character.toString(currentChar)
+					.toLowerCase());
+		}
+		return result;
+	}
+}

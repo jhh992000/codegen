@@ -1,0 +1,58 @@
+String DEFAULT_BASE_PATH = "/ecoAdminNew";
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String VO_POSTFIX = "Vo";
+String VO_PREFIX1 = "";
+String VO_PREFIX2 = "Tb";
+String VO_PREFIX3 = "Eco";
+String VO_PREFIX4 = "Tbt";
+String VO_PREFIX5 = "Tbl";
+String VO_PREFIX6 = "Tst";
+String VO_PREFIX7 = "Eco";
+String DAO_POSTFIX = "Dao";
+String CONTROLLER_CPOSTFIX = "Controller";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+String writerName = "jeong hoon hee";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String table_prefix = tableName.substring(0, 1);
+if (table_prefix.equalsIgnoreCase("C") && tableName.toLowerCase().substring(0, 2).equalsIgnoreCase("c_")) {
+	tableName = tableName.substring(2, tableName.length());
+}
+
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX1.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX2.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX3.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX4.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX5.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX6.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(VO_PREFIX7.toLowerCase()+"_", "");
+
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(VO_PREFIX1, "");
+beanName = beanName.replaceAll(VO_PREFIX2, "");
+beanName = beanName.replaceAll(VO_PREFIX3, "");
+beanName = beanName.replaceAll(VO_PREFIX4, "");
+beanName = beanName.replaceAll(VO_PREFIX5, "");
+beanName = beanName.replaceAll(VO_PREFIX6, "");
+beanName = beanName.replaceAll(VO_PREFIX7, "");
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("serviceClass").setUIValue(beanName+SERVICE_CPOSTFIX);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("ibatisFile").setUIValue(beanName+XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("listJSP").setUIValue("list"+JSP_EXTENSION);
+components.get("formJSP").setUIValue("form"+JSP_EXTENSION);
+components.get("viewJSP").setUIValue("view"+JSP_EXTENSION);
+components.get("messageFile").setUIValue("message-"+beanName+PROPERTIES_EXTENSION);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+components.get("moduleName").setUIValue(beanName.toLowerCase());

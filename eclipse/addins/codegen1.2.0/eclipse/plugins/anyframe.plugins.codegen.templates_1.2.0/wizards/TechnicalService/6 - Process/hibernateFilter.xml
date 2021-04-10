@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Process</title>
+
+		<component-page>
+
+			<description>Process Service Configuration</description>
+
+			<group>
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="BeanName" label="*Bean Id" value="processService" required="true" />
+			</group>
+			<group label="Process XML">
+				<container name="procPath" label="*Process Path" type="srcPackage" required="true" />
+				<textfield name="procName" label="Process File" required="false" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Process Service Configuration</description>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="ProcessServiceTestCase" />
+				<textfield name="adaptorManager" label="*Adaptor Manager's Bean Id" required="true"
+					value="adaptorManager" />
+				<textfield name="adaptorKey" label="*Adaptor Key" required="true" />
+			</group>
+		</component-page>
+
+
+		<output>
+			<template component="out1" expression="applicationContext-process.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="out2" expression="test-defaultProcess.xml" velocity="tmDefaultProcess.vm"
+				container="procPath">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="out3" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

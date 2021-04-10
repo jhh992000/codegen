@@ -1,0 +1,74 @@
+#if($implPackage_package != "")
+package $implPackage_package;
+#end
+
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import anyframe.common.Page;
+import anyframe.common.exception.BaseException;
+
+#if($iPackage != $implPackage)
+import ${iPackage_package}.${iClass};
+
+#end
+#if($implPackage != $daoPackage)
+import ${daoPackage_package}.${daoClass};
+
+#end
+#if($implPackage != $voPackage)
+import ${voPackage_package}.${voClass};
+
+#end
+public class $implClass implements $iClass, ApplicationContextAware{
+	
+	private $daoClass $daoClass_uncap;
+	
+	public void setApplicationContext(ApplicationContext applicationContext) 	throws BeansException {
+	}
+	
+	public void set${daoClass} ($daoClass $daoClass_uncap ) {
+		this.${daoClass_uncap} = ${daoClass_uncap};    
+	}
+
+	public Page select${beanName_cap}List($voClass $voClass_uncap) throws BaseException{
+		try{
+			return ${daoClass_uncap}.select${beanName_cap}List($voClass_uncap);
+		}catch(BaseException e){
+			throw new BaseException(e.getMessage(), e);
+		}catch(Exception e){
+			throw new BaseException(e.getMessage(), e);
+		}	
+	}
+
+	public void update${beanName_cap}($voClass $voClass_uncap) throws BaseException{
+		try{
+			${daoClass_uncap}.update${beanName_cap}($voClass_uncap);
+		}catch(BaseException e){
+			throw new BaseException(e.getMessage(), e);
+		}catch(Exception e){
+			throw new BaseException(e.getMessage(), e);
+		}
+	}
+
+	public void insert${beanName_cap}($voClass $voClass_uncap) throws BaseException{
+		try{
+			${daoClass_uncap}.insert${beanName_cap}($voClass_uncap);
+		}catch(BaseException e){
+			throw new BaseException(e.getMessage(), e);
+		}catch(Exception e){
+			throw new BaseException(e.getMessage(), e);
+		}
+	}
+	
+	public void delete${beanName_cap}($voClass $voClass_uncap) throws BaseException{
+		try{
+			${daoClass_uncap}.delete${beanName_cap}($voClass_uncap);
+		}catch(BaseException e){
+			throw new BaseException(e.getMessage(), e);
+		}catch(Exception e){
+			throw new BaseException(e.getMessage(), e);
+		}
+	}
+}

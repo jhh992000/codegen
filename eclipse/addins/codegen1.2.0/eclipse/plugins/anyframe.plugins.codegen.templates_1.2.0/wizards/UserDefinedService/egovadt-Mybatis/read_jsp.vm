@@ -1,0 +1,148 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../../cmm/inc/taglib.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title><s:message code="${moduleName}.modelName" /> <s:message code="common.edit" /></title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<c:import url="/WEB-INF/jsp/egovframework/EgovCss.jsp" />
+<script type="text/javascript">
+$(document).ready(function(){
+</script>
+</head>
+<body>
+
+<div id="sub_wrapper">
+	<div id="inc_header">
+		<!-- header -->
+		<c:import url="/WEB-INF/jsp/egovframework/headerAdmin.jsp" />
+	</div>
+	<!-- 메인탑 컨텐츠 시작 -->
+	<div id="inc_body">
+		<div id="left_body">
+			<!-- left -->
+			<c:import url="/WEB-INF/jsp/egovframework/admin_left_menu.jsp" />
+		</div>
+		<div id="center_body">
+			<!-- body start -->
+
+			<form:form id="editForm" name="editForm" method="post" commandName="${domain_uncap}" action="${ pageContext.request.contextPath }${requestPath}/${ editMode }.do">
+				<input type="hidden" id="adminMenu" name="adminMenu" value="${ cri.adminMenu }" />
+				<input type="hidden" id="pagerOffset" name="pagerOffset" value="${ cri.pagerOffset }" />
+				<input type="hidden" id="maxPageItems" name="maxPageItems" value="${ cri.maxPageItems }" />
+				<input type="hidden" id="searchKey" name="searchKey" value="${ cri.searchKey }" />
+				<input type="hidden" id="searchValue" name="searchValue" value="${ cri.searchValue }" />
+#foreach($pk in $pks)
+				<form:hidden path="$pk.fieldName"/>
+#end
+
+				<fieldset>
+					<legend>
+						<s:message code="${moduleName}.modelName" /> <s:message code="common.edit" />
+					</legend>
+
+					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td align="center" valign="top">
+								<table width="90%" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="10" height="28" align="left"><img src="/images/egovframework/adt/bullet_bluebar.gif" width="4" height="11" /></td>
+										<td align="left"><span class="writeTableTitle"><s:message code="compatsw.modelName" /> <s:message code="common.edit" /></span></td>
+										<td align="right">
+											<span class="required">*</span> 항목은 필수입력항목입니다.
+										</td>
+									</tr>
+								</table>
+
+								<table class="writeTable" border="0" cellspacing="0" cellpadding="0">
+									<colgroup>
+										<col style="width:20%;" />
+										<col style="width:80%;" />
+									</colgroup>
+									<tbody>
+
+#foreach($col in $cols)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+									<!--
+									<tr>
+										<th scope="row" class="blt_ess"><s:message code="${moduleName}.${col.fieldName}" /></th>
+										<td>
+											<label for="${col.fieldName}" class="skip"><s:message code="${moduleName}.${col.fieldName}" /></label>
+											<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" titleKey="${moduleName}.${col.fieldName}" />
+										</td>
+									</tr>
+									-->
+#else
+#if ($col.nullable == false)
+									<tr>
+										<th scope="row" class="blt_ess"><s:message code="${moduleName}.${col.fieldName}" /></th>
+										<td>
+#if ($col.fieldName=="useYn")
+											<form:radiobutton id="useYnY" path="useYn" value="Y" /><label for="useYnY"><s:message code="common.use" /></label>&nbsp;
+											<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><s:message code="common.notUse" /></label>
+#else
+											<label for="${col.fieldName}" class="skip"><s:message code="${moduleName}.${col.fieldName}" /></label>
+											<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+										</td>
+									</tr>
+#else
+									<tr>
+										<th scope="row" class="blt_ness"><s:message code="${moduleName}.${col.fieldName}" /></th>
+										<td>
+#if ($col.fieldName=="useYn")
+											<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY"><s:message code="common.yes" /></label>&nbsp;
+											<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><s:message code="common.no" /></label>
+#else
+											<label for="${col.fieldName}" class="skip"><s:message code="${moduleName}.${col.fieldName}" /></label>
+											<form:input path="${col.fieldName}" cssClass="txt" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+										</td>
+									</tr>
+#end
+#end
+#end
+									</tbody>
+								</table>
+
+								<div align="right">
+									<div class="btn_area">
+										<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}List.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="button"><s:message code="common.cancel" /></a>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+
+				</fieldset>
+			</form:form>
+
+			<!-- body end -->
+		</div>
+	</div>
+	<div id="inc_footer">
+		<c:import url="/WEB-INF/jsp/egovframework/footer.jsp" />
+	</div>
+</div>
+
+</body>
+</html>

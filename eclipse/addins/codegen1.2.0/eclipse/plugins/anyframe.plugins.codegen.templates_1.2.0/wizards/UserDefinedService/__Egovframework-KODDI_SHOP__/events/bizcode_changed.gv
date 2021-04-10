@@ -1,0 +1,58 @@
+String SERVICE_POSTFIX = "Service";
+String SERVICE_IMPL_POSTFIX = "ServiceImpl";
+String DOMAIN_POSTFIX = "VO";
+String DOMAIN_PREFIX1 = "";
+String DOMAIN_PREFIX2 = "";
+String DAO_POSTFIX = "DAO";
+String CONTROLLER_POSTFIX = "Controller";
+String FORM_JSP_POSTFIX = "F";
+String LIST_JSP_POSTFIX = "L";
+String VIEW_JSP_POSTFIX = "S";
+String JSP_EXTENSION= ".jsp";
+String XML_PREFIX = "sqlmap-";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+
+String basePath = components.get("basePath").getUIValue();
+String masterBizCode = components.get("masterBizCode").getUIValue();
+String bizCode = components.get("bizCode").getUIValue();
+String detailBizCode = components.get("detailBizCode").getUIValue();
+String sequence = components.get("sequence").getUIValue();
+
+String DOMAIN_PACKAGE = "koddi." + masterBizCode + "." + bizCode + "." + detailBizCode.toLowerCase() + ".domain";
+String DAO_PACKAGE = "koddi." + masterBizCode + "." + bizCode + "." + detailBizCode.toLowerCase() + ".service";
+String SERVICE_PACKAGE = "koddi." + masterBizCode + "." + bizCode + "." + detailBizCode.toLowerCase() + ".service";
+String SERVICE_IMPL_PACKAGE = "koddi." + masterBizCode + "." + bizCode + "." + detailBizCode.toLowerCase() + ".service.impl";
+String CONTROLLER_PACKAGE = "koddi." + masterBizCode + "." + bizCode + "." + detailBizCode.toLowerCase() + ".web";
+String IBATIS_PATH = "sqlmap";
+String JSP_PATH = "WebContent/WEB-INF/jsp";
+String REQUEST_PATH = "";
+String JSP_FOLDER = tableName;
+String JSP_FOLDER_PREFIX1 = "";
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX1, "");
+
+components.get("domainPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/main/java/"+DOMAIN_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/WebContent/WEB-INF/src/main/java/"+SERVICE_PACKAGE);
+components.get("serviceImplPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/main/java/"+SERVICE_IMPL_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/main/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/WebContent/WEB-INF/src/main/resources/"+IBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/main/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+masterBizCode+"/"+bizCode+"/"+detailBizCode.toLowerCase());
+components.get("requestPath").setUIValue("/"+masterBizCode+"/"+bizCode);
+
+String className = masterBizCode.toUpperCase()+bizCode.toUpperCase();
+
+if (detailBizCode != null && !detailBizCode.equals("")) {
+	className += detailBizCode.substring(0,1).toUpperCase() + detailBizCode.substring(1);
+}
+
+components.get("serviceClass").setUIValue(className+SERVICE_POSTFIX);
+components.get("serviceImplClass").setUIValue(className+SERVICE_IMPL_POSTFIX);
+components.get("domainClass").setUIValue(className+DOMAIN_POSTFIX);
+components.get("daoClass").setUIValue(className+DAO_POSTFIX);
+components.get("ibatisFile").setUIValue(XML_PREFIX + masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence  + XML_EXTENSION);
+components.get("controllerClass").setUIValue(className + CONTROLLER_POSTFIX);
+components.get("listJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +LIST_JSP_POSTFIX+JSP_EXTENSION);
+components.get("formJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +FORM_JSP_POSTFIX+JSP_EXTENSION);
+components.get("viewJSP").setUIValue(masterBizCode.toUpperCase() + bizCode.toUpperCase() + sequence + "01" +VIEW_JSP_POSTFIX+JSP_EXTENSION);
+components.get("messageFile").setUIValue("message-"+masterBizCode.toUpperCase() + bizCode.toUpperCase()+PROPERTIES_EXTENSION);

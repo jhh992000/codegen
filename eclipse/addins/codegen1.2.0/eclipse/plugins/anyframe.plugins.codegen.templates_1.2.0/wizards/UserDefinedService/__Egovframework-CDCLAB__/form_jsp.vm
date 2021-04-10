@@ -1,0 +1,176 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>${domainName_uncap} <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" type="text/css" href="${ pageContext.request.contextPath }/css/radi_common.css" />
+<link rel="stylesheet" type="text/css" href="${ pageContext.request.contextPath }/css/jquery-ui-1.10.2.custom.css" />
+<script type="text/javascript" src="${ pageContext.request.contextPath }/js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="${ pageContext.request.contextPath }/js/jquery-migrate-1.2.1.js"></script>
+<script type="text/javascript" src="${ pageContext.request.contextPath }/js/jquery-ui-1.10.2.custom.js"></script>
+<script type="text/javascript" src="${ pageContext.request.contextPath }/js/util.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+
+});
+//목록
+function fnList() {
+   	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/list.do";
+   	document.searchForm.submit();
+}
+//수정
+function fnModify() {
+	frm = document.dataForm;
+   	frm.action = "${pageContext.request.contextPath}${requestPath}/modify.do";
+    frm.submit();
+}
+//등록
+function fnCreate() {
+	frm = document.dataForm;
+   	frm.action = "${pageContext.request.contextPath}${requestPath}/create.do";
+    frm.submit();
+}
+//]]>
+</script>
+</head>
+<body>
+<form:form commandName="search${domain_cap}" name="searchForm">
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName" />
+#end
+	<form:hidden path="pageIndex" />
+	<form:hidden path="searchCondition" />
+	<form:hidden path="searchKeyword" />
+</form:form>
+
+<form:form id="dataForm" name="dataForm" method="post" commandName="data${domain_cap}" action="${pageContext.request.contextPath}${requestPath}/${ editMode }.do">
+	<input type="hidden" name="searchCondition" value="${ search${domain_cap}.searchCondition }" />
+	<input type="hidden" name="searchKeyword" value="${ search${domain_cap}.searchKeyword }" />
+	<input type="hidden" name="pageIndex" value="${ search${domain_cap}.pageIndex }" />
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName" />
+#end
+
+	<div class="tablebg">
+		<div class="topbg">
+			<h1>${domainName_uncap} <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose></h1>
+		</div>
+		<div class="boxA">
+			<div class="requireMessage">
+				<span class="require">*</span> 항목은 필수입력항목입니다.
+			</div>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" class="TypeA">
+				<colgroup>
+					<col style="width:20%;" />
+					<col style="width:80%;" />
+				</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+				<!--
+				<tr>
+					<td class="item1">${col.fieldName}</th>
+					<td class="item2">
+						<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+					</td>
+				</tr>
+				-->
+#else
+#if ($col.nullable == false)
+				<tr>
+					<td class="item1">${col.fieldName}</th>
+					<td class="item2">
+#if ($col.fieldName=="useYn")
+						<div class="jUseRadio">
+							<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY">예</label>&nbsp;
+							<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN">아니오</label>
+						</div>
+#elseif($col.fieldName.toLowerCase().indexOf("useyn") != -1)
+						<div class="jUseRadio">
+							<form:radiobutton id="${col.fieldName}Y" path="${col.fieldName}" value="Y"  /><label for="${col.fieldName}Y">예</label>&nbsp;
+							<form:radiobutton id="${col.fieldName}N" path="${col.fieldName}" value="N" /><label for="${col.fieldName}N">아니오</label>
+						</div>
+#else
+						<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+					</td>
+				</tr>
+#else
+				<tr>
+					<td class="item1">${col.fieldName}</th>
+					<td class="item2">
+#if ($col.fieldName=="useYn")
+						<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY">예</label>&nbsp;
+						<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN">아니오</label>
+#elseif($col.fieldName.toLowerCase().indexOf("useyn") != -1)
+						<form:radiobutton id="${col.fieldName}Y" path="${col.fieldName}" value="Y"  /><label for="${col.fieldName}Y">예</label>&nbsp;
+						<form:radiobutton id="${col.fieldName}N" path="${col.fieldName}" value="N" /><label for="${col.fieldName}N">아니오</label>
+#else
+#if ($col.type == "DATE")
+						<form:input path="${col.fieldName}" cssClass="inputLeft datepicker" cssStyle="width:200px;" maxlength="10" />
+#else
+						<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+#end
+					</td>
+				</tr>
+#end
+#end
+#end
+			</table>
+
+
+			<!-- Buttons -->
+			<div class="BtnArea">
+				<c:choose>
+					<c:when test="${ editMode eq 'Create' }">
+						<input type="button" value="등록" class="Btn60" onclick="javascript:fnCreate();"/>
+					</c:when>
+					<c:otherwise>
+						<input type="button" value="저장" class="Btn60" onclick="javascript:fnModify();"/>
+					</c:otherwise>
+				</c:choose>
+				<input type="button" value="취소" class="Btn60" onclick="javascript:history.back();"/>
+				<input type="button" value="닫기" class="Btn60" onclick="javascript:self.close();"/>
+			</div>
+		</div>
+	</div>
+</form:form>
+
+</body>
+</html>

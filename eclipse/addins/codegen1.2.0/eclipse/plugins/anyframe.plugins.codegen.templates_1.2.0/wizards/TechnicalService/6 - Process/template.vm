@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="anyframe.services.process.IProcessService" 
+	name="${BeanName}" class="anyframe.core.process.impl.DefaultProcessService">
+		<property name="processLocation">
+			<map>
+#if(!$procName)			
+				<entry key="*" value="classpath:${procPath_dirname}"/>
+#else
+				<entry key="$procName" value="classpath:${procPath_dirname}/${procName}.xml"/>
+#end				
+#if( $CreateTestCase )
+				<!-- To run the TestCase -->
+				<entry key="test-defaultProcess" value="classpath:${procPath_dirname}/test-defaultProcess.xml"/>
+#end
+			</map>
+		</property>	
+	</bean>
+</beans>

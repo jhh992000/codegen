@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<textfield name="moduleName" label="* 모듈명" required="true" />
+			</group>
+			<group>
+				<textfield name="companyName" label="*소속회사명" required="true" />
+				<textfield name="writerName" label="*작성자이름" required="true" />
+				<textfield name="writeDate" label="*작성일자" required="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Persistence Layer</description>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+			<group>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+			<group>
+				<container name="mybatisPath" label="*Path" type="folder" required="true" />
+				<textfield name="mybatisFile" label="*Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Presentation Layer</description>
+			<group>
+				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
+				<textfield name="controllerClass" label="*Controller Class Name" required="true" />
+			</group>
+			<group>
+				<container name="jspPath" label="*jsp Path" type="folder" required="true" onChange="/events/jsppath_changed.gv" />
+				<textfield name="requestPath" label="*RequestMappingURL" required="true" />
+				<textfield name="listJSP" label="*list.jsp" required="true" extensions="jsp" />
+				<textfield name="formJSP" label="*form.jsp" required="true" extensions="jsp" />
+				<textfield name="readJSP" label="*read.jsp" required="true" extensions="jsp" />
+			</group>
+			<group>
+				<container name="messagePath" label="*Message Path" type="folder" required="true" />
+				<textfield name="messageFile" label="*Message Name" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="mybatisFileOut" expression="$mybatisFile" velocity="mybatis.vm" container="mybatisPath"></template>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
+			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
+			<template component="listjspOut" expression="$listJSP" velocity="list_jsp.vm" container="jspPath"></template>
+			<template component="readjspOut" expression="$readJSP" velocity="read_jsp.vm" container="jspPath"></template>
+			<template component="formjspOut" expression="$formJSP" velocity="form_jsp.vm" container="jspPath"></template>
+			<template component="messageOut" expression="$messageFile" velocity="message.vm" container="messagePath"></template>
+		</output>
+	</wizard>
+</CodeGen>

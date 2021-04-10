@@ -1,0 +1,16 @@
+components.get("masterBizCode").setUIValue("shop");
+components.get("bizCode").setUIValue("cm");
+components.get("detailBizCode").setUIValue("mt");
+components.get("sequence").setUIValue("0107");
+components.get("programType").setUIValue("m");
+
+String basePath = components.get("basePath").getUIValue();
+String masterBizCode = components.get("masterBizCode").getUIValue();
+String bizCode = components.get("bizCode").getUIValue();
+String detailBizCode = components.get("detailBizCode").getUIValue();
+String sequence = components.get("sequence").getUIValue();
+String programType = components.get("programType").getUIValue();
+
+components.get("ibatisPath").setUIValue(basePath+"/src/main/resources/egovframework/sqlmap/shop/" + bizCode.toLowerCase() + "/" + detailBizCode.toLowerCase());
+components.get("ibatisFile").setUIValue(masterBizCode.toLowerCase() + "_" + bizCode.toLowerCase() + "_" + detailBizCode.toLowerCase() + "_" + bizCode.toLowerCase() + detailBizCode.toLowerCase() + sequence + programType + ".xml");
+components.get("datasetFile").setUIValue(masterBizCode.toLowerCase() + "_" + bizCode.toLowerCase() + "_" + detailBizCode.toLowerCase() + "_" + bizCode.toLowerCase() + detailBizCode.toLowerCase() + sequence + programType + "_dataset.xml");

@@ -1,0 +1,18 @@
+String VO_POSTFIX = "";
+String VO_PREFIX = "Tst";
+String DAO_POSTFIX = "Dao";
+String ACTION_CPOSTFIX = "Action";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX.toLowerCase()+"_", "");
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(VO_PREFIX, "");
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);

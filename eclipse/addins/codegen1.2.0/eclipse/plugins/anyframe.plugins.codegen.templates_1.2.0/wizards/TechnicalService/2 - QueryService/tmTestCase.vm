@@ -1,0 +1,90 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.collections.map.ListOrderedMap;
+
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.query.IQueryService;
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-query.xml", 
+			"classpath*:${beanPath_dirname}/applicationContext-datasource.xml", 
+			"classpath*:**/applicationContext-common.xml"};
+	}
+
+	public void onSetUp() throws Exception {
+		DataSource dataSource = (DataSource) applicationContext
+				.getBean("${g1_dataSource}");
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				try {
+					statement.executeUpdate("DROP TABLE TAB_STMR_TEST");
+				}
+				catch (SQLException e) {
+					// The table was probably just not there. Ignore this.
+				}
+
+				statement.executeUpdate("CREATE TABLE TAB_STMR_TEST ( "
+						+ "id varchar(16) NOT NULL, "
+						+ "val varchar(30) NOT NULL, "
+						+ "PRIMARY KEY (id))");
+				statement.executeUpdate("INSERT INTO TAB_STMR_TEST VALUES('foo','1')");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.err.println("Unable to initialize database for test." + e);
+			fail("Unable to initialize database for test. " + e);
+		}
+	}
+	
+	public void onTearDown() throws Exception {
+		DataSource dataSource = (DataSource) applicationContext
+				.getBean("${g1_dataSource}");
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				statement.executeUpdate("DROP TABLE TAB_STMR_TEST");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("Unable to cleanup database after test." + e);
+		}
+	}
+	
+	public void testFindWithPageInfo() throws Exception {
+		IQueryService queryService = (IQueryService) applicationContext
+			.getBean("queryService");
+
+		Collection query = queryService.findBySQL(
+				"select val from TAB_STMR_TEST where id like ?",
+				new String[] { "VARCHAR" }, new String[] { "%foo%" });
+		Iterator queryItr = query.iterator();
+		ListOrderedMap map = (ListOrderedMap) queryItr.next();
+		assertEquals("1", (String) map.get("val"));
+	}
+}

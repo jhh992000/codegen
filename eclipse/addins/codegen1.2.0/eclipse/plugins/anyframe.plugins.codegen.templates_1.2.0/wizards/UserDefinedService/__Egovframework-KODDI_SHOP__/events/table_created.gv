@@ -1,0 +1,26 @@
+String DEFAULT_BASE_PATH = "/shop";
+String DOMAIN_PREFIX1 = "";
+String DOMAIN_PREFIX2 = "";
+String writerName = "jeong hoon hee";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String table_prefix = tableName.substring(0, 1);
+if (table_prefix.equalsIgnoreCase("C") && tableName.toLowerCase().substring(0, 2).equalsIgnoreCase("c_")) {
+	tableName = tableName.substring(2, tableName.length());
+}
+
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(DOMAIN_PREFIX1.toLowerCase()+"_", "");
+jspFolderName = tableName.replaceAll(DOMAIN_PREFIX2.toLowerCase()+"_", "");
+
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(DOMAIN_PREFIX1, "");
+beanName = beanName.replaceAll(DOMAIN_PREFIX2, "");
+
+String beanNameUncap = beanName.substring(0, 1).toLowerCase() + beanName.substring(1, beanName.length());
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+components.get("moduleName").setUIValue(beanName.toLowerCase());

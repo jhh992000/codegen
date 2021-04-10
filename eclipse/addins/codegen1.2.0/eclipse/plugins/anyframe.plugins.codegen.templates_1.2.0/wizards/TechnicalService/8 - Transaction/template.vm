@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="$id"
+#if($propertyName == "DataSource")	
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="$refId" />
+#end
+#if($propertyName == "SessionFactory")	
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="$refId" />
+#end
+#if($propertyName == "UserTransaction")			
+		class="org.springframework.transaction.jta.JTATransactionManager">
+		<property name="transactionManagerName"	value="$refId" />
+		<property name="jndiEnvironment">
+			<props>
+				<prop key="java.naming.factory.initial">$factory</prop>
+				<prop key="java.naming.provider.url">$url</prop>			
+			</props>
+		</property>
+#end
+	</bean>
+</beans>

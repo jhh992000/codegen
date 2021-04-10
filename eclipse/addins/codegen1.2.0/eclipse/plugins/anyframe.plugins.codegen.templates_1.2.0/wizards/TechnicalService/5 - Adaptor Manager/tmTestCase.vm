@@ -1,0 +1,27 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.adaptors.IAdaptorManager;
+
+/**
+ * To run the TestCase, jsofa.orchestrator.ProcessContext is required.
+ */
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-adaptormanager.xml", 
+			"classpath*:**/applicationContext-common.xml"};
+	}
+
+	public void testGetAdaptor() throws Exception {
+		IAdaptorManager adaptorManager = (IAdaptorManager) applicationContext
+			.getBean("${BeanName}");
+		Object adaptor = adaptorManager.getAdaptor("${ref_id}");
+		assertTrue(adaptor.getClass().getName().equals("${refclass}"));
+	}
+}

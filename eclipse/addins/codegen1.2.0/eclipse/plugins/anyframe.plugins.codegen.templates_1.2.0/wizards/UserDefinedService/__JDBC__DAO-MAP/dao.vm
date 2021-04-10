@@ -1,0 +1,492 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+
+public class Dao {
+
+	public static void main(String[] args) {
+	}
+	
+	/**
+	 * dbcp 커넥션얻기
+	 * @param jndiName
+	 * @return
+	 * @throws NamingException
+	 * @throws SQLException
+	 */
+	public Connection getConnection(String jndiName) throws NamingException, SQLException {
+
+		Connection conn = null;
+
+		try {
+			Context ctx = new InitialContext();
+
+			if (ctx != null) {
+				
+				String naming_factory_url_pkgs = (String) ctx.getEnvironment().get("java.naming.factory.url.pkgs");
+				if (naming_factory_url_pkgs == null || naming_factory_url_pkgs.indexOf("jeus.jndi.jns.url") == -1) {
+					jndiName = "java:comp/env/" + jndiName;
+				}
+				DataSource ds = (DataSource) ctx.lookup(jndiName);
+
+				if (ds != null) {
+					conn = ds.getConnection();
+				}
+			}
+
+		} catch (NamingException e) {
+			e.printStackTrace();
+			throw e;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return conn;
+	}
+	
+	/**
+	 * 갯수조회
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getCount(Connection conn) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	SELECT		");
+			query.append("		COUNT(1) AS CNT		");
+			query.append("	FROM		");
+			query.append("		$tableName		");
+			
+			pstmt = conn.prepareStatement(query.toString());
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				result = rs.getInt(1);
+			}			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (rs != null) { rs.close(); } } catch (Exception e2) {}
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 리스트조회
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Map<String, Object>> getList(Connection conn) throws SQLException {
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	SELECT		");
+#set($i = 1)
+#foreach($column in $columns)
+			query.append("		$column.name#if( $i < $columns.size() ),#end#set($i = $i + 1)		");
+#end
+			query.append("	FROM		");
+			query.append("		$tableName		");
+			
+			pstmt = conn.prepareStatement(query.toString());
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+				Long $column.fieldName = rs.getLong("$column.name");
+#else
+				String $column.fieldName = rs.getString("$column.name");
+#end
+#end
+
+#foreach($column in $columns)
+				dataMap.put("$column.name", $column.fieldName);
+#end
+				
+				dataList.add(dataMap);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (rs != null) { rs.close(); } } catch (Exception e2) {}
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return dataList;
+	}
+	
+	/**
+	 * 리스트조회
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Map<String, Object>> getPagedList(Connection conn, int startIdx, int endIdx) throws SQLException {
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	SELECT		");
+			query.append("		t2.*		");
+			query.append("	FROM (		");
+			query.append("		SELECT t1.*, ROWNUM as RNUM from (		");
+			query.append("			SELECT		");
+			query.append("				COUNT(1) OVER() AS TOTAL_COUNT,		");
+			query.append("				#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )		");
+			query.append("				#end#set($i = $i + 1)#end		");
+			query.append("			FROM		");
+			query.append("				$tableName		");
+			query.append("			#if($primaryKeys.size() > 0)ORDER BY #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end		");
+			query.append("		) t1		");
+			query.append("		WHERE ROWNUM <=  ? /* endIdx */		");
+			query.append("	) t2		");
+			query.append("	WHERE RNUM > ? /* startIdx */		");
+
+			int parameterIndex = 1;
+			pstmt = conn.prepareStatement(query.toString());
+			pstmt.setInt(parameterIndex++, endIdx);
+			pstmt.setInt(parameterIndex++, startIdx);
+			
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+				Long $column.fieldName = rs.getLong("$column.name");
+#else
+				String $column.fieldName = rs.getString("$column.name");
+#end
+#end
+
+#foreach($column in $columns)
+				dataMap.put("$column.name", $column.fieldName);
+#end
+				
+				dataList.add(dataMap);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (rs != null) { rs.close(); } } catch (Exception e2) {}
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return dataList;
+	}
+	
+	/**
+	 * 데이터1개조회
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public Map<String, Object> get${domain_cap}(Connection conn, #if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")long $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws SQLException {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	SELECT		");
+			query.append("		#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )		");
+			query.append("		#end#set($i = $i + 1)#end		");
+			query.append("	FROM		");
+			query.append("		$tableName		");
+			query.append("	WHERE		");
+#if($primaryKeys.size() > 0)#set($i = 1)#foreach($primaryKey in $primaryKeys)
+			query.append("		$primaryKey.name = ?		");
+#if( $i < $primaryKeys.size() )
+			query.append("	AND	");
+#end#set($i = $i + 1)#end#end
+			
+			int parameterIndex = 1;
+			pstmt = conn.prepareStatement(query.toString());
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			pstmt.setLong(parameterIndex++, $column.fieldName);
+#else
+			pstmt.setString(parameterIndex++, $column.fieldName);
+#end
+#end
+#end
+			
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+				Long $column.fieldName = rs.getLong("$column.name");
+#else
+				String $column.fieldName = rs.getString("$column.name");
+#end
+#end
+
+#foreach($column in $columns)
+				dataMap.put("$column.name", $column.fieldName);
+#end
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (rs != null) { rs.close(); } } catch (Exception e2) {}
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return dataMap;
+	}
+	
+	/**
+	 * 데이터등록
+	 * @param conn
+	 * @param dataMap
+	 * @return
+	 * @throws SQLException
+	 */
+	public int insert(Connection conn, Map<String, Object> dataMap) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	INSERT INTO $tableName (		");
+#set($i = 1)
+#foreach($column in $columns)
+			query.append("		$column.name#if( $i < $columns.size() ),#end#set($i = $i + 1)		");
+#end
+			query.append("	)		");
+			query.append("	VALUES (		");
+#set($i = 1)
+#foreach($column in $columns)
+			query.append("		?#if( $i < $columns.size() ),#end#set($i = $i + 1)		/* $column.name */		");
+#end
+			query.append("	)		");
+
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			Long $column.fieldName = (Long) dataMap.get("$column.name");
+#else
+			String $column.fieldName = (String) dataMap.get("$column.name");
+#end
+#end
+
+			int parameterIndex = 1;
+			pstmt = conn.prepareStatement(query.toString());
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			pstmt.setLong(parameterIndex++, $column.fieldName);
+#else
+			pstmt.setString(parameterIndex++, $column.fieldName);
+#end
+#end
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 데이터수정
+	 * @param conn
+	 * @param dataMap
+	 * @return
+	 * @throws SQLException
+	 */
+	public int update(Connection conn, Map<String, Object> dataMap) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	UPDATE		");
+			query.append("		$tableName		");
+			query.append("	SET		");
+#set($i = 1)
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+			query.append("		$column.name = ?#if( $i < ($columns.size()-$primaryKeys.size()) ),#end		");
+#set($i = $i + 1)
+#end
+#end
+			query.append("	WHERE		");
+#if($primaryKeys.size() > 0)#set($i = 1)#foreach($primaryKey in $primaryKeys)
+			query.append("		$primaryKey.name = ?		");
+#if( $i < $primaryKeys.size() )
+			query.append("	AND	");
+#end#set($i = $i + 1)#end#end
+
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			Long $column.fieldName = (Long) dataMap.get("$column.name");
+#else
+			String $column.fieldName = (String) dataMap.get("$column.name");
+#end
+#end
+
+			int parameterIndex = 1;
+			pstmt = conn.prepareStatement(query.toString());
+			
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			pstmt.setLong(parameterIndex++, $column.fieldName);
+#else
+			pstmt.setString(parameterIndex++, $column.fieldName);
+#end
+#end
+#end			
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			pstmt.setLong(parameterIndex++, $column.fieldName);
+#else
+			pstmt.setString(parameterIndex++, $column.fieldName);
+#end
+#end
+#end
+
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 데이터삭제
+	 * @param conn
+	 * @param testSeq
+	 * @return
+	 * @throws SQLException
+	 */
+	public int delete(Connection conn, #if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")Long $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		
+		try {
+			StringBuffer query = new StringBuffer();
+			query.append("	DELETE		");
+			query.append("		$tableName		");
+			query.append("	WHERE		");
+#if($primaryKeys.size() > 0)#set($i = 1)#foreach($primaryKey in $primaryKeys)
+			query.append("		$primaryKey.name = ?		");
+#if( $i < $primaryKeys.size() )
+			query.append("	AND	");
+#end#set($i = $i + 1)#end#end
+
+			int parameterIndex = 1;
+			pstmt = conn.prepareStatement(query.toString());
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			pstmt.setLong(parameterIndex++, $column.fieldName);
+#else
+			pstmt.setString(parameterIndex++, $column.fieldName);
+#end
+#end
+#end
+
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try { if (pstmt != null) { pstmt.close(); } } catch (Exception e2) {}
+			try { if (conn != null) { conn.close(); } } catch (Exception e2) {}
+		}
+		
+		return result;
+	}
+
+}

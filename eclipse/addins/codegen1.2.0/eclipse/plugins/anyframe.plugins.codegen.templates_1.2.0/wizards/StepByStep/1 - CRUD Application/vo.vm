@@ -1,0 +1,79 @@
+#set($columns = $model.fields)
+#if ($voPackage_package != "")
+package $voPackage_package;
+#end
+
+/*
+ * Copyright(c) 2007 Samsung SDS Co., Ltd. All rights reserved.
+ *
+ * VO Class :${voClass}
+ */
+
+import java.io.Serializable;
+#foreach($column in $columns)
+#if ($column.javaType == "BigDecimal")
+import java.math.BigDecimal;
+#end
+#if ($column.javaType == "Timestamp")
+import java.sql.Timestamp;
+#end
+#if ($column.javaType == "Date")
+import java.sql.Date;
+#end
+#end
+
+public class $voClass implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	private int pageIndex = 1;
+    
+    private int pageUnit = 10;
+    
+    private int pageSize = 10;
+    
+#foreach($column in $columns)
+#if ($column.javaType == "Blob" || $column.javaType == "Clob")
+  private String $column.fieldName;
+#else
+  private $column.javaType $column.fieldName;
+#end
+
+#end
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+	public int getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	public int getPageUnit() {
+		return pageUnit;
+	}
+	public void setPageUnit(int pageUnit) {
+		this.pageUnit = pageUnit;
+	}
+#foreach($column in $columns)
+#if ($column.javaType == "Blob" || $column.javaType == "Clob")
+	public String get${column.javaName}() {
+		return $column.fieldName;
+	}
+	public void set${column.javaName}(String $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#else
+	public $column.javaType get${column.javaName}() {
+		return $column.fieldName;
+	}
+	public void set${column.javaName}($column.javaType $column.fieldName) {
+		this.$column.fieldName = $column.fieldName;
+	}
+#end
+
+#end
+}

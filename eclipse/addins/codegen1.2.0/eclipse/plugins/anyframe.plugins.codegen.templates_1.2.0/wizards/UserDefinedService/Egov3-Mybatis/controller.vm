@@ -1,0 +1,206 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.util.List;
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.go.carmileage.common.aspect.MenuLoad;
+import kr.go.carmileage.common.web.FlashMessage;
+import kr.go.carmileage.common.web.RedirectUrlMaker;
+import kr.go.carmileage.home.member.service.MemberVo;
+import kr.go.carmileage.common.dao.Criteria;
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 :
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 ${companyName} Co. Ltd. All rights reserved.
+ */
+@Controller
+public class ${controllerClass} {
+
+	private static Logger logger = Logger.getLogger(${controllerClass}.class);
+
+	@Resource(name = "${serviceClass_uncap}")
+	private ${serviceClass} ${serviceClass_uncap};
+	@Resource
+	private MessageSourceAccessor messageSourceAccessor;
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}List.do" })
+	@MenuLoad
+	public String ${moduleName}List(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+
+		Integer totalCount = ${serviceClass_uncap}.totalCount(cri);
+		cri.setTotalCount(totalCount);
+
+		List<${domain_cap}> list = ${serviceClass_uncap}.pagedList(cri);
+
+		model.addAttribute("list", list);
+		model.addAttribute("cri", cri);
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+
+		return "${requestPath}/${moduleName}List";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param site
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}Read.do" })
+	@MenuLoad
+	public String ${moduleName}Read(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+
+		${domain_uncap} = ${serviceClass_uncap}.read(${domain_uncap});
+
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${moduleName}Read";
+	}
+
+	/**
+	 * 생성화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}CreateForm.do" })
+	@MenuLoad
+	public String ${moduleName}CreateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+
+		model.addAttribute("editMode", "${moduleName}Create");
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${moduleName}Form";
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param cri
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}UpdateForm.do" })
+	@MenuLoad
+	public String ${moduleName}UpdateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+
+		${domain_uncap} = ${serviceClass_uncap}.read(${domain_uncap});
+
+		model.addAttribute("editMode", "${moduleName}Update");
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+		model.addAttribute("cri", cri);
+		return "${requestPath}/${moduleName}Form";
+	}
+
+	/**
+	 * 생성
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param result
+	 * @param cri
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}Create.do" })
+	@MenuLoad
+	public String ${moduleName}Create(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, MemberVo sessionMember, RedirectAttributes redirectAttributes) throws Exception {
+
+		${serviceClass_uncap}.create(${domain_uncap});
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.create.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri, true).getRedirectUrl();
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param result
+	 * @param cri
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}Update.do" })
+	@MenuLoad
+	public String ${moduleName}Update(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, MemberVo sessionMember, RedirectAttributes redirectAttributes) throws Exception {
+
+		${serviceClass_uncap}.update(${domain_uncap});
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.update.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri).getRedirectUrl();
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param cri
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping({ "${requestPath}/${moduleName}Delete.do" })
+	@MenuLoad
+	public String ${moduleName}Delete(Model model, Criteria cri, ${domain_cap} ${domain_uncap}, RedirectAttributes redirectAttributes) throws Exception {
+
+		${serviceClass_uncap}.delete(${domain_uncap});
+
+		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.delete.success")));
+
+		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri).getRedirectUrl();
+	}
+
+}

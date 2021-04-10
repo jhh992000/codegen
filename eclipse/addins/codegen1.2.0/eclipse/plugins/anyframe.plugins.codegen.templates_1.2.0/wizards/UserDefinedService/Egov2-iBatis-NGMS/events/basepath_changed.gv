@@ -1,0 +1,7 @@
+String basePath = components.get("basePath").getUIValue();
+
+components.get("bizCode1").setUIValue("og");
+components.get("bizCode2").setUIValue("qt");
+components.get("bizCode3").setUIValue("rct");
+components.get("bizNo").setUIValue("001");
+components.get("uiViewType").setUIValue("V");

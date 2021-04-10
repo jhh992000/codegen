@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<textfield name="writerName" label="*작성자이름" required="true" />
+			</group>
+			<group>
+				<textfield name="writeDate" label="*작성일자" required="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Persistence Layer</description>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+			<group>
+				<container name="sqlmapPath" label="*Path" type="folder" required="true" />
+				<textfield name="sqlmapFile" label="*Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Presentation Layer</description>
+			<group>
+				<container name="actionsPackage" label="*Action Package" type="srcPackage" required="true" />
+				<textfield name="actionClass" label="*Action Class Name" required="true" />
+			</group>
+			<group>
+				<container name="tilesPath" label="*타일즈 경로" type="folder" required="true" />
+				<textfield name="tilesFileName" label="*타일즈 파일명" required="true" />
+				<container name="strutsConfigPath" label="*스트럿츠 경로" type="folder" required="true" />
+				<textfield name="strutsConfigFileName" label="*타일즈 파일명" required="true" />
+			</group>
+			<group>
+				<container name="jspPath" label="*jsp Path" type="folder" required="true" onChange="/events/jsppath_changed.gv" />
+				<textfield name="requestPath" label="*request Path" required="true" />
+				<textfield name="listJSP" label="* List 파일명" required="true" extensions="jsp" />
+				<textfield name="formJSP" label="* Form 파일명" required="true" extensions="jsp" />
+				<textfield name="viewJSP" label="* View 파일명" required="true" extensions="jsp" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="sqlmapFileOut" expression="$sqlmapFile" velocity="sqlmap.vm" container="sqlmapPath"></template>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+			<template component="actionOut" expression="$actionClass" velocity="action.vm" extension="java" container="actionsPackage"></template>
+			<template component="listjspOut" expression="$listJSP" velocity="list_jsp.vm" container="jspPath"></template>
+			<template component="viewjspOut" expression="$viewJSP" velocity="view_jsp.vm" container="jspPath"></template>
+			<template component="formjspOut" expression="$formJSP" velocity="form_jsp.vm" container="jspPath"></template>
+			<template component="tilesOut" expression="$tilesFileName" velocity="tiles.vm" container="tilesPath"></template>
+			<template component="strutsConfigOut" expression="$strutsConfigFileName" velocity="strutsConfig.vm" container="strutsConfigPath"></template>
+		</output>
+	</wizard>
+</CodeGen>

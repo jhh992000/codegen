@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Cache</title>
+
+		<component-page>
+
+			<description>Cache Configuration</description>
+
+			<group>
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="beanName" label="*Bean Id" required="true" value="cacheService" />
+				<combo name="storage" label="Storage" value="Memory" listener="true">
+					<elements>
+						<option>Memory</option>
+						<option>Disk</option>
+						<option>Disk when the Overflow occurs</option>
+					</elements>
+				</combo>
+				<textfield name="capacity" label="Capacity" check="number" required="false" />
+				<container name="path" label="*Path" type="folder" external="false" required="true"
+					radio="Disk,Disk when the Overflow occurs" />
+			</group>
+
+		</component-page>
+
+		<component-page>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="CacheServiceTestCase" />
+			</group>
+		</component-page>
+		<output>
+			<template component="o1" expression="applicationContext-cache.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="o2" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

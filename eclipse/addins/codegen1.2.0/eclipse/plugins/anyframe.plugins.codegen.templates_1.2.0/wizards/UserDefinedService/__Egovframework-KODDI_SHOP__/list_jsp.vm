@@ -1,0 +1,156 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+#set($detailBizCode_cap = "$detailBizCode.substring(0,1).toUpperCase()$detailBizCode.substring(1)")
+#set($detailBizCode_uncap = "$detailBizCode.substring(0,1).toLowerCase()$detailBizCode.substring(1)VO")
+#set($detailBizCode_uncap_lower = "$detailBizCode.toLowerCase()")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../cm/include/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${detailBizCode_uncap}.modelName" /> <spring:message code="common.list" /></title>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		jQuery.showConfirm("<spring:message code="common.question.delete" />", {
+			yesCallback: function() {
+				 window.location = deleteUrl;
+			},
+			noCallback: function() {
+				return;
+			}
+		});
+		return false;
+	});
+});
+//]]>
+</script>
+</head>
+<body>
+
+<form:form id="searchForm" name="searchForm" method="post" commandName="cri" action="${ pageContext.request.contextPath }${requestPath}/${detailBizCode_uncap_lower}/list.do">
+	<fieldset>
+		<input type="hidden" name="menuNo" value="${ currentMenu.menuNo }" />
+		<input type="hidden" id="maxPageItems" name="maxPageItems" value="${ cri.maxPageItems }" />
+
+		<div class="searchArea">
+			<div class="search_first">
+				<label for="searchKey" class="skip"><spring:message code="search.searchKey" /></label>
+				<form:select path="searchKey" id="searchKey" titleMessageKey="search.searchKey">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+					<form:option value="$column.fieldName"><spring:message code="${detailBizCode_uncap}.$column.fieldName" /></form:option>
+#end#end
+				</form:select>
+				<label for="searchValue" class="skip"><spring:message code="search.searchValue" /></label>
+				<form:input path="searchValue" id="searchValue" cssClass="w200" titleMessageKey="search.searchValue" />
+				<button type="submit" class="btn30 btnNavy mgl5"><spring:message code="common.search" /></button>
+			</div>
+		</div>
+	</fieldset>
+</form:form>
+
+<pg:pager
+	url="${requestPath}/${detailBizCode_uncap_lower}/list.do"
+	items="${ cri.totalCount }"
+	maxPageItems="${ cri.maxPageItems }"
+	maxIndexPages="${ cri.maxIndexPages }"
+	isOffset="${ true }"
+	index="center"
+	export="offset,currentPageNumber=pageNumber"
+	scope="request">
+	<pg:param name="maxPageItems" value="${ cri.maxPageItems }" />
+	<pg:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+	<pg:param name="searchKey" value="${ cri.searchKey }" />
+	<pg:param name="searchValue" value="${ cri.searchValue }" />
+	<pg:param name="menuNo" value="${ cri.menuNo }" />
+
+	<div class="boardListInfo">
+		<pg:page export="firstItem, lastItem">
+			<span class="total"><spring:message code="common.list.totalCount" arguments="<em>${ cri.totalCount }</em>" /></span>
+			<span class="page"><spring:message code="common.list.scope" /> ${ firstItem }-${ lastItem }</span>
+		</pg:page>
+	</div>
+
+	<table class="boardList" summary="">
+		<colgroup>
+			<col style="width:5%;" />
+#foreach($col in $cols)
+			<col style="" />
+#end
+			<col style="width:10%;" />
+		</colgroup>
+		<thead>
+		<tr>
+			<th scope="col"><spring:message code="common.sortNum" /></th>
+#foreach($col in $cols)
+			<th scope="col"><spring:message code="${detailBizCode_uncap}.${col.fieldName}" /></th>
+#end
+			<th scope="col"><spring:message code="common.manage" /></th>
+		</tr>
+		</thead>
+
+		<tbody>
+		<c:forEach var="item" items="${ list }" varStatus="status">
+			<tr>
+				<td>${ cri.totalCount-((currentPageNumber-1)*cri.maxPageItems)-(status.index) }</td>
+#foreach($col in $cols)
+#if ($col.type == "DATE")
+				<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#else
+				<td>${ item.${col.fieldName} }</td>
+#end
+#end
+				<td>
+					<a href="${ pageContext.request.contextPath }${requestPath}/${detailBizCode_uncap_lower}/<spring:url value="updateForm.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton updateButton"><span class="ui-icon-gear"><spring:message code="common.update" /></span></a>
+					<a href="${ pageContext.request.contextPath }${requestPath}/${detailBizCode_uncap_lower}/<spring:url value="delete.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton deleteButton"><span class="ui-icon-trash"><spring:message code="common.delete" /></span></a>
+				</td>
+			</tr>
+		</c:forEach>
+		<c:if test="${ empty list }">
+			<tr>
+				<td colspan="${colspan}">
+					<c:choose>
+						<c:when test="${ empty cri.searchValue }">
+							<spring:message code="common.listEmpty" />
+						</c:when>
+						<c:otherwise>
+							<spring:message code="search.not_match_data" arguments="${ cri.searchValue }" />
+						</c:otherwise>
+					</c:choose>
+				</td>
+			</tr>
+		</c:if>
+		</tbody>
+	</table>
+
+	<div class="boardNavigation">
+		<div class="pagination">
+			<pg:index>
+				<c:import url="../../cm/include/pager.jsp">
+					<c:param name="contextPath" value="" />
+					<c:param name="totalItemCount" value="${ cri.totalCount }" />
+					<c:param name="pagerOffset" value="${ cri.pagerOffset }" />
+					<c:param name="maxPageItems" value="${ cri.maxPageItems }" />
+					<c:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+				</c:import>
+			</pg:index>
+		</div>
+		<div class="buttonRight">
+			<a href="${ pageContext.request.contextPath }${requestPath}/${detailBizCode_uncap_lower}/<spring:url value="createForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="btn40 btnBlue mgl10"><span><spring:message code="common.create" /></span></a>
+		</div>
+	</div>
+</pg:pager>
+
+</body>
+</html>

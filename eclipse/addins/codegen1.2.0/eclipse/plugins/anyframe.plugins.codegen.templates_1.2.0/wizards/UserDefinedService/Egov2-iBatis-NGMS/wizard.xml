@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv" />
+				<textfield name="writerName" label="*작성자이름" required="true" />
+				<textfield name="writeDate" label="*작성일자" required="true" />
+			</group>
+			<group>
+				<textfield name="bizName" label="*업무명     ex) 게시물관리" required="false" onChange="/events/input_changed.gv" />
+			</group>
+			<group>
+				<textfield name="bizCode1" label="*메인업무코드      ex) og " required="true" onChange="/events/input_changed.gv" />
+				<textfield name="bizCode2" label="*주요업무코드      ex) qt " required="true" onChange="/events/input_changed.gv" />
+				<textfield name="bizCode3" label="*세부업무코드     ex) rct  " required="true" onChange="/events/input_changed.gv" />
+				<textfield name="bizNo" label="*업무구분번호     ex) 010  " required="true" onChange="/events/input_changed.gv" />
+				<combo name="uiViewType" label="*페이지구분코드     ex) V  " edit="true" required="true" value="V" onChange="/events/input_changed.gv">
+					<elements>
+						<option>V</option>
+						<option>P</option>
+						<option>S</option>
+					</elements>
+				</combo>
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>상세설정</description>
+			<group>
+				<textfield name="moduleName" label="* 모듈명" required="true" />
+			</group>
+			<group>
+				<container name="uiPath" label="*ui Path" type="folder" required="true" />
+				<textfield name="uiXmlFile" label="*ui XML Filename" required="true" extensions="xml" />
+			</group>
+			<group>
+				<container name="domainPackage" label="*Vo Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Vo ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+			<group>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+			<group>
+				<container name="serviceImplPackage" label="*Service Impl Package" type="srcPackage" required="true" />
+				<textfield name="serviceImplClass" label="*Service Impl Class Name" required="true" />
+			</group>
+			<group>
+				<container name="ibatisPath" label="*Path" type="folder" required="true" />
+				<textfield name="daoNameSpace" label="*DAO NameSpace" required="true" />
+				<textfield name="statementNamespace" label="*Statement NameSpace" required="true" />
+				<textfield name="ibatisFile" label="SqlMap Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="uiXmlFileOut" expression="$uiXmlFile" velocity="ui.vm" container="uiPath"></template>
+			<!--
+			<template component="uiXmlFileOut" expression="$uiXmlFile" velocity="ui.vm" container="uiPath"></template>
+			<template component="ibatisFileOut" expression="$ibatisFile" velocity="ibatis.vm" container="ibatisPath"></template>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
+			<template component="serviceImplOut" expression="$serviceImplClass" velocity="service_impl.vm" extension="java" container="serviceImplPackage"></template>
+			 -->
+		</output>
+	</wizard>
+</CodeGen>

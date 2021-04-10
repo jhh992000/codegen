@@ -1,0 +1,161 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<title>qarpt <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose> - eGovFrame Portal 온라인 지원 포탈</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="<c:url value='/css/egovframework/adt/com.css' />" rel="stylesheet" type="text/css" />
+<c:import url="/WEB-INF/jsp/egovframework/EgovCss.jsp" />
+<script type="text/javaScript" language="javascript" defer="defer">
+//<![CDATA[
+//목록
+function fnList() {
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}List.do";
+	document.searchForm.submit();
+}
+//수정
+function fnModify() {
+	frm = document.searchForm;
+	frm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}ModifyForm.do";
+	frm.submit();
+}
+//삭제
+function fnRemove() {
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}Remove.do";
+	document.searchForm.submit();
+}
+//]]>
+</script>
+</head>
+<body>
+<form:form commandName="search${domain_cap}" name="searchForm">
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName"/>
+#end
+	<form:hidden path="pageIndex" />
+	<form:hidden path="searchCondition" />
+	<form:hidden path="searchKeyword" />
+	<form:hidden path="adminMenu" />
+</form:form>
+
+<div id="sub_wrapper">
+	<div id="inc_header">
+		<!-- header -->
+		<c:import url="/WEB-INF/jsp/egovframework/headerAdmin.jsp" />
+	</div>
+	<!-- 메인탑 컨텐츠 시작 -->
+	<div id="inc_body">
+		<div id="left_body">
+			<!-- left -->
+			<c:import url="/WEB-INF/jsp/egovframework/admin_left_menu.jsp" />
+		</div>
+		<div id="center_body">
+			<!-- body start -->
+
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td align="center" valign="top">
+						<table width="90%" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="10" height="28" align="left"><img src="/images/egovframework/adt/bullet_bluebar.gif" width="4" height="11" /></td>
+								<td align="left"><span class="right_board_title_name_black">${domainName_uncap} 상세조회</span></td>
+							</tr>
+						</table>
+
+						<table class="writeTable" border="0" cellspacing="0" cellpadding="0">
+							<colgroup>
+								<col style="width:20%;" />
+								<col style="width:80%;" />
+							</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+							<!--
+							<tr>
+								<th class="blt_ess">${col.fieldName}</th>
+								<td>
+									${ data${domain_cap}.${col.fieldName} }
+								</td>
+							</tr>
+							-->
+#else
+#if ($col.nullable == false)
+							<tr>
+								<th class="blt_ess">${col.fieldName}</th>
+								<td>
+#if ($col.type == "DATE")
+									<fmt:formatDate value="${ data${domain_cap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+									${ data${domain_cap}.${col.fieldName} }
+#end
+								</td>
+							</tr>
+#else
+							<tr>
+							<th class="blt_ness">${col.fieldName}</th>
+								<td>
+#if ($col.type == "DATE")
+									<fmt:formatDate value="${ data${domain_cap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+									${ data${domain_cap}.${col.fieldName} }
+#end
+								</td>
+							</tr>
+#end
+#end
+#end
+						</table>
+
+							<div align="right">
+								<div class="btn_area">
+									<a href="javascript:fnModify();" class="button">수정</a>
+									<a href="javascript:fnRemove();" class="button">삭제</a>
+									<a href="javascript:fnList();" class="button">목록</a>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+
+			<!-- body end -->
+		</div>
+	</div>
+	<div id="inc_footer">
+		<c:import url="/WEB-INF/jsp/egovframework/footer.jsp" />
+	</div>
+</div>
+
+</body>
+</html>

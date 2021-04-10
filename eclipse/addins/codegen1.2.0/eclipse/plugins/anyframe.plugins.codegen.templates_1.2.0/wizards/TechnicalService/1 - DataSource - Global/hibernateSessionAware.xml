@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Add DataSource - Global</title>
+
+		<component-page>
+
+			<description>Global Data Source Configuration</description>
+
+			<group>
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="BeanId" label="*Bean Id" value="dataSource" required="true" />
+				<textfield name="JNDIName" label="*JNDI Name" required="true" />
+			</group>
+			<group checkbox="ExternalJNDI">
+				<checkbox name="ExternalJNDI" label="External JNDI" />
+				<combo name="FactoryClass" label="Factory Class" edit="true" onChange="/scripts/test.gv">
+					<elements>
+						<option>weblogic.jndi.WLInitialContextFactory</option>
+						<option>jeus.jndi.JEUSContextFactory</option>
+						<option>com.evermind.server.rmi.RMIInitialContextFactory</option><!-- 4.0 -->
+						<option>com.ibm.websphere.naming.WsnInitialContextFactory</option><!-- 3.0.x, 3.5.x -->
+					</elements>
+				</combo>
+				<combo name="JNDIURL" label="JNDI URL" edit="true">
+					<elements>
+						<option>t3://localhost:7001</option>
+						<option>localhost</option>
+						<option>ormi://localhost:23791</option><!-- 4.0 -->
+						<option>iiop://localhost:2809</option><!-- 3.0.x, 3.5.x -->
+					</elements>
+				</combo>
+				<textfield name="User" label="User" required="false" />
+				<textfield name="Password" label="Password" required="false" />
+			</group>
+
+		</component-page>
+
+
+		<component-page>
+			<description>Global Data Source Configuration.</description>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="TestPackage" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="DataSourceGlobalTestCase" />
+			</group>
+		</component-page>
+
+
+		<output>
+			<template component="." expression="applicationContext-datasource-jta.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="${Class}" expression="${Class}" velocity="tmTestCase.vm" extension="java"
+				container="TestPackage">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+		</output>
+	</wizard>
+</CodeGen>

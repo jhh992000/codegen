@@ -1,0 +1,51 @@
+#set($primaryKeys = $model.primaryKeys)
+#set($columns = $model.fields)
+#set($tableName = $model.name)
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//TITAN//DTD QUERYSERVICE//EN"
+"http://www.sds.samsung.co.kr/athena/dtds/anyframe_core_query_mapping.dtd">
+<queryservice>
+	<queries>
+		<query id="select${beanName_cap}" isDynamic="true">
+			<statement>
+				SELECT
+				#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+				
+				#end#set($i = $i + 1)#end 
+				
+				FROM $tableName
+				#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name=:${voClass_uncap}.$primaryKey.fieldName#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+				
+			</statement>
+		</query>	
+			<query id="insert${beanName_cap}" isDynamic="true">
+			<statement>
+				INSERT INTO $tableName 
+				( #set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+				
+				#end#set($i = $i + 1)#end )
+				VALUES ( #set($i = 1)#foreach($column in $columns):${voClass_uncap}.$column.fieldName#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+				
+				#end#set($i = $i + 1)#end  )
+			</statement>
+		</query>
+		<query id="update${beanName_cap}" isDynamic="true">
+			<statement>
+				UPDATE $tableName 
+				SET #set($i = 1)#foreach( $column in $columns)#if($column.isPK()==false)$column.name=:${voClass_uncap}.$column.fieldName#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+				
+				#end#set($i = $i + 1)#end#end
+				
+				#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name=:${voClass_uncap}.$primaryKey.fieldName#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+				
+			</statement>
+		</query>
+		<query id="delete${beanName_cap}" isDynamic="true">
+			<statement>
+				DELETE FROM $tableName 
+				#if($primaryKeys.size() > 0)WHERE #set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name=:${voClass_uncap}.$primaryKey.fieldName#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+				
+			</statement>
+		</query>
+	</queries>
+</queryservice>

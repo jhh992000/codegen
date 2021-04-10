@@ -1,0 +1,106 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${servicePackage_package} != "")
+package ${servicePackage_package};
+#end
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.daeyoon.cms.dao.common.Criteria;
+
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * 프로그램 파일명 : ${serviceClass}.java
+ *
+ * 프로그램 설명 :
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Service
+public class ${serviceClass} {
+	private static Logger logger = Logger.getLogger(${serviceClass}.class);
+
+	@Resource
+	private ${daoClass} ${daoClass_uncap};
+
+	/* COMMON SERVICE */
+	public List<${domain_cap}> pagedList(Criteria criteria) throws Exception {
+		Integer totalCount = ${daoClass_uncap}.totalCount(criteria);
+		criteria.setTotalCount(totalCount);
+		List<${domain_cap}> resultList = ${daoClass_uncap}.pagedList(criteria);
+		return resultList;
+	}
+
+	public ${domain_cap} create(${domain_cap} ${domain_uncap}) throws Exception {
+		${daoClass_uncap}.create(${domain_uncap});
+		return ${domain_uncap};
+	}
+
+	public ${domain_cap} readDefault(${domain_cap} ${domain_uncap}) throws Exception {
+		${domain_cap} result = ${daoClass_uncap}.readDefault(${domain_uncap});
+		return result;
+	}
+
+	public ${domain_cap} read(${domain_cap} ${domain_uncap}) throws Exception {
+		${domain_cap} result = ${daoClass_uncap}.read(${domain_uncap});
+		return result;
+	}
+
+	public Integer update(${domain_cap} ${domain_uncap}) throws Exception {
+		Integer updateCount = ${daoClass_uncap}.update(${domain_uncap});
+		return updateCount;
+	}
+
+	public Integer delete(${domain_cap} ${domain_uncap}) throws Exception {
+		Integer deleteCount = ${daoClass_uncap}.delete(${domain_uncap});
+		return deleteCount;
+	}
+
+	public ${domainClass} readDefault(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")Integer $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws Exception {
+		${domainClass} ${domain_uncap} = new ${domainClass}();
+#foreach($primaryKey in $primaryKeys)
+		${domain_uncap}.set$primaryKey.fieldName.substring(0,1).toUpperCase()$primaryKey.fieldName.substring(1)(${primaryKey.fieldName});
+#end
+		return ${daoClass_uncap}.readDefault(${domain_uncap});
+	}
+
+	public ${domainClass} read(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")Integer $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws Exception {
+		${domainClass} ${domain_uncap} = new ${domainClass}();
+#foreach($primaryKey in $primaryKeys)
+		${domain_uncap}.set$primaryKey.fieldName.substring(0,1).toUpperCase()$primaryKey.fieldName.substring(1)(${primaryKey.fieldName});
+#end
+		return read(${domain_uncap});
+	}
+
+	public Integer delete(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")Integer $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws Exception {
+		${domainClass} ${domain_uncap} = new ${domainClass}();
+#foreach($primaryKey in $primaryKeys)
+		${domain_uncap}.set$primaryKey.fieldName.substring(0,1).toUpperCase()$primaryKey.fieldName.substring(1)(${primaryKey.fieldName});
+#end
+		return delete(${domain_uncap});
+	}
+}

@@ -1,0 +1,27 @@
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String VO_POSTFIX = "";
+String DAO_POSTFIX = "Dao";
+String IMPL_POSTFIX = "Impl";
+String  CONTROLLER_CPOSTFIX = "Controller";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+
+components.get("serviceClass").setUIValue(beanName+SERVICE_CPOSTFIX);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("daoImplClass").setUIValue(beanName+DAO_POSTFIX+IMPL_POSTFIX);
+components.get("sqlmapFile").setUIValue(beanName+XML_EXTENSION);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("listJSP").setUIValue("list"+JSP_EXTENSION);
+components.get("formJSP").setUIValue("form"+JSP_EXTENSION);
+components.get("viewJSP").setUIValue("view"+JSP_EXTENSION);
+components.get("messageFile").setUIValue("message-"+beanName+PROPERTIES_EXTENSION);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="cacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
+	    <constructor-arg index="0">
+	        <props>
+#if($capacity)
+	            <prop key="cache.capacity">${capacity}</prop>	        
+#end	            
+#if($storage == "Memory")
+	            <prop key="cache.memory">true</prop>
+#elseif($storage == "Disk")	            
+				<prop key="cache.memory">false</prop>
+				<prop key="cache.persistence.class">com.opensymphony.oscache.plugins.diskpersistence.DiskPersistenceListener</prop>
+	            <prop key="cache.path">${path.replaceAll("\\","/")}</prop>	            
+#elseif($storage == "Disk when the Overflow occurs")	            
+				<prop key="cache.memory">true</prop>
+				<prop key="cache.persistence.class">com.opensymphony.oscache.plugins.diskpersistence.DiskPersistenceListener</prop>
+	            <prop key="cache.path">${path.replaceAll("\\","/")}</prop>	            
+				<prop key="cache.persistence.overflow.only">true</prop>
+#end
+	        </props>
+	    </constructor-arg> 
+	</bean>
+	
+	<bean id="cache" factory-bean="cacheAdministrator" factory-method="getCache"/>	
+
+    <bean id="${beanName}" class="anyframe.core.cache.impl.DefaultCacheService">
+    	<property name="cache" ref="cache" />
+    </bean>  
+</beans>

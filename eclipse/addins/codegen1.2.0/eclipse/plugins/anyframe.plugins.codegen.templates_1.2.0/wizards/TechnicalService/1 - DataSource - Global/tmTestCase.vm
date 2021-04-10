@@ -1,0 +1,22 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import org.springframework.jndi.JndiObjectFactoryBean;
+
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+
+	protected String[] getConfigLocations() {
+		return new String[] { "classpath*:${beanPath_dirname}/applicationContext-datasource-jta.xml"};
+	}	
+
+	public void testDataSource() throws Exception {
+		JndiObjectFactoryBean dataSource = (JndiObjectFactoryBean) applicationContext.getBean("${BeanName}");
+		assertEquals(dataSource.getJndiName(), "${JNDIName}");
+	}
+}

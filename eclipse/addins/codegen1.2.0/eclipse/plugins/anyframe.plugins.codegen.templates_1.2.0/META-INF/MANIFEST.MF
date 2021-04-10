@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Codegen.templates
+Bundle-SymbolicName: anyframe.plugins.codegen.templates
+Bundle-Version: 1.2.0
+Bundle-Activator: anyframe.plugins.codegen.templates.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
+Export-Package: anyframe.plugins.codegen.templates
+Bundle-ClassPath: lib/abstractplugin.jar,
+ .
+Bundle-Vendor: Samsung SDS

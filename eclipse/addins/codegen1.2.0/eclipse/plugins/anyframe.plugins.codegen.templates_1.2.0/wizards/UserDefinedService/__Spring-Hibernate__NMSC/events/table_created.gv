@@ -1,0 +1,39 @@
+String DEFAULT_BASE_PATH ="/nmsc";
+String TABLE_PREFIX ="awb_";
+String TABLE_SUFFIX ="_t";
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String VO_POSTFIX = "";
+String SEARCH_VO_POSTFIX = "SearchVO";
+String DAO_POSTFIX = "Dao";
+String IMPL_POSTFIX = "Impl";
+String CONTROLLER_CPOSTFIX = "Controller";
+String LISTJSP_PREFIX = "select";
+String JSP_EXTENSION= ".jsp";
+String JS_EXTENSION= ".js";
+String XML_EXTENSION = ".xml";
+String PROPERTIES_EXTENSION = ".properties";
+
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+tableName = org.apache.commons.lang.StringUtils.substringAfter(tableName, TABLE_PREFIX);
+tableName = org.apache.commons.lang.StringUtils.substringBefore(tableName, TABLE_SUFFIX);
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("serviceClass").setUIValue(beanName+SERVICE_CPOSTFIX);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("domainSearchVoClass").setUIValue(beanName+SEARCH_VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("daoImplClass").setUIValue(beanName+DAO_POSTFIX+IMPL_POSTFIX);
+components.get("controllerClass").setUIValue(beanName+CONTROLLER_CPOSTFIX);
+components.get("dwrClass").setUIValue("Dwr"+beanName+"Service");
+components.get("selectJSP").setUIValue(tableName+"_select"+JSP_EXTENSION);
+components.get("insertJSP").setUIValue(tableName+"_insert"+JSP_EXTENSION);
+components.get("updateJSP").setUIValue(tableName+"_update"+JSP_EXTENSION);
+components.get("infoJSP").setUIValue(tableName+"_info"+JSP_EXTENSION);
+components.get("selectJS").setUIValue(tableName+"_select"+JS_EXTENSION);
+components.get("insertJS").setUIValue(tableName+"_insert"+JS_EXTENSION);
+components.get("updateJS").setUIValue(tableName+"_update"+JS_EXTENSION);
+components.get("infoJS").setUIValue(tableName+"_info"+JS_EXTENSION);

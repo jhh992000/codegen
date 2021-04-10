@@ -1,0 +1,1 @@
+components.get("refId").setLabelText( "*" + components.get("propertyName").combo.getText() + " Id");

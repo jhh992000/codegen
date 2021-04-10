@@ -1,0 +1,126 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($columns = $model.fields)
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($tbName_s = $tbName.replaceAll("TBL_","").toLowerCase())
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/jsp/manager/include_files/common_jsp/common.jsp"%>
+<html>
+<head>
+<script type="text/javascript" src="/html/${mode}/contents/${tbName_s}/${tbName_s}_info.js"></script>
+<script type="text/javascript" src="/dwr/interface/${dwrClass}.js"></script>
+</head>
+<body>
+<form:form name="${formName}" method="post" commandName="model">
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+	<form:hidden path="$column.name" />
+#end
+#end
+
+
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding: 10px 15px 15px 15px;">
+<tr> 
+<td class="Pop_Title_Td">
+
+	<!-- -------------- 페이지 타이틀 시작 --------------  -->
+	<table width="100%" height="35" border="0" cellpadding="0" cellspacing="0">
+		<tr> 
+			<td background="/html/${mode}/images/body/popup_title.gif" class="pop_title">${domain_cap}</td>
+		</tr>
+	</table>
+	<!-- -------------- 페이지 타이틀 끝 --------------  -->
+
+</td>
+</tr>
+<tr> 
+<td class="Body_Td">
+
+	<!-- -------------- 서브 타이틀부분 --------------  -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+	<td class="sub_title"> <img src="/html/${mode}/images/body/subtitle_ico.gif" align="absmiddle" />내용보기</td>
+	</tr>
+	</table>
+	<!-- -------------- 서브 타이틀부분 --------------  -->
+
+	<!-- -------------- 내용 시작 --------------  -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr><td colspan="2" class="list_bar_1px"></td></tr>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+	<tr>
+	<td width="120" class="list_bar_first">${col.name}</td>
+	<td width="" class="list"><form:input path="${col.name}" cssStyle="width:100%;" maxlength="${col.size}" readonly="true" /></td>
+	</tr>
+	<tr>
+	<td colspan="2" class="list_line"></td>
+	</tr>
+#end
+#end
+	</table>
+	<!-- -------------- 내용 끝 --------------  -->
+
+	<!-- -------------- 테이블사이 여백 시작 --------------  -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+	<td class="margin_s"></td>
+	</tr>
+	</table>
+	<!-- -------------- 테이블사이 여백 끝 --------------  -->
+
+	<!-- -------------- 버튼 영역 시작 --------------  -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+	<td align="right">
+		<table align="right" border="0" cellpadding="0" cellspacing="3" class="btn">
+		<tr>
+		<td>
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+			<td class="btn_type1_head"></td>
+			<td class="btn_type1" nowrap="nowrap"><input type="button" value="취소" style="border: 0px;background:none;color: white;" onclick="javascript:parent.tb_remove();" /></td>
+			<td class="btn_type1_end"></td>
+			</tr>
+			</table>
+
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
+	<!-- -------------- 버튼 영역 끝 --------------  -->
+
+</td>
+</tr>
+</table>
+
+
+</form:form>
+
+</body>
+</html>

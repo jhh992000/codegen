@@ -1,0 +1,29 @@
+String VO_POSTFIX = "";
+String VO_PREFIX = "Tst";
+String DAO_POSTFIX = "Dao";
+String ACTION_CPOSTFIX = "Action";
+String FORMJSP_PREFIX = "form";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+String writerName = "jeong hoon hee";
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String jspFolderName = tableName.replaceAll(VO_PREFIX.toLowerCase()+"_", "");
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(VO_PREFIX, "");
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+
+components.get("basePath").setUIValue("/nifdsAnimalHome");
+components.get("writerName").setUIValue(writerName);
+components.get("domainClass").setUIValue(beanName+VO_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("sqlmapFile").setUIValue(beanName+XML_EXTENSION);
+components.get("actionClass").setUIValue(beanName+ACTION_CPOSTFIX);
+components.get("listJSP").setUIValue("list"+JSP_EXTENSION);
+components.get("formJSP").setUIValue("form"+JSP_EXTENSION);
+components.get("viewJSP").setUIValue("view"+JSP_EXTENSION);
+components.get("writeDate").setUIValue(today);
+components.get("tilesFileName").setUIValue(beanName+"Tiles"+XML_EXTENSION);
+components.get("strutsConfigFileName").setUIValue(beanName+"Config"+XML_EXTENSION);

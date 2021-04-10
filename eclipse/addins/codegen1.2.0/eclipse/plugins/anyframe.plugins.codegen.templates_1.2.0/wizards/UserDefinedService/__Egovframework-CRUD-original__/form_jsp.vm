@@ -1,0 +1,161 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<html>
+<head>
+<title>${domainName_uncap} <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javaScript" language="javascript" defer="defer">
+<!--
+//목록
+function fnList() {
+   	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}List.do";
+   	document.searchForm.submit();
+}
+//수정
+function fnModify() {
+	frm = document.dataForm;
+   	frm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}Modify.do";
+    frm.submit();
+}
+//등록
+function fnCreate() {
+	frm = document.dataForm;
+   	frm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}Create.do";
+    frm.submit();
+}
+-->
+</script>
+</head>
+<body>
+<form:form commandName="search${domain_cap}" name="searchForm">
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName" />
+#end
+	<form:hidden path="pageIndex" />
+	<form:hidden path="searchCondition" />
+	<form:hidden path="searchKeyword" />
+</form:form>
+
+<h4>${domainName_uncap} <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose></h4>
+<form:form id="dataForm" name="dataForm" method="post" commandName="data${domain_cap}" action="${pageContext.request.contextPath}${requestPath}/${domainName_uncap}${ editMode }.do">
+	<input type="hidden" name="searchCondition" value="${ search${domain_cap}.searchCondition }" />
+	<input type="hidden" name="searchKeyword" value="${ search${domain_cap}.searchKeyword }" />
+	<input type="hidden" name="pageIndex" value="${ search${domain_cap}.pageIndex }" />
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName" />
+#end
+	<fieldset>
+		<legend>
+			${domainName_uncap} <c:choose><c:when test="${ editMode eq 'Create' }">등록</c:when><c:otherwise>수정</c:otherwise></c:choose>
+		</legend>
+
+			<table class="boardWriteTb">
+			<colgroup>
+				<col style="width:20%;" />
+				<col style="width:80%;" />
+			</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+			<!--
+			<tr>
+				<th class="blt_ess">${col.fieldName}</th>
+				<td>
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+				</td>
+			</tr>
+			-->
+#else
+#if ($col.nullable == false)
+			<tr>
+				<th class="blt_ess">${col.fieldName}</th>
+				<td>
+#if ($col.fieldName=="useYn")
+					<div class="jUseRadio">
+						<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY">예</label>&nbsp;
+						<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN">아니오</label>
+					</div>
+#elseif($col.fieldName.toLowerCase().indexOf("useyn") != -1)
+					<div class="jUseRadio">
+						<form:radiobutton id="${col.fieldName}Y" path="${col.fieldName}" value="Y"  /><label for="${col.fieldName}Y">예</label>&nbsp;
+						<form:radiobutton id="${col.fieldName}N" path="${col.fieldName}" value="N" /><label for="${col.fieldName}N">아니오</label>
+					</div>
+#else
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+				</td>
+			</tr>
+#else
+			<tr>
+				<th class="blt_ness">${col.fieldName}</th>
+				<td>
+#if ($col.fieldName=="useYn")
+					<form:radiobutton id="useYnY" path="useYn" value="Y"  /><label for="useYnY">예</label>&nbsp;
+					<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN">아니오</label>
+#elseif($col.fieldName.toLowerCase().indexOf("useyn") != -1)
+					<form:radiobutton id="${col.fieldName}Y" path="${col.fieldName}" value="Y"  /><label for="${col.fieldName}Y">예</label>&nbsp;
+					<form:radiobutton id="${col.fieldName}N" path="${col.fieldName}" value="N" /><label for="${col.fieldName}N">아니오</label>
+#else
+#if ($col.type == "DATE")
+					<form:input path="${col.fieldName}" cssClass="inputLeft datepicker" cssStyle="width:200px;" maxlength="10" />
+#else
+					<form:input path="${col.fieldName}" cssClass="inputLeft" cssStyle="width:200px;" maxlength="${col.size}" />
+#end
+#end
+				</td>
+			</tr>
+#end
+#end
+#end
+		</table>
+		
+		<!-- Buttons -->
+		<div class="boardNavigation">
+			<div class="buttonRight">
+				<c:choose>
+					<c:when test="${ editMode eq 'Create' }">
+						<a href="#" onclick="javascript:fnCreate(); return false;">등록</a>
+					</c:when>
+					<c:otherwise>
+						<a href="#" onclick="javascript:fnModify(); return false;">수정</a>
+					</c:otherwise>
+				</c:choose>
+				<a href="#" onclick="javascript:fnList();">목록</a>
+			</div>
+		</div>
+	</fieldset>
+</form:form>
+
+</body>
+</html>

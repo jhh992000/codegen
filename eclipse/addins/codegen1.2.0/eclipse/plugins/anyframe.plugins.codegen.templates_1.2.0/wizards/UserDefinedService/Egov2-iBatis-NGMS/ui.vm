@@ -1,0 +1,175 @@
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/css/stylesheetAL.css" type="text/css"?>
+<?xml-stylesheet href="/css/GirStyleAL.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+<head>
+<script type="javascript" src="/js/cm/xecureSubmissionHandler.js"></script>
+<script type="javascript" src="/XecureObject/xecureweb.js"></script>
+<script type="text/javascript" src="/js/jquery/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+<script language="javascript" src="/js/common.js"></script>
+<script language="javascript" src="/js/common2.js"></script>
+<script language="javascript" src="/js/moment.js"></script>
+<script language="javascript" src="/js/common.wq5.js"></script>
+<script type="javascript"><![CDATA[
+$(document).ready(function(){
+	fn_search();
+});
+function fn_search() {
+
+	fn_executeSubmission(
+	{
+		url : "/cm/com/selectList.do",
+		params : {
+			daoName : "$statementNamespace",
+			tgName : "$moduleName",
+			rsName : "dataList1"		/* 수신데이터셋 매핑ID */
+		},
+		ref : null,						/* 전송데이터셋 */
+		target : "dataList1",			/* 수신데이터셋 */
+		async : false,
+		callback : function(e) {
+			var msg = WebSquare.xml.getValue($.parseXML(e.responseText), "map/msg", "value");
+			if (msg == "success") {
+			} else {
+			}
+		}
+	});
+
+}
+function fn_save() {
+	if (!confirm("저장하시겠습니까?")) {
+		return;
+	}
+
+	fn_executeSubmission(
+	{
+		url : "/cm/com/modifyDataList.do",
+		params : {
+			daoName : "$statementNamespace",
+			tgName : "$moduleName",
+			rsName : "dataList1"		/* 수신데이터셋 매핑ID */
+		},
+		ref : "dataList1",				/* 전송데이터셋 */
+		target : null,					/* 수신데이터셋 */
+		async : false,
+		callback : function(e) {
+			var msg = WebSquare.xml.getValue($.parseXML(e.responseText), "map/msg", "value");
+			if (msg == "success") {
+				alert("정상적으로 저장되었습니다.");
+				fn_search();
+			} else {
+				alert("저장도중 예외가 발생했습니다.");
+			}
+		}
+	});
+}
+
+function fn_add_row() {
+	var lastIndex = dataList1.getTotalRow();
+	dataList1.insertRow(lastIndex);
+}
+function fn_del_row() {
+	var checkedIndexs = grid1.getCheckedIndex("chk");		//선택한 행 인덱스 리스트
+	if (checkedIndexs != null && checkedIndexs.length > 0) {
+		dataList1.removeRows(checkedIndexs);
+	} else {
+		alert("삭제할 데이터를 1개이상 선택해주세요.");
+		return;
+	}
+}
+]]></script>
+<w2:buildDate />
+	<xf:model>
+
+		<xf:instance>
+			<data xmlns=""></data>
+		</xf:instance>
+
+		<w2:dataCollection>
+
+			<w2:dataList id="dataList1" baseNode="vector" repeatNode="map" saveRemovedData="true" valueAttribute="value">
+				<w2:columnInfo>
+#foreach($column in $columns)
+					<w2:column id="$column.fieldName" name="$column.fieldName" dataType="text" />
+#end
+				</w2:columnInfo>
+			</w2:dataList>
+
+		</w2:dataCollection>
+
+	</xf:model>
+</head>
+<body>
+
+	<xf:group id="contentsArea" class="contentsArea">
+
+		<w2:textbox id="txtTitle" class="title mgt10" label="TITLE" tagname="h3" style=""></w2:textbox>
+
+		<xf:group id="group_grid_button_area" class="clearfix mgt15">
+			<xf:group id="group_grid_button_right" class="fr">
+				<xf:trigger id="btnAddRow" type="image" class="btn005 small fl">
+					<xf:label>+행추가</xf:label>
+					<script ev:event="onclick" type="javascript"><![CDATA[
+						fn_add_row();
+					]]></script>
+				</xf:trigger>
+				<xf:trigger id="btnDeleteRow" type="image" class="btn005 small fr mgl5">
+					<xf:label>-행삭제</xf:label>
+					<script ev:event="onclick" type="javascript"><![CDATA[
+						fn_del_row();
+					]]></script>
+				</xf:trigger>
+			</xf:group>
+		</xf:group>
+
+		<xf:group id="gridArea" class="gridArea mgt5" style="">
+
+			<w2:gridView id="grid1" dataList="dataList1"
+				scrollByColumn="false" summaryAuto="false" scrollByColumnAdaptive="false" style="height:350px;"
+				ignoreCellClick="false" ignoreToggleOnDisabled="false" fixedColumnWithHidden="true"
+				useShiftKey="true" sortable="false" tooltipDisplay="true" autoFit="allColumn" fixedColumn="5"
+				readOnlyBackgroundColor="#FFFFFF" editModeEvent="onclick"  excludeDeletedRows="true">
+
+				<script ev:event="oneditend(row,col,value)" type="javascript"><![CDATA[
+				]]></script>
+				<script ev:event="oncellclick(row,col)" type="javascript"><![CDATA[
+				]]></script>
+
+				<w2:header id="grid1_header1" class="gridHeaderTable" columnClass="gridHeaderTD">
+					<w2:row id="grid1_header_row1">
+						<w2:column blockSelect="false" displayMode="label" id="grid1_header_row1_1" inputType="checkbox" width="30" value="선택" style="height:22px;"></w2:column>
+#set($colCnt = 2)
+#foreach($column in $columns)
+						<w2:column blockSelect="false" displayMode="label" id="grid1_header_row1_$colCnt" inputType="text" width="100" value="$column.fieldName"></w2:column>
+#set($colCnt = $colCnt+1)
+#end
+					</w2:row>
+				</w2:header>
+				<w2:gBody id="grid1_gBody1" class="gridBodyTable" columnClass="gridBodyTD">
+					<w2:row id="grid1_body_row1">
+						<w2:column blockSelect="false" displayMode="label" id="chk" inputType="checkbox" readOnly="false" trueValue="Y" falseValue="N" valueType="other"></w2:column><!-- 선택 -->
+#foreach($column in $columns)
+						<w2:column blockSelect="false" displayMode="label" id="$column.fieldName" inputType="text" readOnly="false"></w2:column>
+#end
+					</w2:row>
+				</w2:gBody>
+			</w2:gridView>
+		</xf:group>
+
+		<xf:group class="clearfix mgt10" id="group_button_area">
+			<xf:group id="group_button_right" class="fr" style="">
+				<xf:trigger id="btnSave" type="image" class="btn002 mgr5 fr">
+				<xf:label>저장</xf:label>
+				<script ev:event="onclick" type="javascript"><![CDATA[
+					fn_save();
+				]]></script>
+				</xf:trigger>
+			</xf:group>
+		</xf:group>
+	</xf:group>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<!-- ${domain_uncap} -->
+    <package name="${domain_uncap}" namespace="${requestPath}" extends="common">
+        <action name="list" class="${actionsPackage_package}.${domain_cap}Action" method="list">
+            <result name="success" type="tiles">${domain_uncap}.list</result>
+        </action>
+        <action name="form" class="${actionsPackage_package}.${domain_cap}Action" method="form">
+            <result name="success" type="tiles">${domain_uncap}.form</result>
+        </action>
+        <action name="insert" class="${actionsPackage_package}.${domain_cap}Action" method="insert">
+            <result name="success" type="redirectAction">list?${pageUrl}</result>
+        </action>
+        <action name="update" class="${actionsPackage_package}.${domain_cap}Action" method="update">
+            <result name="success" type="redirectAction">list?${pageUrl}</result>
+        </action>
+        <action name="delete" class="${actionsPackage_package}.${domain_cap}Action" method="delete">
+            <result name="success" type="redirectAction">list?${pageUrl}</result>
+        </action>
+    </package>
+
+</struts>

@@ -1,0 +1,10 @@
+String iPackage = components.get("iPackage").text.getText();
+
+String implPostfix = new String(".impl");
+if(iPackage.endsWith("/")) implPostfix = "impl";		// default package
+
+components.get("implPackage").text.setText(iPackage+implPostfix);
+components.get("daoPackage").text.setText(iPackage+implPostfix);
+components.get("voPackage").text.setText(iPackage);
+
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="queryService" class="anyframe.core.query.impl.QueryServiceImpl">
+		<property name="jdbcTemplate">
+			<ref bean="${g1_id}"/>
+		</property>
+#if( $pagingSQLGenerator )		
+		<property name="pagingSQLGenerator">
+			<ref bean="${g2_id}"/>
+		</property>
+#end		
+		<config:configuration>
+#if($g3Path)
+  		    <filename>classpath:${g3Path_dirname}/*.xml</filename>
+#end  		    
+			<nullcheck type="VARCHAR" default-value="" />
+#if($g3_frequency)
+     	    <sqlload dynamic="true" frequency="${g3_frequency}"/> 
+#end
+#if($g3_skipError == true)
+     	    <skiperror>true</skiperror>
+#end     	    
+		</config:configuration>					
+	</bean>
+	<!-- The original JdbcTemplate definition -->
+    <bean id="${g1_id}" class="anyframe.core.query.impl.util.PagingJdbcTemplate">
+      <property name="dataSource" ref="$g1_dataSource" />
+    </bean>
+#if( $pagingSQLGenerator )		    
+	<bean id="${g2_id}" class="${g2_class}">
+    </bean>
+#end
+</beans>	

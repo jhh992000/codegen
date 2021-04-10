@@ -1,0 +1,20 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = $domain_cap.replaceAll("$masterBizCode.toUpperCase()$bizCode.toUpperCase()",""))
+#set($domain_uncap = "$domain_uncap.substring(0,1).toLowerCase()$domain_uncap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($detailBizCode_cap = "$detailBizCode.substring(0,1).toUpperCase()$detailBizCode.substring(1)")
+#set($detailBizCode_uncap = "$detailBizCode.substring(0,1).toLowerCase()$detailBizCode.substring(1)")
+#========================================
+# ${detailBizCode_uncap} ($tbName.toUpperCase())
+#========================================
+${domain_uncap}.modelName=${domain_cap}
+#foreach($col in $cols)
+${domain_uncap}.${col.fieldName}=${col.fieldName}
+#end

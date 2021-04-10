@@ -1,0 +1,23 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import javax.sql.DataSource;
+
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+
+
+public class $Class extends AbstractDependencyInjectionSpringContextTests {
+	
+	protected String[] getConfigLocations() {
+		return new String[] { "classpath*:${beanPath_dirname}/applicationContext-datasource.xml"};
+	}	
+
+	public void testDataSource() throws Exception {
+		DataSource dataSource = (DataSource) applicationContext.getBean("${BeanId}");
+		assertNotNull(dataSource.getConnection());
+	}
+}

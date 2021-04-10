@@ -1,0 +1,154 @@
+#set($bind_char = "#")
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($daoClass_uncap = "$daoClass.substring(0,1).toLowerCase()$daoClass.substring(1)")
+#set($sqlmapid = "$masterBizCode.toLowerCase()$bizCode.toLowerCase()$sequence")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.toLowerCase()")
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+			<Dataset DataSetType="Dataset" Id="ds_list">
+				<Contents>
+					<colinfo id="RN" size="255" summ="default" type="RN"/>
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#elseif ($column.type == "DATE")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#elseif ($column.type == "CLOB")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#else
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#end
+#end
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="ds_detail">
+				<Contents>
+					<colinfo id="ROW_STS" size="255" summ="default" type="STRING"/>
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#elseif ($column.type == "DATE")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#elseif ($column.type == "CLOB")
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#else
+					<colinfo id="$column.name" size="255" summ="default" type="STRING"/>
+#end
+#end
+				</Contents>
+			</Dataset>
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="${masterBizCode.toLowerCase()}.${queryName}">
+
+	<typeAlias  alias="rowData" type="ppms.cm.cm.type.JRowData"/>
+
+	<resultMap id="includeClobColumn" class="rowData">
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+		<result property="$column.name" column="$column.name" nullValue="0" />
+#elseif ($column.type == "DATE")
+		<result property="$column.name" column="$column.name" javaType="java.util.Date" />
+#elseif ($column.type == "CLOB")
+		<result property="$column.name" column="$column.name" jdbcType="CLOB" typeHandler="ppms.cm.cm.util.ClobStringTypeHandler"/>
+#else
+		<result property="$column.name" column="$column.name" nullValue="" />
+#end
+#end
+	</resultMap>
+
+	<select id="${queryName}.select" parameterClass="java.util.Map"  resultMap="includeClobColumn">
+		SELECT
+			#set($i = 1)#foreach($column in $columns)A.$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+
+			#end#set($i = $i + 1)#end
+
+		FROM
+			$tableName A
+		WHERE
+			1=1
+		#foreach($primaryKey in $primaryKeys)<isNotEmpty property="$primaryKey.name">
+		AND
+			$primaryKey.name = ${bind_char}$primaryKey.name${bind_char}
+		</isNotEmpty>
+		#end
+
+		#if($primaryKeys.size() > 0)ORDER BY
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end
+
+	</select>
+
+	<insert id="${queryName}.insert" parameterClass="java.util.Map">
+		INSERT INTO $tableName (
+		#set($i = 1)#foreach($column in $columns)	$column.name#if( $i < $columns.size() ),
+		#end#set($i = $i + 1)#end )
+		VALUES (
+		#set($i = 1)#foreach($column in $columns)	${bind_char}$column.name${bind_char}#if( $i < $columns.size() ),
+		#end#set($i = $i + 1)#end  )
+	</insert>
+
+	<update id="${queryName}.update" parameterClass="java.util.Map">
+		UPDATE
+			$tableName
+		SET
+#set($nPKCount = ($columns.size()-$pks.size()))
+#set($i = 1)#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+			$column.name = ${bind_char}$column.name${bind_char}#if( $i < $nPKCount ),
+#end#set($i = $i + 1)#end#end
+
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.name${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</update>
+
+	<delete id="${queryName}.delete" parameterClass="java.util.Map">
+		DELETE FROM
+			$tableName
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = ${bind_char}$primaryKey.name${bind_char}#if( $i < $primaryKeys.size() )
+
+		AND
+			#end#set($i = $i + 1)#end#end
+
+	</delete>
+
+</sqlMap>

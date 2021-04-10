@@ -1,0 +1,178 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../../../cmm/inc/taglib.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><s:message code="${moduleName}.modelName" /> <s:message code="common.list" /></title>
+<c:import url="/WEB-INF/jsp/egovframework/EgovCss.jsp" />
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		com.confirm("<s:message code="common.question.delete" />", function(r) {
+			if (r == true) {
+				 window.location = deleteUrl;
+			}
+		});
+		return false;
+	});
+});
+</script>
+</head>
+<body>
+
+<div id="sub_wrapper">
+	<div id="inc_header">
+		<!-- header -->
+		<c:import url="/WEB-INF/jsp/egovframework/headerAdmin.jsp" />
+	</div>
+	<!-- 메인탑 컨텐츠 시작 -->
+	<div id="inc_body">
+		<div id="left_body">
+			<!-- left -->
+			<c:import url="/WEB-INF/jsp/egovframework/admin_left_menu.jsp" />
+		</div>
+		<div id="center_body">
+
+			<pg:pager
+				url="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do"
+				items="${ cri.totalCount }"
+				maxPageItems="${ cri.maxPageItems }"
+				maxIndexPages="${ cri.maxIndexPages }"
+				isOffset="${ true }"
+				index="center"
+				export="offset,currentPageNumber=pageNumber"
+				scope="request">
+				<pg:param name="maxPageItems" value="${ cri.maxPageItems }" />
+				<pg:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+				<pg:param name="searchKey" value="${ cri.searchKey }" />
+				<pg:param name="searchValue" value="${ cri.searchValue }" />
+				<pg:param name="adminMenu" value="${ cri.adminMenu }" />
+
+				<form:form id="searchForm" name="searchForm" method="post" commandName="cri" action="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do">
+					<form:hidden path="adminMenu" />
+					<form:hidden path="maxPageItems" />
+
+					<fieldset>
+						<legend><s:message code="${moduleName}.modelName" /> <s:message code="common.search" /></legend>
+
+						<div class="board_title01" style="padding-top: 5px;">
+							<span class="black_title_text"><s:message code="${moduleName}.modelName" /> <s:message code="common.search" /></span>
+						</div>
+						<div class="search_box01">
+							<ul style="padding-top: 20px;">
+								<li style="float: left; margin-left: 20px; padding-top: 2px;"><img src="/images/egovframework/adt/img_search.gif" alt="Search" width="41" height="15" /></li>
+								<li style="float: left; margin-left: 5px;">
+									<label for="searchKey"  class="skip"><s:message code="search.searchKey" /></label>
+									<form:select path="searchKey" id="searchKey" cssClass="form-control input-sm">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+										<form:option value="$column.fieldName"><s:message code="${moduleName}.$column.fieldName" /></form:option>
+#end#end
+									</form:select>
+									<s:message code="search.searchValue" var="txtSearchValue" />
+									<form:input path="searchValue" id="searchValue" cssClass="form-control ml-0" cssStyle="" placeholder="${ txtSearchValue }" />
+									<button class="button" type="submit"><s:message code="common.search" /></button>
+								</li>
+							</ul>
+						</div>
+
+					</fieldset>
+				</form:form>
+
+
+				<div class="egovframe_tablestyle">
+					<table summary="" cellpadding="" cellspacing="0">
+						<colgroup>
+							<col style="width: 5%;" />
+#foreach($col in $cols)
+							<col style="" />
+#end
+							<col style="width: 15%;" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col"><s:message code="common.sortNum" /></th>
+#foreach($col in $cols)
+								<th scope="col"><s:message code="${moduleName}.${col.fieldName}" /></th>
+#end
+								<th scope="col"><s:message code="common.manage" /></th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="item" items="${ list }" varStatus="status">
+								<tr>
+									<td>${ cri.totalCount-((currentPageNumber-1)*cri.maxPageItems)-(status.index) }</td>
+#foreach($col in $cols)
+#if ($col.type == "DATE")
+									<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#else
+									<td>${ item.${col.fieldName} }</td>
+#end
+#end
+									<td class="center">
+										<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}UpdateForm.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="button updateButton"><s:message code="common.update" /></a>
+										<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}Delete.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ item.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="button deleteButton"><s:message code="common.delete" /></a>
+									</td>
+								</tr>
+							</c:forEach>
+							<c:if test="${ empty list }">
+								<tr>
+									<td colspan="${colspan}" class="empty">
+										<c:choose>
+											<c:when test="${ empty cri.searchValue }">
+												<s:message code="common.listEmpty" />
+											</c:when>
+											<c:otherwise>
+												<s:message code="search.not_match_data" arguments="${ cri.searchValue }" />
+											</c:otherwise>
+										</c:choose>
+									</td>
+								</tr>
+							</c:if>
+						</tbody>
+					</table>
+				</div>
+				<div>
+					<span class="right_board_list" style="display: block; text-align: center">
+						<div class="pagination">
+							<pg:index>
+								<c:import url="../../../cmm/inc/pager.jsp">
+									<c:param name="contextPath" value="" />
+									<c:param name="totalItemCount" value="${ cri.totalCount }" />
+									<c:param name="pagerOffset" value="${ cri.pagerOffset }" />
+									<c:param name="maxPageItems" value="${ cri.maxPageItems }" />
+									<c:param name="maxIndexPages" value="${ cri.maxIndexPages }" />
+								</c:import>
+							</pg:index>
+						</div>
+					</span>
+				</div>
+				<div align="right">
+					<div class="btn_area">
+						<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}CreateForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="button"><s:message code="common.create" /></a>
+					</div>
+				</div>
+			</pg:pager>
+		</div>
+	</div>
+	<div id="inc_footer">
+		<!-- footer -->
+		<c:import url="/WEB-INF/jsp/egovframework/footer.jsp" />
+	</div>
+</div>
+
+</body>
+</html>

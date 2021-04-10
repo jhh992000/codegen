@@ -1,0 +1,27 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "kr.go.nmsc.domain";
+String DOMAIN_SEARCH_VO_PACKAGE = "kr.go.nmsc.domain.search";
+String DAO_PACKAGE = "kr.go.nmsc.dao";
+String DAO_IMPL_PACKAGE = "kr.go.nmsc.dao.hibernate";
+String SERVICE_PACKAGE = "kr.go.nmsc.service";
+String CONTROLLER_PACKAGE = "kr.go.nmsc.web";
+String DWR_PACKAGE = "kr.go.nmsc.service";
+String JSP_PATH = "WebContent/jsp";
+String JS_PATH = "WebContent/html";
+String MESSAGE_RESOURCE_PATH = "WebContent/WEB-INF/messages";
+String REQUEST_PATH = "";
+String MODE = components.get("mode").getUIValue();
+
+CONTROLLER_PACKAGE = CONTROLLER_PACKAGE+"."+MODE;
+DWR_PACKAGE = DWR_PACKAGE+".dwr";
+
+components.get("servicePackage").setUIValue(basePath+"/src/"+SERVICE_PACKAGE);
+components.get("domainPackage").setUIValue(basePath+"/src/"+DOMAIN_PACKAGE);
+components.get("domainSearchVoPackage").setUIValue(basePath+"/src/"+DOMAIN_SEARCH_VO_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/src/"+DAO_PACKAGE);
+components.get("daoImplPackage").setUIValue(basePath+"/src/"+DAO_IMPL_PACKAGE);
+components.get("controllerPackage").setUIValue(basePath+"/src/"+CONTROLLER_PACKAGE);
+components.get("dwrPackage").setUIValue(basePath+"/src/"+DWR_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+MODE+"/contents/"+tableName);
+components.get("jsPath").setUIValue(basePath+"/"+JS_PATH+"/"+MODE+"/contents/"+tableName);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+MODE+"/"+tableName);

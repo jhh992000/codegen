@@ -1,0 +1,32 @@
+String basePath = components.get("basePath").getUIValue();
+String moduleName = components.get("moduleName").getUIValue();
+String DOMAIN_PACKAGE = "egovframework";
+String DAO_PACKAGE = "egovframework";
+String SERVICE_PACKAGE = "egovframework";
+String SERVICE_IMPL_PACKAGE = "egovframework";
+String CONTROLLER_PACKAGE = "egovframework";
+String IBATIS_PATH = "egovframework/sqlmap";
+String JSP_PATH = "webapp/WEB-INF/jsp/egovframework";
+String REQUEST_PATH = "";
+String JSP_FOLDER = tableName;
+String JSP_FOLDER_PREFIX1 = "tb_";
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX1, "");
+
+
+if (moduleName != null && !moduleName.equals("")) {
+	DOMAIN_PACKAGE += "." + moduleName + ".service";
+	DAO_PACKAGE += "." + moduleName + ".service.impl";
+	SERVICE_PACKAGE += "." + moduleName + ".service";
+	SERVICE_IMPL_PACKAGE += "." + moduleName + ".service.impl";
+	CONTROLLER_PACKAGE += "." + moduleName + ".web";
+}
+
+
+components.get("domainPackage").setUIValue(basePath+"/webapp/WEB-INF/src/main/java/"+DOMAIN_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/webapp/WEB-INF/src/main/java/"+SERVICE_PACKAGE);
+components.get("serviceImplPackage").setUIValue(basePath+"/webapp/WEB-INF/src/main/java/"+SERVICE_IMPL_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/webapp/WEB-INF/src/main/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/webapp/WEB-INF/src/main/resource/"+IBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/webapp/WEB-INF/src/main/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+JSP_FOLDER);

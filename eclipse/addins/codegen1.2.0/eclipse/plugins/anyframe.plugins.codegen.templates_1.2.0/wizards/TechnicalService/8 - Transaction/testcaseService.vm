@@ -1,0 +1,15 @@
+#if(${Package_package})
+package ${Package_package};
+#end
+
+import anyframe.core.query.QueryServiceException;
+
+public interface TransactionTestSampleService {
+    void insertData(TransactionVO vo)  throws QueryServiceException;
+    void updateData(TransactionVO vo)  throws QueryServiceException;
+    void removeData(TransactionVO vo)  throws QueryServiceException;
+    TransactionVO[] listData(TransactionVO vo)  throws QueryServiceException;
+    public int getCommitCount() ;
+
+    public int getRollbackCount() ;
+}

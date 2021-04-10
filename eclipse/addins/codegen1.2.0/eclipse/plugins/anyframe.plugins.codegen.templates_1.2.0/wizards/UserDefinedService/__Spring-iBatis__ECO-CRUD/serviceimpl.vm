@@ -1,0 +1,49 @@
+#set($columns = $model.fields)
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.toLowerCase()")
+#set($namespace = $domainClass.replaceAll("VO",""))
+#set($namespace = "$namespace.toLowerCase()")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($dao_cap = "$daoClass")
+#set($dao_uncap = "$dao_cap.substring(0,1).toLowerCase()$dao_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+#if(${daoPackage_package} != "")
+package ${daoPackage_package};
+#end
+
+import org.springframework.stereotype.Service;
+
+import ${domainPackage_package}.${namespace}.${domain_cap};
+import com.eco.service.common.BbsServiceImpl;
+import com.eco.service.common.DAOBean;
+
+/**
+ * 업   무   명 :
+ * 프로그램 ID : ${serviceImplClass}.java
+ * 프로그램 명 : $tableName 테이블의 데이터를 핸들링하는 DAO 클래스입니다.
+ * 개       요 : 기본적으로 CRUD 메소드가 제공됩니다.
+ * 작   성   자 : ${writerName}
+ * 작   성   일 : ${writeDate}
+ *
+ *   수정일       수정자                              수정내용
+ * ---------   --------   --------------------------------------------------------
+ *
+ * Copyright(c) 2012 DAEYOON Co. Ltd. All rights reserved.
+ */
+
+@Service("${service_uncap}")
+@DAOBean("${dao_uncap}")
+public class ${serviceImplClass} extends BbsServiceImpl<${domain_cap}> implements ${serviceClass} {
+
+}

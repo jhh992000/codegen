@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>TransactionService Definition</title>
+		<component-page>
+			<description>Transaction Manager Configuration</description>
+			<group>
+				<container name="beanPath" label="*Path" type="srcPackage" required="true" />
+				<textfield name="id" label="*Transaction Id" required="true" value="txManager" />
+				<combo name="propertyName" label="*Property Name" value="DataSource" onChange="/scripts/test.gv"
+					listener="true">
+					<elements>
+						<option>DataSource</option>
+						<option>SessionFactory</option>
+						<option>UserTransaction</option>
+					</elements>
+				</combo>
+				<textfield name="refId" label="*DataSource Id              " required="true" />
+				<container name="mappingPath" label="*Query mapping Path" type="srcPackage" required="true"
+					radio="DataSource" />
+				<combo name="factory" label="*Factory Class" edit="true" required="true" radio="UserTransaction">
+					<elements>
+						<option>weblogic.jndi.WLInitialContextFactory</option>
+						<option>jeus.jndi.JNSContextFactory</option>
+						<option>com.ibm.websphere.naming.WsnInitialContextFactory</option><!-- 4.0 -->
+						<option>com.ibm.ejs.ns.jndi.CNInitialContextFactory</option><!-- 3.0.x, 3.5.x -->
+					</elements>
+				</combo>
+				<combo name="url" label="*JNDI URL" edit="true" required="true" radio="UserTransaction">
+					<elements>
+						<option>weblogic.jndi.WLInitialContextFactory</option>
+						<option>jeus.jndi.JNSContextFactory</option>
+						<option>com.ibm.websphere.naming.WsnInitialContextFactory</option>
+						<option>com.ibm.ejs.ns.jndi.CNInitialContextFactory</option>
+					</elements>
+				</combo>
+			</group>
+		</component-page>
+
+		<component-page>
+			<group checkbox="CreateTestCase">
+				<checkbox name="CreateTestCase" label="Create TestCase" />
+				<container name="Package" label="*Package" type="srcpackage" required="true" />
+				<textfield name="Class" label="*Class" required="true" value="TransactionTestCase" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="file00" expression="applicationContext-transaction.xml" velocity="template.vm"
+				container="beanPath" />
+			<template component="file01" expression="applicationContext-tx-sample.xml" velocity="testcaseXml.vm"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file02" expression="${Class}" velocity="testcase.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file03" expression="TransactionTestSampleService" velocity="testcaseService.vm"
+				extension="java" container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file04" expression="TransactionTestSampleServiceImpl" velocity="testcaseImpl.vm"
+				extension="java" container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file05" expression="TransactionVO" velocity="testcaseVO.vm" extension="java"
+				container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file06" expression="TransactionSynchronizationSample"
+				velocity="testcaseMyTransaction.vm" extension="java" container="Package">
+				<condition variable="CreateTestCase" value="true" />
+			</template>
+			<template component="file07" expression="test-tx-mapping.xml" velocity="mappingXml.vm"
+				container="mappingPath">
+				<condition variable="CreateTestCase" value="true" />
+				<condition variable="propertyName" value="DataSource" />
+			</template>
+		</output>
+
+	</wizard>
+</CodeGen>

@@ -1,0 +1,44 @@
+#set($columns = $model.fields)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+
+$(document).ready(function(){
+	$("#model").validate({
+		submitHandler: function(form) {	
+			jQuery.showConfirm("저장하시겠습니까?", { 
+				yesCallback: function() {
+					var $domain_uncap = { 
+#set($i = 1)#foreach($column in $columns)						$column.name : $("#$column.name").val()#if( $i < $columns.size() ),
+#end#set($i = $i + 1)#end
+
+					};
+					${dwrClass}.insert$domain_cap($domain_uncap, function(bool) {
+						parent.tb_remove();
+						parent.reloadList();
+					});
+				}, 
+				noCallback: function() {
+					return false;
+				}
+			});
+		},
+		rules: {
+#set($i = 1)#foreach($column in $columns)			$column.name: { required: true }#if( $i < $columns.size() ),
+#end#set($i = $i + 1)#end
+
+		},
+		messagesPrefix: "<br>&nbsp;<img src='/html/manager/images/icon_alert.gif' align='absmiddle' /> ",
+		messages: {
+#set($i = 1)#foreach($column in $columns)			$column.name: { required: "$column.name 을 입력해주세요." }#if( $i < $columns.size() ),
+#end#set($i = $i + 1)#end
+
+		},
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+});

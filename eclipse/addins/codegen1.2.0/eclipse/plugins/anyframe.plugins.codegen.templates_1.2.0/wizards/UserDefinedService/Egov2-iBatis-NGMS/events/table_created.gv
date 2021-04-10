@@ -1,0 +1,36 @@
+String DEFAULT_BASE_PATH = "/test";
+String SERVICE_POSTFIX = "Service";
+String SERVICE_IMPL_POSTFIX = "ServiceImpl";
+String DOMAIN_POSTFIX = "Vo";
+String DOMAIN_PREFIX1 = "";
+String DOMAIN_PREFIX2 = "Tbl";
+String DOMAIN_PREFIX3 = "Tb";
+String DAO_POSTFIX = "Dao";
+String XML_EXTENSION = ".xml";
+String writerName = "jeong hoon hee";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String table_prefix = tableName.substring(0, 1);
+if (table_prefix.equalsIgnoreCase("C") && tableName.toLowerCase().substring(0, 2).equalsIgnoreCase("c_")) {
+	tableName = tableName.substring(2, tableName.length());
+}
+
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.replaceAll(DOMAIN_PREFIX1, "");
+beanName = beanName.replaceAll(DOMAIN_PREFIX2, "");
+beanName = beanName.replaceAll(DOMAIN_PREFIX3, "");
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("serviceClass").setUIValue(beanName+SERVICE_POSTFIX);
+components.get("serviceImplClass").setUIValue(beanName+SERVICE_IMPL_POSTFIX);
+components.get("domainClass").setUIValue(beanName+DOMAIN_POSTFIX);
+components.get("daoClass").setUIValue(beanName+DAO_POSTFIX);
+components.get("ibatisFile").setUIValue(beanName + XML_EXTENSION);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+components.get("bizCode1").setUIValue("og");
+components.get("moduleName").setUIValue(beanName);
+components.get("bizName").setUIValue(beanName);

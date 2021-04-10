@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<textfield name="masterBizCode" label="*업무영역코드 (예 : shop)" required="true" onChange="/events/bizcode_changed.gv" />
+			</group>
+			<group>
+				<textfield name="bizCode" label="*단위업무코드 (예 : cm)" required="true" onChange="/events/bizcode_changed.gv" />
+			</group>
+			<group>
+				<textfield name="detailBizCode" label="*세부업무코드 (예 : mt)" required="true" onChange="/events/bizcode_changed.gv" />
+			</group>
+			<group>
+				<textfield name="sequence" label="*일련번호 (예 : 0101)" required="true" onChange="/events/sequence_changed.gv" />
+			</group>
+			<group>
+				<textfield name="programType" label="*프로그램유형 (예 : M)" required="true" onChange="/events/programType_changed.gv" />
+			</group>
+			<group>
+				<container name="ibatisPath" label="*Path" type="folder" required="true" />
+				<textfield name="ibatisFile" label="SqlMap Name" required="true" extensions="xml" />
+				<textfield name="datasetFile" label="dataset Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="ibatisFileOut" expression="$ibatisFile" velocity="ibatis.vm" container="ibatisPath"></template>
+			<template component="datasetFileOut" expression="$datasetFile" velocity="dataset.vm" container="ibatisPath"></template>
+		</output>
+	</wizard>
+</CodeGen>

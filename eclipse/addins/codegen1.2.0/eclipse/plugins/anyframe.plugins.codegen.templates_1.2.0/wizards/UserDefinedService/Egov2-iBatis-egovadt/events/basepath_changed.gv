@@ -1,0 +1,20 @@
+String basePath = components.get("basePath").getUIValue();
+String moduleName = components.get("moduleName").getUIValue();
+String modulePackage = components.get("modulePackage").getUIValue();
+String DOMAIN_PACKAGE = modulePackage + ".service";
+String DAO_PACKAGE = modulePackage + ".service.impl";
+String SERVICE_PACKAGE = modulePackage + ".service";
+String SERVICE_IMPL_PACKAGE = modulePackage + ".service.impl";
+String CONTROLLER_PACKAGE = modulePackage + ".web";
+String IBATIS_PATH = "egovframework/sqlmap/" + modulePackage.replaceAll("egovframework\\.", "").replaceAll("\\.", "/");
+String JSP_PATH = "src/main/webapp/WEB-INF/jsp/" + modulePackage.replaceAll("adt\\.", "").replaceAll("\\.", "/");
+String REQUEST_PATH = "";
+
+components.get("domainPackage").setUIValue(basePath+"/src/main/java/"+DOMAIN_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/src/main/java/"+SERVICE_PACKAGE);
+components.get("serviceImplPackage").setUIValue(basePath+"/src/main/java/"+SERVICE_IMPL_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/src/main/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/src/main/resources/"+IBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/src/main/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+modulePackage.replaceAll("egovframework\\.adt\\.", "").replaceAll("\\.", "/"));

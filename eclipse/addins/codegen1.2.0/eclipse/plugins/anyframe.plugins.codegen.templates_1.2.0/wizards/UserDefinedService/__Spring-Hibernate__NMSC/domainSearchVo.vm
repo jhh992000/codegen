@@ -1,0 +1,55 @@
+#set($columns = $model.fields)
+#if ($domainPackage_package != "")
+package $domainSearchVoPackage_package;
+#end
+
+/**
+ * File Name    : ${domainSearchVoClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2010 NMSC Co., Ltd. All rights reserved.
+ *
+ */
+
+import kr.go.nmsc.common.annotation.SearchColumn;
+import kr.go.nmsc.common.annotation.SearchLikeMode;
+import kr.go.nmsc.common.domain.SearchBaseDomain;
+
+public class ${domainSearchVoClass} extends SearchBaseDomain {
+#foreach($column in $columns)
+
+#if ($column.javaType == "java.lang.String")
+	@SearchLikeMode
+#end
+	@SearchColumn(name="$column.name")
+	public String SC_$column.name;
+#end
+
+#foreach($column in $columns)
+	public String getSC_${column.name}() {
+		return SC_$column.name;
+	}
+	public void setSC_${column.name}(String SC_$column.name) {
+		this.SC_$column.name = SC_$column.name;
+	}
+#end
+
+	public String toString() {
+		final String TAB = "    ";
+		StringBuffer retValue = new StringBuffer();
+		retValue.append("$domainClass ( ");
+		retValue.append(TAB);
+		retValue.append(super.toString());
+		retValue.append(TAB);
+#foreach($column in $columns)
+		retValue.append("SC_$column.name = ");
+		retValue.append(this.SC_$column.name);
+		retValue.append(TAB);
+#end
+		retValue.append(" )");
+
+		return retValue.toString();
+	}
+}

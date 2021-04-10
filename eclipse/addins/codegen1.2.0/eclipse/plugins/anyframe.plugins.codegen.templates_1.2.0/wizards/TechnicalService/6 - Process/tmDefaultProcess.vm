@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jsofa-process PUBLIC "-//JSOFA//DTD PROCESS//EN"
+ "http://www5f.biglobe.ne.jp/~webtest/jsofa/dtd/jsofa-process.dtd">
+
+<process>
+		<fork>
+			<set var="msg" value="Hello"/>
+			<set var="name" value="HongGilDong"/>
+		</fork>
+</process>

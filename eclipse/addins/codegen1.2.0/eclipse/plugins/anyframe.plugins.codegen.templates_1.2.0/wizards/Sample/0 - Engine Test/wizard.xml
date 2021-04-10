@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CodeGen>
+	<wizard>
+
+		<title>Code Generator Test 1</title>
+
+		<component-page>
+			<description>Output</description>
+			<container name="folder" label="Folder Output: " type="folder" />
+			<textfield name="name" label="Name: " />
+			<combo name="outputcb" label="cb" tooltip="Combo6" check="ip" edit="true">
+				<elements>
+					<option value="111">rr51</option>
+					<option value="222">rr52</option>
+				</elements>
+			</combo>
+			<!-- test_extensions 테스트 -->
+			<textfield name="tf2" label="test_extensions" required="false" value="test.txt" extensions="txt" />
+
+			<!-- number 테스트 -->
+			<textfield name="tfasdf" label="number 테스트" required="false" value="111" check="number" />
+		</component-page>
+
+		<component-page required="false">
+
+			<description>Test: TextField</description>
+
+			<group label="Textfield test" checkbox="ch1">
+				<checkbox name="ch1" label="Textfield test" />
+
+				<!-- default-value 테스트 -->
+				<textfield name="tf1" label="test_default-value" required="false" tooltip="컨트롤 보여지면 안됨"
+					default-value="1" />
+
+				<!-- test_extensions 테스트 -->
+				<textfield name="tf2" label="test_extensions" required="false" value="test.txt" extensions="txt" />
+
+				<!-- type 테스트 -->
+				<textfield name="tf3" label="test_type" required="false" value="10" tooltip="스트링일때 에러?" type="int" />
+
+
+				<!-- type 테스트 -->
+				<textfield name="tf31" label="test_type" required="false" value="20" tooltip="스트링일때 에러?" type="int" />
+
+				<!-- number 테스트 -->
+				<textfield name="tf4" label="number 테스트" required="false" value="111" check="number" />
+
+				<!-- ip 테스트 -->
+				<textfield name="tf5" label="ip 테스트" required="false" value="111.111.111.111" check="ip" />
+
+				<!-- static value 테스트 -->
+				<textfield name="tf6" label="static value 테스트" required="false" tooltip="static key key1 set"
+					value="#key1" />
+
+				<combo name="tfcb" label="cb" tooltip="Combo6" check="number" edit="true">
+					<elements>
+						<option value="111">rr51</option>
+						<option value="222">rr52</option>
+					</elements>
+				</combo>
+			</group>
+		</component-page>
+
+		<component-page required="false" condition="$ch1">
+
+			<description>Test: Combo</description>
+
+			<group label="Combo test" checkbox="ch2">
+				<checkbox name="ch2" label="Combo test" />
+
+				<!-- validation check 테스트 -->
+				<combo name="cb1" label="validation check" tooltip="Combo1" edit="true" check="number">
+					<elements>
+						<option value="111">111</option>
+						<option value="222">222</option>
+						<option value="333">333</option>
+						<option value="444">444</option>
+						<option value="555">555</option>
+						<option value="666">666</option>
+					</elements>
+				</combo>
+
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>Test: etc</description>
+
+			<group label="etc" checkbox="ch3">
+				<checkbox name="ch3" label="etc test" />
+
+				<file name="file" label="file" tooltip="extension, external, foolpath check" required="false"
+					extensions="*" external="true" fullpath="true" />
+
+				<!-- class browse 버튼 -->
+				<type name="type" label="type" tooltip="type" required="false" />
+
+				<!-- type="folder, package, source -->
+				<container name="con1" label="folder" tooltip="container" type="folder" external="true"
+					required="false" />
+				<container name="con2" label="package" tooltip="external" type="package" external="true"
+					required="false" />
+				<container name="con3" label="source" tooltip="external" type="source" external="true" required="false" />
+				<container name="con4" label="srcpackage" tooltip="external" type="srcpackage" external="true"
+					required="false" />
+			</group>
+		</component-page>
+
+		<table-page required="false">
+			<description>table test</description>
+
+			<columns>
+				<column>c1</column>
+				<column>c2</column>
+				<column>c3</column>
+				<column>c1</column>
+				<column>c2</column>
+				<column>c3</column>
+			</columns>
+			<lines>
+				<linhas>
+					<var>v1</var>
+					<var>v2</var>
+					<var>v3</var>
+				</linhas>
+			</lines>
+		</table-page>
+		<model-page type="pojo" required="false">
+			<description>jdbc model page.</description>
+		</model-page>
+
+<!--		<model-page type="sql" required="false">-->
+<!--			<description>Descriptions Here.</description>-->
+<!--		</model-page>-->
+
+		<table-page required="false">
+			<description>Descriptions Here.</description>
+
+			<columns>
+				<column>cc1</column>
+				<column>cc2</column>
+				<column>cc3</column>
+			</columns>
+			<lines>
+				<linhas>
+					<combo>
+						<elements>
+							<option value="white">cc1a</option>
+							<option value="blue">cc1b</option>
+						</elements>
+					</combo>
+					<combo>
+						<elements>
+							<option value="white">cc2a</option>
+							<option value="blue">cc2b</option>
+						</elements>
+					</combo>
+					<combo>
+						<elements>
+							<option value="white">cc3a</option>
+							<option value="blue">cc3b</option>
+						</elements>
+					</combo>
+				</linhas>
+				<linhas>
+					<combo>
+						<elements>
+							<option value="white">cc1a2</option>
+							<option value="blue">cc1b2</option>
+						</elements>
+					</combo>
+					<combo>
+						<elements>
+							<option value="white">cc2a2</option>
+							<option value="blue">cc2b2</option>
+						</elements>
+					</combo>
+					<combo>
+						<elements>
+							<option value="white">cc3a2</option>
+							<option value="blue">cc3b2</option>
+						</elements>
+					</combo>
+				</linhas>
+			</lines>
+		</table-page>
+
+
+		<variables>
+			<var name="var1" value="val1" value2="val11" />
+			<var name="var2" value="val2" value2="val22" />
+		</variables>
+
+
+		<component-page required="true">
+			<description>Radio test</description>
+			<group>
+
+				<combo name="radio" label="Choose some View Layer Technology:" listener="true">
+					<elements>
+						<option value="1">JSP</option>
+						<option value="2">Velocity</option>
+						<option value="3">Freemarker</option>
+						<option value="4">XSLT</option>
+						<option value="5">WebMacro</option>
+					</elements>
+				</combo>
+
+				<combo name="rr1" label="JSP" tooltip="Combo1" radio="JSP">
+					<elements>
+						<option value="111">rr11</option>
+						<option value="222">rr12</option>
+					</elements>
+				</combo>
+				<combo name="rr2" label="Velocity" tooltip="Combo2" radio="Velocity">
+					<elements>
+						<option value="111">rr21</option>
+						<option value="222">rr22</option>
+					</elements>
+				</combo>
+				<combo name="rr3" label="Freemarker" tooltip="Combo3" radio="Freemarker">
+					<elements>
+						<option value="111">rr31</option>
+						<option value="222">rr32</option>
+					</elements>
+				</combo>
+				<combo name="rr4" label="XSLT" tooltip="Combo4" radio="XSLT">
+					<elements>
+						<option value="111">rr41</option>
+						<option value="222">rr42</option>
+					</elements>
+				</combo>
+				<combo name="rr5" label="WebMacro" tooltip="Combo5" radio="WebMacro">
+					<elements>
+						<option value="111">rr51</option>
+						<option value="222">rr52</option>
+					</elements>
+				</combo>
+
+			</group>
+
+			<combo name="rr6" label="aaa" tooltip="Combo6" check="number" edit="true">
+				<elements>
+					<option value="111">rr51</option>
+					<option value="222">rr52</option>
+				</elements>
+			</combo>
+		</component-page>
+
+		<output>
+			<template component="name" velocity="template.vm" extension="txt" container="folder" />
+		</output>
+	</wizard>
+</CodeGen>

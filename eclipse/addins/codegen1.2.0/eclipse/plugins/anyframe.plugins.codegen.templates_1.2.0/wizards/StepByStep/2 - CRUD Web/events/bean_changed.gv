@@ -1,0 +1,36 @@
+String BEAN_PREFIX = "applicationContext-";
+String BEANID_POSTFIX = "Service";
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String IMPL_POSTFIX = "Impl";
+String DAO_POSTFIX = "DAO";
+String VO_POSTFIX = "VO";
+String MAPPING_PREFIX = "mapping-";
+
+String STURTS_PREFIX = "struts-config-";
+String ACTION_POSTFIX = "Action";
+String ADDJSP_PREFIX = "add";
+String LISTJSP_PREFIX = "list";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+
+String beanName = components.get("beanName").getUIValue();	//tableTestService
+String bean = anyframe.plugins.codegen.core.util.StringUtil.removePostfix(beanName, BEANID_POSTFIX);	// tableTest
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.capitalize(bean);	// TableTest
+String tableName = anyframe.plugins.codegen.core.util.StringUtil.toDBName(tableJavaName);	// table_test
+String serviceName = tableName + SERVICE_POSTFIX;		// table_testservice
+String serviceJavaName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(beanName);	// TableTestService
+
+components.get("beanFileName").setUIValue(BEAN_PREFIX+serviceName+XML_EXTENSION);
+components.get("iClass").setUIValue(serviceJavaName);
+components.get("implClass").setUIValue(serviceJavaName+IMPL_POSTFIX);
+components.get("daoClass").setUIValue(tableJavaName+DAO_POSTFIX);
+components.get("voClass").setUIValue(tableJavaName+VO_POSTFIX);
+components.get("mappingFile").setUIValue(MAPPING_PREFIX+serviceName+XML_EXTENSION);
+
+components.get("strutsFileName").setUIValue(STURTS_PREFIX+tableName+XML_EXTENSION);
+components.get("actionClass").setUIValue(tableJavaName+ACTION_POSTFIX);
+components.get("addJSP").setUIValue(ADDJSP_PREFIX+tableJavaName+JSP_EXTENSION);
+components.get("listJSP").setUIValue(LISTJSP_PREFIX+tableJavaName+JSP_EXTENSION);
+
+

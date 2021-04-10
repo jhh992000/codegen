@@ -1,0 +1,197 @@
+#set($columns = $model.fields)
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+#if(${daoPackage_package} != "")
+package ${daoPackage_package};
+#end
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * 업   무   명 :
+ * 프로그램 ID : ${daoClass}.java
+ * 프로그램 명 : $tableName 테이블의 데이터를 핸들링하는 DAO 클래스입니다.
+ * 개       요 : 기본적으로 CRUD 메소드가 제공됩니다.
+ * 작   성   자 : ${writerName}
+ * 작   성   일 : ${writeDate}
+ *
+ *   수정일       수정자                              수정내용
+ * ---------   --------   --------------------------------------------------------
+ *
+ * Copyright(c) 2012 DAEYOON Co. Ltd. All rights reserved.
+ */
+
+public class ${daoClass} extends SqlMapClientDaoSupport {
+
+	/**
+	 * 페이징된 리스트 조회
+	 * 
+	 * @param startIdx
+	 * @param endIdx
+	 * @param searchKey
+	 * @param searchValue
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public List<${domain_cap}> get${domain_cap}PagedList(long startIdx, long endIdx, String searchKey, String searchValue, ${domain_cap} ${domain_uncap}) throws DataAccessException {
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("startIdx", startIdx);
+        paramMap.put("endIdx", endIdx);
+        paramMap.put("searchKey", searchKey);
+        paramMap.put("searchValue", searchValue);
+        if (${domain_uncap} != null) {
+        	/*
+#foreach($column in $columns)
+            paramMap.put("$column.fieldName", ${domain_uncap}.get${column.javaName}());
+#end
+			*/
+        }
+		return getSqlMapClientTemplate().queryForList("get${domain_cap}PagedList", paramMap);
+	}
+
+	/**
+	 * 갯수조회
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int get${domain_cap}Count(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+		paramMap.put("$column.fieldName", ${domain_uncap}.get${column.javaName}());
+#end
+#end
+		return ((Integer) getSqlMapClientTemplate().queryForObject("get${domain_cap}Count", paramMap)).intValue();
+	}
+
+	/**
+	 * 리스트조회
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public List<${domain_cap}> getList(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+		paramMap.put("$column.fieldName", ${domain_uncap}.get${column.javaName}());
+#end
+#end
+		return getSqlMapClientTemplate().queryForList("get${domain_cap}List", paramMap);
+	}
+
+	/**
+	 * 데이터1개조회
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+	 * @param $column.fieldName
+#end
+#end
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public ${domain_cap} get${domain_cap}(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")long $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws DataAccessException {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+		paramMap.put("$column.fieldName", $column.fieldName);
+#end
+#end
+		return (${domain_cap}) getSqlMapClientTemplate().queryForObject("get${domain_cap}", paramMap);
+	}
+
+	/**
+	 * 데이터저장
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public Long insert${domain_cap}(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return (Long) getSqlMapClientTemplate().insert("insert${domain_cap}", ${domain_uncap});
+	}
+
+	/**
+	 * 데이터수정
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public Integer update${domain_cap}(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getSqlMapClientTemplate().update("update${domain_cap}", ${domain_uncap});
+	}
+	
+	/**
+	 * 데이터삭제
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+	 * @param $column.fieldName
+#end
+#end
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int delete${domain_cap}(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)#if ($primaryKey.type=="INT" || $primaryKey.type=="DOUBLE" || $primaryKey.type=="FLOAT" || $primaryKey.type=="NUMBER" || $primaryKey.type=="int" || $primaryKey.type=="double" || $primaryKey.type=="float" || $primaryKey.type=="number")long $primaryKey.fieldName#else$primaryKey.javaType.replaceAll("java.lang.", "") $primaryKey.fieldName#end#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) throws DataAccessException {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+		paramMap.put("$column.fieldName", $column.fieldName);
+#end
+#end
+		return getSqlMapClientTemplate().delete("delete${domain_cap}", paramMap);
+	}
+
+}

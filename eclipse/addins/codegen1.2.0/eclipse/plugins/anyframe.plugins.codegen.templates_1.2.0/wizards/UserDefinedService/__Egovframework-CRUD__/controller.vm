@@ -1,0 +1,267 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("Vo"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.util.List;
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import egovframework.eco.common.Criteria;
+import egovframework.eco.common.ExtPaginationInfo;
+import egovframework.eco.common.RedirectUrlMaker;
+import egovframework.let.common.EgovMessageSource;
+
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 : $tableName 테이블과 관련된 업무 요청을 받아 처리하는 Controller 클래스
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2013 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Controller
+public class ${controllerClass} {
+
+	protected static final Log logger = LogFactory.getLog(${controllerClass}.class);
+
+	@Resource(name = "${service_uncap}")
+	private ${service_cap} ${service_uncap};
+
+	@Resource(name = "egovMessageSource")
+	private EgovMessageSource egovMessageSource;
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/list.do")
+	public String list(Model model, Criteria criteria, ${domain_cap} ${domainName_uncap}) throws Exception {
+
+		/** 페이징 */
+		ExtPaginationInfo paginationInfo = new ExtPaginationInfo(criteria);
+		criteria.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		criteria.setLastIndex(paginationInfo.getLastRecordIndex());
+		criteria.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		/** 전체건수조회 */
+		int totCnt = ${service_uncap}.select${domainName}TotCnt(criteria);
+		paginationInfo.setTotalRecordCount(totCnt);
+
+		/** 리스트조회 */
+		List<${domain_cap}> ${domainName_uncap}List = ${service_uncap}.select${domainName}List(criteria);
+		model.addAttribute("${domainName_uncap}List", ${domainName_uncap}List);
+
+		model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+		model.addAttribute("criteria", criteria);
+		model.addAttribute("paginationInfo", paginationInfo);
+		model.addAttribute("message", egovMessageSource.getMessage("success.common.select"));
+
+		return "${requestPath}/list";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/view.do")
+	public String view(Model model, Criteria criteria, ${domain_cap} ${domainName_uncap}) throws Exception {
+
+		${domainName_uncap} = ${service_uncap}.select${domainName}(${domainName_uncap});
+
+		model.addAttribute("criteria", criteria);
+		model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+
+		return "${requestPath}/view";
+	}
+
+	/**
+	 * 생성화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/insertForm.do")
+	public String insertForm(Model model, Criteria criteria, ${domain_cap} ${domainName_uncap}) throws Exception {
+
+		model.addAttribute("editMode", "insert");
+		model.addAttribute("criteria", criteria);
+		model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+		return "${requestPath}/form";
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/updateForm.do")
+	public String updateForm(Model model, Criteria criteria, ${domain_cap} ${domainName_uncap}) throws Exception {
+
+		${domainName_uncap} = ${service_uncap}.select${domainName}(${domainName_uncap});
+
+		model.addAttribute("editMode", "update");
+		model.addAttribute("criteria", criteria);
+		model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+		return "${requestPath}/form";
+	}
+
+	/**
+	 * 등록
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param bindingResult
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/insert.do")
+	public String insert(ModelMap model, Criteria criteria, @Valid@ModelAttribute("${domainName_uncap}") ${domain_cap} ${domainName_uncap}, BindingResult bindingResult, SessionStatus status, RedirectAttributes redirectAttributes) throws Exception {
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("editMode", "insert");
+			model.addAttribute("criteria", criteria);
+			model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+			return "${requestPath}/form";
+		} else {
+
+			// 등록
+#if($primaryKeys.size() == 1)
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+			int nextId = ${service_uncap}.select${domainName}NextId();
+			${domainName_uncap}.set$pk_cap(nextId);
+#end
+#elseif($primaryKeys.size() > 1)
+			int nextId = ${service_uncap}.select${domainName}NextId(${domainName_uncap});
+			${domainName_uncap}.set$pk_cap(nextId);
+#end
+			${service_uncap}.insert${domainName}(${domainName_uncap});
+
+			// Double submission 방지
+			status.setComplete();
+
+			// 저장완료 메세지
+			redirectAttributes.addFlashAttribute("flashMessage", egovMessageSource.getMessage("success.common.insert"));
+
+			if (criteria.getMenuNo() != null && criteria.getMenuNo() > 0) {
+				model.addAttribute("menuNo", criteria.getMenuNo());
+			}
+			
+			return "redirect:${requestPath}/list.do";
+		}
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param bindingResult
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/update.do")
+	public String update(ModelMap model, Criteria criteria, @Valid@ModelAttribute("${domainName_uncap}") ${domain_cap} ${domainName_uncap}, BindingResult bindingResult, SessionStatus status, RedirectAttributes redirectAttributes) throws Exception {
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("editMode", "update");
+			model.addAttribute("${domainName_uncap}", ${domainName_uncap});
+			return "${requestPath}/form";
+		} else {
+
+			// 수정
+			${service_uncap}.update${domainName}(${domainName_uncap});
+
+			// Double submission 방지
+			status.setComplete();
+
+			// 수정완료 메세지
+			redirectAttributes.addFlashAttribute("flashMessage", egovMessageSource.getMessage("success.common.update"));
+
+			RedirectUrlMaker redirectUrlMaker = new RedirectUrlMaker("${requestPath}/list.do", criteria);
+			return redirectUrlMaker.getRedirectUrl();
+		}
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/delete.do")
+	public String delete(Model model, Criteria criteria, ${domain_cap} ${domainName_uncap}, SessionStatus status, RedirectAttributes redirectAttributes) throws Exception {
+
+		// 삭제
+		${service_uncap}.delete${domainName}(${domainName_uncap});
+
+		// Double submission 방지
+		status.setComplete();
+
+		// 삭제완료 메세지
+		redirectAttributes.addFlashAttribute("flashMessage", egovMessageSource.getMessage("success.common.delete"));
+
+		RedirectUrlMaker redirectUrlMaker = new RedirectUrlMaker("${requestPath}/list.do", criteria);
+		return redirectUrlMaker.getRedirectUrl();
+	}
+
+}

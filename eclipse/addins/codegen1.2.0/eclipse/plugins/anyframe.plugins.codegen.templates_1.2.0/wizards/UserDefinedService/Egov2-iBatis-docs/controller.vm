@@ -1,0 +1,232 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import kr.go.car.cmmn.util.PaginationVO;
+import kr.go.car.cmmn.web.RedirectParameter;
+import kr.go.car.domain.User;
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 : ${moduleKorName} Controller
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Controller
+public class ${controllerClass} {
+
+	protected static final Log logger = LogFactory.getLog(${controllerClass}.class);
+
+	@Resource(name = "${service_uncap}")
+	private ${service_cap} ${service_uncap};
+	@Resource(name = "messageSourceAccessor")
+	private MessageSourceAccessor messageSourceAccessor;
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}List.do")
+	public String ${domainName_uncap}List(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, User sessionUser) throws Exception {
+
+		/** count */
+		int totCnt = ${service_uncap}.select${domainName}TotCnt(search${domain_cap});
+
+		/** pagination vo */
+		PaginationVO paginationVO = (PaginationVO) search${domain_cap};
+
+		/** paging setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(paginationVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(paginationVO.getPageUnit());
+		paginationInfo.setPageSize(paginationVO.getPageSize());
+		paginationInfo.setTotalRecordCount(totCnt);
+		if(paginationVO.getPageIndex() > paginationInfo.getTotalPageCount()){
+			paginationInfo.setCurrentPageNo(paginationInfo.getTotalPageCount());
+		}
+		paginationVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		paginationVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		paginationVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		/** list */
+		List<${domain_cap}> ${domainName_uncap}List = ${service_uncap}.select${domainName}List(search${domain_cap});
+
+		model.addAttribute("${domainName_uncap}List", ${domainName_uncap}List);
+		model.addAttribute("paginationInfo", paginationInfo);
+
+		return "${requestPath}/${domainName_uncap}List";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param search${domain_cap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}View.do")
+	public String ${domainName_uncap}View(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, User sessionUser) throws Exception {
+
+		${domain_cap} ${domain_uncap} = ${service_uncap}.select${domainName}(search${domain_cap});
+
+		new RedirectParameter().copyParameter(search${domain_cap}, ${domain_uncap});
+
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+
+		return "${requestPath}/${domainName_uncap}View";
+	}
+
+	/**
+	 * 등록화면
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}CreateForm.do")
+	public String ${domainName_uncap}CreateForm(Model model, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}, User sessionUser) throws Exception {
+
+		model.addAttribute("editMode", "${moduleName}Create");
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+		return "${requestPath}/${domainName_uncap}Form";
+	}
+
+	/**
+	 * 등록
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Create.do")
+	public String ${domainName_uncap}Create(ModelMap model, ${domain_cap} ${domain_uncap}, User sessionUser) throws Exception {
+
+#if($primaryKeys.size() == 1)
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMERIC" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+		int nextId = ${service_uncap}.select${domainName}NextId();
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+#elseif($primaryKeys.size() > 1)
+		int nextId = ${service_uncap}.select${domainName}NextId(${domain_uncap});
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+		${service_uncap}.insert${domainName}(${domain_uncap});
+
+		${domain_uncap}.setPageIndex(1);
+
+		return new RedirectParameter("${requestPath}/${domainName_uncap}List.do").getParameter(${domain_uncap});
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param search${domain_cap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}ModifyForm.do")
+	public String ${domainName_uncap}ModifyForm(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, User sessionUser) throws Exception {
+
+		${domain_cap} ${domain_uncap} = ${service_uncap}.select${domainName}(search${domain_cap});
+
+		new RedirectParameter().copyParameter(search${domain_cap}, ${domain_uncap});
+
+		model.addAttribute("editMode", "${moduleName}Modify");
+		model.addAttribute("${domain_uncap}", ${domain_uncap});
+		return "${requestPath}/${domainName_uncap}Form";
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Modify.do")
+	public String ${domainName_uncap}Modify(ModelMap model, ${domain_cap} ${domain_uncap}, User sessionUser) throws Exception {
+
+		${service_uncap}.update${domainName}(${domain_uncap});
+
+		return new RedirectParameter("${requestPath}/${domainName_uncap}List.do").getParameter(${domain_uncap});
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param model
+	 * @param ${domain_uncap}
+	 * @param sessionUser
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/${domainName_uncap}Remove.do")
+	public String ${domainName_uncap}Remove(Model model, @ModelAttribute("${domain_uncap}") ${domain_cap} ${domain_uncap}, User sessionUser) throws Exception {
+
+		${service_uncap}.delete${domainName}(${domain_uncap});
+
+		return new RedirectParameter("${requestPath}/${domainName_uncap}List.do").getParameter(${domain_uncap});
+	}
+
+}

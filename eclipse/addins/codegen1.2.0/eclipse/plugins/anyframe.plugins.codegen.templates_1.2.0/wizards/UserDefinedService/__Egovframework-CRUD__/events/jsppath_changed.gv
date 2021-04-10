@@ -1,0 +1,6 @@
+String basePath = components.get("basePath").getUIValue();
+String JSP_PATH = basePath+"/WebContent/WEB-INF/jsp/eco";
+String jspPath = components.get("jspPath").getUIValue();
+String newRequestPath = jspPath.replaceAll(JSP_PATH, "");
+
+components.get("requestPath").setUIValue("/eco" + newRequestPath);

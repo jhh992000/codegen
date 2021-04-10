@@ -1,0 +1,90 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${servicePackage_package} != "")
+package ${servicePackage_package};
+#end
+
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * File Name    : ${serviceClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2008 BALHAE Co., Ltd. All rights reserved.
+ */
+
+@Service
+public class ${serviceClass} {
+	
+	private final Log log = LogFactory.getLog(${serviceClass}.class);
+	private ${daoClass} ${daoClass_uncap};
+
+	@Autowired
+	public void set${daoClass}($daoClass ${daoClass_uncap}) {
+		this.${daoClass_uncap} = ${daoClass_uncap};
+	}
+
+	public int getNextKey(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.getNextKey(${domain_uncap});
+	}
+
+	public int getCount(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.getCount(${domain_uncap});
+	}
+
+	public List<${domain_cap}> getPagedList(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.getPagedList(${domain_uncap});
+	}
+
+	public List<${domain_cap}> getList(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.getList(${domain_uncap});
+	}
+
+	public ${domain_cap} getInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.getInfo(${domain_uncap});
+	}
+	
+	public ${domain_cap} getInfoByKey(#set($i = 1)#foreach($primaryKey in $model.primaryKeys)#if($primaryKey.type=="NUMBER" || $primaryKey.type=="number")int#else String#end $primaryKey.fieldName#if( $i < $model.primaryKeys.size() ), #end#set($i = $i + 1)#end) throws DataAccessException {
+		${domain_cap} ${domain_uncap} = new ${domain_cap}();
+#foreach($primaryKey in $model.primaryKeys)
+		${domain_uncap}.set${primaryKey.fieldName.substring(0,1).toUpperCase()}${primaryKey.fieldName.substring(1)}($primaryKey.fieldName);
+#end
+		return ${daoClass_uncap}.getInfo(${domain_uncap});
+	}
+
+	public int insertInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.insertInfo(${domain_uncap});
+	}
+
+	public int updateInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.updateInfo(${domain_uncap});
+	}
+
+	public int deleteInfoByKey(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ${daoClass_uncap}.deleteInfoByKey(${domain_uncap});
+	}
+
+}

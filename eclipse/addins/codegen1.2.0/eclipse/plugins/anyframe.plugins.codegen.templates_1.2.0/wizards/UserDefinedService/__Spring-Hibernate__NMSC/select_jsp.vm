@@ -1,0 +1,205 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($tbName_s = $tbName.replaceAll("TBL_","").toLowerCase())
+#set($columns = $model.fields)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/jsp/manager/include_files/common_jsp/common.jsp"%>
+<html>
+<head>
+<script type="text/javascript" src="/html/${mode}/contents/${tbName_s}/${tbName_s}_select.js"></script>
+<script type="text/javascript" src="/dwr/interface/${dwrClass}.js"></script>
+</head>
+<body>
+<form:form name="${formName}" commandName="model" method="get" onsubmit="return false;">
+
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="true")
+	<form:hidden path="$column.name" />
+#else
+	<html:hidden name="searchVO" property="SC_$column.name" styleId="SC_$column.name" />
+#end
+#end
+	<html:hidden name="searchVO" property="SITE_MNU_SEQ_N" styleId="SITE_MNU_SEQ_N" />
+	<html:hidden name="searchVO" property="PAGER_OFFSET" styleId="PAGER_OFFSET" />
+	<html:hidden name="searchVO" property="MAX_PAGE_ITEMS" styleId="MAX_PAGE_ITEMS" />
+	<html:hidden name="searchVO" property="MAX_INDEX_PAGES" styleId="MAX_INDEX_PAGES" />
+	<html:hidden name="searchVO" property="OC" styleId="OC" />
+	<html:hidden name="searchVO" property="ORDER" styleId="ORDER" />
+
+	<pg:pager
+		url="javascript:getList"
+		items="${searchVO.ITEM_COUNT}"
+		maxPageItems="${searchVO.MAX_PAGE_ITEMS}"
+		maxIndexPages="${searchVO.MAX_INDEX_PAGES}" 
+		isOffset="<%=true%>" index="center" export="offset,currentPageNumber=pageNumber" scope="request">
+		<%-- 페이징 링크버튼 붙는 검색파라미터 --%>
+		<pg:param name="MAX_PAGE_ITEMS" value="${ searchVO.MAX_PAGE_ITEMS }" />
+		<pg:param name="MAX_INDEX_PAGES" value="${ searchVO.MAX_INDEX_PAGES }" />
+		<pg:param name="SC" value="${ searchVO.SC }" />
+		<pg:param name="SW" value="${ searchVO.SW }" />
+		<pg:param name="OC" value="${ searchVO.OC }" />
+		<pg:param name="ORDER" value="${ searchVO.ORDER }" />
+		<pg:param name="SITE_MNU_SEQ_N" value="${ searchVO.SITE_MNU_SEQ_N }" />
+		
+#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+		<pg:param name="SC_$column.name" value="${ searchVO.sc_$column.name }" />
+#end
+#end
+		
+		<!-- SEARCH START -->
+		<table width="100%" border="0" cellpadding="0" cellspacing="1" bgcolor="#D5D5D5">
+		<tr> 
+			<td bgcolor="#EFEFEF" style="padding:4px">
+				<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+				<tr> 
+					<td height="35" align="center">
+						<table width="1%" border="0" cellpadding="5" cellspacing="0">
+						<tr> 
+							<td nowrap="nowrap" class="search_s_title"> 
+								<img src="/html/manager/images/body/arr.gif" align="absmiddle"/>검색조건 : 
+							</td>
+							<td width="1%" nowrap="nowrap"> 
+								<html:select name="searchVO" property="SC" styleId="SC">
+#foreach($col in $cols)	
+									<html:option value="${col.name}">${col.name}</html:option>
+#end
+								</html:select>
+							</td>
+							<td>
+								<img src="/html/manager/images/body/search_sero.gif"/>
+							</td>
+							<td nowrap="nowrap" class="search_s_title"> 
+								<img src="/html/manager/images/body/arr.gif" align="absmiddle"/>검색단어 : 
+							</td>
+							<td nowrap="nowrap"> 
+								<html:text name="searchVO" property="SW" styleId="SW" styleClass="input" onkeyup="if(event.keyCode==13){goFind();}" />
+							</td>
+							<td>
+								<a href="javascript:goFind();"><img src="/html/manager/images/body/btn_search.gif" width="36" height="20" hspace="10" align="absmiddle"/></a>
+							</td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+		<!-- SEARCH END -->
+		
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td class="margin_table"></td></tr></table>
+		
+		<!-- BUTTON START -->
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr> 
+			<td>
+				<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td class="btn_type1_head"></td>
+				<td class="btn_type1" nowrap="nowrap"><a href="javascript:goDeleteForList();">삭제</a></td>
+				<td class="btn_type1_end"></td>
+				</tr>
+				</table>
+			</td>
+			<td align="right">
+				<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+				<td class="btn_type1_head"></td>
+				<td class="btn_type1" nowrap="nowrap"><a href="${requestPath}/iframe/insertForm.do?TB_iframe=true&width=748&height=600" class="thickbox">추가</a></td>
+				<td class="btn_type1_end"></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+		<!-- BUTTON END -->
+		
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td class="margin_s"></td></tr></table>
+		
+		<!-- DATA START -->
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" id="tbl_data">
+		<tr> 
+			<td colspan="${colspan}" class="list_bar_1px"></td>
+		</tr>
+		<tr> 
+			<td width="40" class="list_bar_back">
+				<input type="checkbox" name="choice" onclick="toggleCheck();" />
+			</td>
+#foreach($col in $cols)	
+			<td class="list_bar_back" width="">${col.name}</td>
+#end
+			<td class="list_bar_back" width="80">작업</td>
+		</tr>
+		<tr> 
+			<td colspan="${colspan}" class="list_bar_1px"></td>
+		</tr>
+		<c:set var="i" value="${0}" />
+		<c:forEach var="item" items="${ ${domain_uncap}List }">
+			<c:set var="i" value="${ i+1 }" />
+			<pg:item>
+				<tr>
+					<td align="center" width="25" height="25"><input type="checkbox" name="CHK_$pk.name" style="border:0px;" value="${ item.$pk.name }" /></td>
+#foreach($col in $cols)			
+#if($col.isPK())
+					<td>
+						<a href="javascript:goView(#foreach($pk in $pks)'${ item.$pk.name }'#if($velocityCount<$pks.size()), #end#end);">${ item.$col.name }</a>
+					</td>
+#else
+					<td>
+						${ item.${col.name} }
+					</td>
+#end			
+#end
+					<td align="center">
+						[<a href="${requestPath}/iframe/info.do?$pk.name=${ item.$pk.name }&TB_iframe=true&width=600&height=600" class="thickbox">보기</a>]
+						[<a href="${requestPath}/iframe/updateForm.do?$pk.name=${ item.$pk.name }&TB_iframe=true&width=600&height=600" class="thickbox">수정</a>]
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="${colspan}" class="list_line"></td>
+				</tr>
+			</pg:item>
+		</c:forEach>
+		<c:if test="${ empty ${domain_uncap}List }">
+			<tr>
+				<td colspan="${colspan}" align="center" height="25">데이터가 존재하지 않습니다.</td>
+			</tr>
+		</c:if>
+		<tr><td colspan="${colspan}" class="list_bar_2px"></td></tr>
+		<tr> 
+			<td colspan="${colspan}" class="no">
+				<c:import url="/jsp/manager/include_files/common_jsp/pager.jsp"><c:param name="MAX_PAGE_ITEMS" value="${searchVO.MAX_PAGE_ITEMS}" /></c:import>
+			</td>
+		</tr>
+		<tr><td colspan="${colspan}" class="list_no_line"></td></tr>
+		</table>
+		<!-- DATA END -->
+			
+	</pg:pager>
+</form:form>
+</body>
+</html>

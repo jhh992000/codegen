@@ -1,0 +1,72 @@
+tf: $tf
+
+:: textfield test ::
+combo_ip: ${outputcb}
+test_default-value: ${tf1}		 
+test_extensions: ${tf2}			 
+test_type: ${tf3}+${tf31}		 
+number test: ${tf4}			 
+ip test: ${tf5}				 
+static value test: ${tf6}		 
+combo_num: ${tfcb}
+
+
+:: combo test ::
+combo test: ${cb1}			:is right editing val?
+
+:: etc components test ::
+file test: ${file}
+type test: ${type}
+folder: ${con1}
+package: ${con2}
+source: ${con3}
+
+:: table test :: 
+#foreach($row in $table0.items)
+	$row.getText(0)
+	$row.getText(1)
+	$row.getText(2)
+#end
+
+select $columns FROM $tablesSQL $!where $!joins $!groupBy $!orderBy
+
+:: model test ::
+$model
+$model.name 
+$model.capName
+$model.uncapName
+$model.javaName
+$model.fieldName
+$model.fullyName
+-----------------------
+#foreach($f in $model.fields)
+	$f.name $f.type 
+#end
+
+:: table2 test::
+#foreach($column in $table1.items)
+	$column.getText(0)
+	$column.getText(1)
+	$column.getText(2)
+#end
+
+:: variables ::
+$var1
+$var1.value
+$var1.value1
+$var1.value2
+
+$var2
+$var2.value
+$var2.value1
+$var2.value2
+
+${radio}
+${rr1}
+${rr2}
+${rr3}
+${rr4}
+${rr5}
+${rr6}
+	
+$tf1_package

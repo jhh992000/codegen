@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Common Bean Creation</title>
+
+		<component-page>
+			<description>applicationContext-common Definition</description>
+			<group label="applicationContext-common.xml 생성할 위치">
+				<container name="commonPath" label="*Path" type="srcPackage" required="true" />
+			</group>
+		</component-page>
+		<output>
+			<template component="beanOut" expression="applicationContext-common.xml" velocity="bean.vm"
+				container="commonPath" />
+		</output>
+	</wizard>
+</CodeGen>

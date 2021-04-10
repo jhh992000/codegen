@@ -1,0 +1,45 @@
+String basePath = components.get("basePath").getUIValue();
+String bizName = components.get("bizName").getUIValue();
+String DOMAIN_PACKAGE = "com.gir";
+String DAO_PACKAGE = "com.gir";
+String SERVICE_PACKAGE = "com.gir";
+String SERVICE_IMPL_PACKAGE = "com.gir";
+String IBATIS_PATH = "sqlmap/gir";
+String UI_PATH = "/webapp/";
+
+String bizCode1 = components.get("bizCode1").getUIValue().toLowerCase();
+String bizCode2 = components.get("bizCode2").getUIValue().toLowerCase();
+String bizCode3 = components.get("bizCode3").getUIValue().toLowerCase();
+String bizNo = components.get("bizNo").getUIValue().toLowerCase();
+String bizFullCode = bizCode1.toUpperCase() + bizCode2.toUpperCase() + bizCode3.toUpperCase() + bizNo;
+
+if (!bizCode1.equals("") && !bizCode2.equals("") && !bizCode3.equals("")) {
+	components.get("daoNameSpace").setUIValue(bizCode1.toUpperCase() + bizCode2.toUpperCase() + bizCode3.toUpperCase());
+	components.get("statementNamespace").setUIValue(bizCode1.toUpperCase() + bizCode2.toUpperCase() + bizCode3.toUpperCase() + "Dao");
+} else {
+	components.get("daoNameSpace").setUIValue("");
+	components.get("statementNamespace").setUIValue("");
+}
+
+
+String packagePrefix = bizCode1 + "." + bizCode2 + "." + bizCode3;
+DOMAIN_PACKAGE = DOMAIN_PACKAGE + "." + packagePrefix + ".service";
+DAO_PACKAGE = DAO_PACKAGE + "." + packagePrefix + ".service.dao";
+SERVICE_PACKAGE = SERVICE_PACKAGE + "." + packagePrefix + ".service";
+SERVICE_IMPL_PACKAGE = SERVICE_IMPL_PACKAGE + "." + packagePrefix + ".service.impl";
+IBATIS_PATH = IBATIS_PATH + "/" + bizCode1 + "/" + bizCode2 + "/" + bizCode3;
+UI_PATH = UI_PATH + bizCode2 + "/" + bizCode3;
+
+components.get("domainPackage").setUIValue(basePath+"/java/"+DOMAIN_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/java/"+SERVICE_PACKAGE);
+components.get("serviceImplPackage").setUIValue(basePath+"/java/"+SERVICE_IMPL_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/resource/"+IBATIS_PATH);
+components.get("uiPath").setUIValue(basePath+UI_PATH);
+
+components.get("serviceClass").setUIValue(bizFullCode+SERVICE_POSTFIX);
+components.get("serviceImplClass").setUIValue(bizFullCode+SERVICE_IMPL_POSTFIX);
+components.get("domainClass").setUIValue(bizFullCode+DOMAIN_POSTFIX);
+components.get("daoClass").setUIValue(bizFullCode+DAO_POSTFIX);
+components.get("ibatisFile").setUIValue(bizFullCode + "Sql" +  XML_EXTENSION);
+components.get("uiXmlFile").setUIValue(bizFullCode + XML_EXTENSION);

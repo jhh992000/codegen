@@ -1,0 +1,27 @@
+String BEAN_PREFIX = "applicationContext-";
+String BEANID_POSTFIX = "Service";
+String SERVICE_CPOSTFIX = "Service";
+String SERVICE_POSTFIX = "service";
+String IMPL_POSTFIX = "Impl";
+String DAO_POSTFIX = "DAO";
+String VO_POSTFIX = "VO";
+String MAPPING_PREFIX = "mapping-";
+
+String STURTS_PREFIX = "struts-config-";
+String ACTION_POSTFIX = "Action";
+String ADDJSP_PREFIX = "add";
+String LISTJSP_PREFIX = "list";
+String UPDATEJSP_PREFIX = "update";
+String JSP_EXTENSION= ".jsp";
+String XML_EXTENSION = ".xml";
+
+
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+
+components.get("strutsFileName").setUIValue(STURTS_PREFIX+tableName+XML_EXTENSION);
+components.get("actionClass").setUIValue(tableJavaName+ACTION_POSTFIX);
+components.get("addJSP").setUIValue(ADDJSP_PREFIX+tableJavaName+JSP_EXTENSION);
+components.get("listJSP").setUIValue(LISTJSP_PREFIX+tableJavaName+JSP_EXTENSION);
+components.get("updateJSP").setUIValue(UPDATEJSP_PREFIX+tableJavaName+JSP_EXTENSION);
+

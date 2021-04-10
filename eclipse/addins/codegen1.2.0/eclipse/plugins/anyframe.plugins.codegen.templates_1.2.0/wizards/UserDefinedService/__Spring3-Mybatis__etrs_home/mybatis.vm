@@ -1,0 +1,215 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($columns = $model.fields)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${daoPackage_package}.${daoClass}">
+
+	<resultMap type="${domainPackage_package}.${domain_cap}" id="resultMap-default-${domain_cap}">
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+		<result property="$column.fieldName" column="$column.name" />
+#elseif ($column.type == "DATE")
+		<result property="$column.fieldName" column="$column.name" javaType="date" jdbcType="TIMESTAMP" />
+#else
+		<result property="$column.fieldName" column="$column.name" />
+#end
+#end
+	</resultMap>
+
+	<resultMap type="${domainPackage_package}.${domain_cap}" id="resultMap-${domain_cap}" extends="resultMap-default-${domain_cap}">
+	</resultMap>
+
+	<sql id="selectColumns">
+		#set($i = 1)#foreach($column in $columns)A.$column.name#if( $i < $columns.size() ), #end#if( $i%5 == 0 )
+
+		#end#set($i = $i + 1)#end
+
+	</sql>
+
+	<sql id="searchConditions">
+		<where>
+#foreach($column in $columns)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+			<if test="condition.${column.fieldName} != null">
+				AND A.$column.name = #{condition.${column.fieldName}}
+			</if>
+#elseif ($column.type == "DATE")
+			<if test="condition.${column.fieldName} != null">
+				AND TO_CHAR(A.$column.name, 'YYYY-MM-DD') = TO_CHAR(TO_DATE(#{condition.${column.fieldName}}, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+			</if>
+			<if test="condition.${column.fieldName}Start != null">
+				<if test="condition.${column.fieldName}End != null">
+					AND A.$column.name BETWEEN TO_DATE(#{condition.${column.fieldName}Start}, 'YYYY-MM-DD') AND TO_DATE(#{condition.${column.fieldName}End}, 'YYYY-MM-DD')
+				</if>
+			</if>
+#else
+			<if test="condition.${column.fieldName} != null">
+#if ($column.size == 1)
+				AND A.$column.name = #{condition.${column.fieldName}}
+#else
+				AND A.$column.name LIKE '%' || #{condition.${column.fieldName}} || '%'
+#end
+			</if>
+#end
+#end
+			<if test="searchKey != null and searchValue != null">
+#foreach($column in $columns)
+#if ($column.type=="VARCHAR" || $column.type=="VARCHAR2" || $column.type=="CHAR")
+				<if test="searchKey == '${column.fieldName}'">
+#if ($column.size == 1)
+					AND A.$column.name = #{searchValue}
+#else
+					AND A.$column.name LIKE '%' || #{searchValue} || '%'
+#end
+				</if>
+#elseif ($column.type == "DATE")
+				<if test="searchKey == '${column.fieldName}'">
+					AND TO_CHAR(A.$column.name, 'YYYY-MM-DD') = TO_CHAR(TO_DATE(#{searchValue}, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+				</if>
+#else
+				<if test="searchKey == '${column.fieldName}'">
+					AND A.$column.name = #{searchValue}
+				</if>
+#end
+#end
+			</if>
+		</where>
+	</sql>
+
+	<select id="totalCount" parameterType="com.daeyoon.cms.dao.common.Criteria" resultType="int">
+		SELECT
+			COUNT(*) FROM
+		$tableName A
+		<include refid="searchConditions"/>
+	</select>
+
+	<select id="pagedList" parameterType="com.daeyoon.cms.dao.common.Criteria" resultMap="resultMap-${domain_cap}">
+		SELECT
+			*
+		FROM
+		(
+			SELECT
+				ROWNUM RN, ALL_LIST.*
+			FROM
+			(
+				SELECT
+					<include refid="selectColumns"/>
+				FROM
+					$tableName A
+				<include refid="searchConditions"/>
+				<if test="orderList.size() > 0">
+					ORDER BY
+					<foreach collection="orderList" item="order" open="" close="" separator=",">
+						${order.alias}.${order.columnName} ${order.orderType}
+					</foreach>
+				</if>
+				<if test="orderList.size() == 0">
+					#if($primaryKeys.size() > 0)ORDER BY #set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end
+
+				</if>
+			) ALL_LIST
+			WHERE  ROWNUM <![CDATA[ <= ]]> #{end}
+		) WHERE RN <![CDATA[ >= ]]> #{start}
+	</select>
+
+	<select id="list" parameterType="com.daeyoon.cms.dao.common.Criteria" resultMap="resultMap-${domain_cap}">
+		SELECT
+			<include refid="selectColumns"/>
+		FROM
+			$tableName A
+		<include refid="searchConditions"/>
+		<if test="orderList.size() > 0">
+			ORDER BY
+			<foreach collection="orderList" item="order" open="" close="" separator=",">
+				${order.alias}.${order.columnName} ${order.orderType}
+			</foreach>
+		</if>
+		<if test="orderList.size() == 0">
+			#if($primaryKeys.size() > 0)ORDER BY #set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name DESC#if( $i < $primaryKeys.size() ) , #end#set($i = $i + 1)#end#end
+
+		</if>
+	</select>
+
+	<select id="readDefault" parameterType="${domainPackage_package}.${domain_cap}" resultMap="resultMap-default-${domain_cap}">
+		SELECT
+			<include refid="selectColumns"/>
+		FROM
+			$tableName A
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name = #{$primaryKey.fieldName}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+
+	</select>
+
+	<select id="read" parameterType="${domainPackage_package}.${domain_cap}" resultMap="resultMap-${domain_cap}">
+		SELECT
+			<include refid="selectColumns"/>
+		FROM
+			$tableName A
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)A.$primaryKey.name = #{$primaryKey.fieldName}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+
+	</select>
+
+	<insert id="create" parameterType="${domainPackage_package}.${domain_cap}">
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+		<selectKey keyProperty="${pk_uncap}" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(${pk_column.name}),0)+1 as ${pk_uncap} FROM $tableName
+		</selectKey>
+#end
+		INSERT INTO $tableName
+		(
+			#set($i = 1)#foreach($column in $columns)$column.name#if( $i < $columns.size() ),
+			#end#set($i = $i + 1)#end
+
+		)
+		VALUES
+		(
+			#set($i = 1)#foreach($column in $columns)#{$column.fieldName#if ($column.nullable == true)#if ($column.javaType == "java.lang.String"), jdbcType=VARCHAR#elseif ($column.type=="INT"), jdbcType=INTEGER#elseif ($column.type=="DOUBLE"), jdbcType=DOUBLE#elseif ($column.type=="NUMBER"), jdbcType=NUMERIC#elseif ($column.type=="int"), jdbcType=INTEGER#elseif ($column.type=="double"), jdbcType=DOUBLE#elseif ($column.type=="number"), jdbcType=NUMERIC#elseif ($column.javaType == "java.lang.Double"), jdbcType=DOUBLE#elseif ($column.javaType == "java.lang.Float"), jdbcType=NUMERIC#elseif ($column.type == "DATE"), jdbcType=TIMESTAMP#else , jdbcType=VARCHAR#end#end}#if( $i < $columns.size() ),
+			#end#set($i = $i + 1)
+#end
+
+		)
+	</insert>
+
+	<update id="update" parameterType="${domainPackage_package}.${domain_cap}">
+		UPDATE
+			$tableName
+		SET
+#set($nPKCount = ($columns.size()-$pks.size()))
+#set($i = 1)#foreach($column in $columns)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+			$column.name = #{$column.fieldName#if ($column.nullable == true)#if ($column.javaType == "java.lang.String"), jdbcType=VARCHAR#elseif ($column.type=="INT"), jdbcType=INTEGER#elseif ($column.type=="DOUBLE"), jdbcType=DOUBLE#elseif ($column.type=="NUMBER"), jdbcType=NUMERIC#elseif ($column.type=="int"), jdbcType=INTEGER#elseif ($column.type=="double"), jdbcType=DOUBLE#elseif ($column.type=="number"), jdbcType=NUMERIC#elseif ($column.javaType == "java.lang.Double"), jdbcType=DOUBLE#elseif ($column.javaType == "java.lang.Float"), jdbcType=NUMERIC#elseif ($column.type == "DATE"), jdbcType=TIMESTAMP#else , jdbcType=VARCHAR#end#end}#if( $i < $nPKCount ),
+#end#set($i = $i + 1)#end#end
+
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = #{$primaryKey.fieldName}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+
+	</update>
+
+	<delete id="delete" parameterType="${domainPackage_package}.${domain_cap}">
+		DELETE FROM
+			$tableName
+		#if($primaryKeys.size() > 0)WHERE
+			#set($i = 1)#foreach($primaryKey in $primaryKeys)$primaryKey.name = #{$primaryKey.fieldName}#if( $i < $primaryKeys.size() ) AND #end#set($i = $i + 1)#end#end
+
+	</delete>
+
+</mapper>

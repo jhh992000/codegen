@@ -1,0 +1,100 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+2)
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+
+<div class="searchTop"></div>
+<div class="searchTb">
+	<s:form id="search" name="search" method="post" action="%{thisSite.webPath}/list.do" theme="simple">
+	<input type="hidden" name="gSiteCode" id="gSiteCode" value="<c:out value="${gSiteCode}"/>"/>
+	<input type="hidden" name="gMenuCode" id="gMenuCode" value="<c:out value="${gMenuCode}"/>"/>
+	<input type="hidden" name="nMenuCode" id="nMenuCode" value="<c:out value="${nMenuCode}"/>"/>
+		<fieldset><legend>${domain_cap} 검색</legend>
+		<ul>
+			<li class="title" style="width:80px;">검색</li>
+			<li class="conTd">
+				<s:select
+					value="%{searchKey}"
+					name="searchKey"
+					id="searchKey"
+					title="검색항목"
+					headerKey=""
+					headerValue="::항목선택::"
+					list="#{#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)'${primaryKey.fieldName}':'${primaryKey.name}'#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end}"
+					></s:select>
+				<s:textfield
+					value="%{searchValue}"
+					name="searchValue"
+					id="searchValue"
+					title="검색어"
+					cssClass="inputLeft"
+					size="25"
+					maxlength="100"></s:textfield>
+				<a href="javascript:document.search.submit();"  class="btn01"><span>검색</span></a>
+			</li>
+		</ul>
+
+		</fieldset>
+	</s:form>
+</div>
+<div class="searchBottom"></div>
+
+<div class="boardListInfo">
+	<span class="total">총 <em><c:out value="${pageInfo.totalCount}"/></em> 건</span>
+	<span class="page">현재페이지 : <c:out value="${pageInfo.page}"/>/<c:out value="${pageInfo.totalPageCount}"/></span>
+</div>
+
+<table class="boardListTb">
+	<colgroup>
+		<col style="width:5%;"	/>
+#foreach($col in $cols)
+		<col />
+#end
+		<col />
+	</colgroup>
+	<tr>
+		<th>No</th>
+#foreach($col in $cols)
+		<th>${col.fieldName}</th>
+#end
+		<th>관리</th>
+	</tr>
+	<s:if test="%{${domain_uncap}List.size == 0}">
+	<tr>
+		<td colspan="${colspan}" align="center"> 등록된 데이터가 없습니다. </td>
+	</tr>
+	</s:if>
+
+		<c:forEach var="item" items="${${domain_uncap}List}" varStatus="status">
+	<tr>
+		<td><c:out value="${ item.totalCount - ((pageInfo.page - 1) * pageInfo.pageSize) - status.index}"/></td>
+#foreach($col in $cols)
+		<td>${ item.${col.fieldName} }</td>
+#end
+		<td>
+			<a href="${thisSite.webPath}<s:url namespace="${requestPath}" action="form"/>?<c:out value="${pageUrl}${pageUrl2}" escapeXml="false"/>&mode=update&#foreach($pk in $pks)${pk.fieldName}=<c:out value="${ item.${pk.fieldName} }"/>#if($velocityCount<$pks.size())&#end#end" class="sbtn02"><span>수정</span></a>
+			<a href="${thisSite.webPath}<s:url namespace="${requestPath}" action="delete"/>?<c:out value="${pageUrl}${pageUrl2}" escapeXml="false"/>&#foreach($pk in $pks)${pk.fieldName}=<c:out value="${ item.${pk.fieldName} }"/>#if($velocityCount<$pks.size())&#end#end" class="sbtn02"><span>삭제</span></a>
+		</td>
+	</tr>
+	</c:forEach>
+</table>
+
+<div class="boardNavigation">
+	<div class="buttonRight">
+		<a href="${thisSite.webPath}<s:url namespace="${requestPath}" action="form"/>?<c:out value="${pageUrl}${pageUrl2}" escapeXml="false"/>&mode=insert" class="btn"><span>등록</span></a>
+	</div>
+	<%@ include file="../common/paging.jsp" %>
+</div>
+

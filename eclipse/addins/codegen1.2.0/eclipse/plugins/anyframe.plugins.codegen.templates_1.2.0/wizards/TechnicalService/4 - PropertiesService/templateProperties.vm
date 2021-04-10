@@ -1,0 +1,4 @@
+            
+#foreach($row in $table0.items)
+	${row.getText(0)}=${row.getText(1)}
+#end

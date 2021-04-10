@@ -1,0 +1,66 @@
+#if($beanId_cap.lastIndexOf("Service") != -1)
+#set($obj = $beanId_cap.substring(0,$beanId_cap.lastIndexOf("Service")))
+#else
+#set($obj = $beanId_cap)
+#end
+##set($domain_cap = "$obj.substring(2)")
+##set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($mapperClass_uncap = "$mapperClass.substring(0,1).toLowerCase()$mapperClass.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${mapperPackage_package} != "")
+package ${mapperPackage_package};
+#end
+
+import java.sql.SQLException;
+import java.util.List;
+
+import egovframework.portal.common.dao.Criteria;
+import egovframework.rte.psl.dataaccess.mapper.Mapper;
+
+/**
+ * 프로그램 설명 :
+ *
+ * @author ${companyName} ${writerName}
+ * @version 1.0
+ * @since ${writeDate}
+ * @see none
+ *
+ * <pre>
+ * << 개정이력(Modification Information) >>
+ *
+ *     수정일        수정자           수정내용
+ *  -------------    --------    ---------------------------
+ *   ${writeDate}     ${writerName}          최초 생성
+ * </pre>
+ */
+@Mapper("${mapperClass_uncap}")
+public interface ${mapperClass} {
+
+	public Integer totalCount(Criteria criteria) throws SQLException;
+
+	public List<${domain_cap}> pagedList(Criteria criteria) throws SQLException;
+
+	public List<${domain_cap}> list(Criteria criteria) throws SQLException;
+
+	public Integer create(${domain_cap} ${domain_uncap}) throws SQLException;
+
+	public ${domain_cap} read(${domain_cap} ${domain_uncap}) throws SQLException;
+
+	public int update(${domain_cap} ${domain_uncap}) throws SQLException;
+
+	public int delete(${domain_cap} ${domain_uncap}) throws SQLException;
+
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+#if($UUID =="true")	
+	<bean id="$BeanName" class="anyframe.core.idgen.impl.UUIdGenerationService">
+		<config:configuration>
+		      <address>$Address</address>
+		</config:configuration>			
+	</bean> 
+#end
+#if($Sequence =="true")  
+	<bean id="$BeanNameSeq" class="anyframe.core.idgen.impl.SequenceIdGenerationService">
+		<property name="dataSource" ref="$DataSourceSeq"/>
+		<config:configuration >	
+			<query>$Query</query>
+		</config:configuration>
+	</bean> 
+#end
+#if($chTable =="true")
+	<bean id="$BeanNameTab" class="anyframe.core.idgen.impl.TableIdGenerationService">
+		<property name="dataSource" ref="$DataSourceTab"/>
+		<config:configuration  block-size="$BlockSize" table="$Table" key-table="$KeyTable"/>
+	</bean>
+#end
+</beans>

@@ -1,0 +1,86 @@
+#if($beanId_cap.lastIndexOf("Service") != -1)
+#set($obj = $beanId_cap.substring(0,$beanId_cap.lastIndexOf("Service")))
+#else
+#set($obj = $beanId_cap)
+#end
+##set($domain_cap = "$obj.substring(2)")
+##set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($daoClass_uncap = "$daoClass.substring(0,1).toLowerCase()$daoClass.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${daoPackage_package} != "")
+package ${daoPackage_package};
+#end
+
+import java.util.List;
+import java.util.Map;
+import org.springframework.stereotype.Repository;
+import egovframework.rte.psl.dataaccess.EgovAbstractDAO;
+
+
+/**
+ * 프로그램 파일명 : ${daoClass}.java
+ *
+ * 프로그램 설명 : ${bizName} DAO
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2019 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Repository("${daoClass}")
+public class ${daoClass} extends EgovAbstractDAO {
+
+	public EgovMap select${moduleName}(Map<String, Object> dto) throws Exception {
+		return (EgovMap) selectByPk("${statementNamespace}.select${moduleName}", dto);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<EgovMap> select${moduleName}List(Map<String, Object> dto) throws Exception {
+		return list("${statementNamespace}.select${moduleName}List", dto);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<EgovMap> select${moduleName}PagedList(Map<String, Object> dto) throws Exception {
+		return list("${statementNamespace}.select${moduleName}PagedList", dto);
+	}
+
+	public int select${moduleName}TotCnt(Map<String, Object> dto) throws Exception {
+		return ((Integer) getSqlMapClientTemplate().queryForObject("${statementNamespace}.select${moduleName}ListTotCnt", dto)).intValue();
+	}
+
+	public void insert${moduleName}(Map<String, Object> dto) throws Exception {
+		insert("${statementNamespace}.insert${moduleName}", dto);
+	}
+
+	public int update${moduleName}(Map<String, Object> dto) throws Exception {
+		return update("${statementNamespace}.update${moduleName}",dto);
+	}
+
+	public int delete${moduleName}(Map<String, Object> dto) throws Exception {
+		return delete("${statementNamespace}.delete${moduleName}", dto);
+	}
+
+}

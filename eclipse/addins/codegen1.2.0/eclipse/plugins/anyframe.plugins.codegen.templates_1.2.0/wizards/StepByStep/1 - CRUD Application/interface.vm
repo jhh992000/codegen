@@ -1,0 +1,26 @@
+#if($iPackage_package != "")
+package $iPackage_package;
+#end
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import anyframe.common.Page;
+import anyframe.common.exception.BaseException;
+
+#if($iPackage != $voPackage)
+import ${voPackage_package}.${voClass};
+
+#end
+public interface $iClass {
+
+	Log logger = LogFactory.getLog(${iClass}.class);
+
+	public Page select${beanName_cap}List($voClass $voClass_uncap) throws BaseException;
+	
+	public void update${beanName_cap}($voClass $voClass_uncap) throws BaseException;
+
+	public void insert${beanName_cap}($voClass $voClass_uncap) throws BaseException;
+	
+	public void delete${beanName_cap}($voClass $voClass_uncap) throws BaseException;
+}

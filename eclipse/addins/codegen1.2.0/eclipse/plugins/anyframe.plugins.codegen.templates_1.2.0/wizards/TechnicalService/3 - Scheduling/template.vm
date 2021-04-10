@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	
+	<bean id="$schedulerId" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="$triggerId"/>
+			</list>
+		</property>		
+	</bean>	
+	
+	<bean id="$triggerId" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="$jobName"/>
+				<property name="targetMethod" value="$method"/>
+#if($group)				
+				<property name="group" value="$group"/>
+#end				
+			</bean>
+		</property>
+		<property name="repeatInterval" value="$interval"/>
+		<property name="repeatCount" value="$count"/>
+	</bean>
+#if($isGenerate == "true")
+	<bean id="$jobName" class="$jobPackage_package.$className"/>
+#else
+	<bean id="$jobName" class="$jobClass"/>
+#end
+
+</beans>

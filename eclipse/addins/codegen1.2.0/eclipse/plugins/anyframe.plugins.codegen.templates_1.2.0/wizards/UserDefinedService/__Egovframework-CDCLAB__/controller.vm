@@ -1,0 +1,241 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+#set($listJspCutIndex =  $listJSP.length() - 4)
+#set($listJSPName = "$listJSP.substring(0, $listJspCutIndex)")
+#set($viewJspCutIndex =  $viewJSP.length() - 4)
+#set($viewJSPName = "$viewJSP.substring(0, $viewJspCutIndex)")
+#set($formJspCutIndex =  $formJSP.length() - 4)
+#set($formJSPName = "$formJSP.substring(0, $formJspCutIndex)")
+
+import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import javax.annotation.Resource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.SessionStatus;
+import egovframework.cmmn.util.PaginationVO;
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import ${domainPackage_package}.${domain_cap};
+import ${servicePackage_package}.${serviceClass};
+
+/**
+ * 프로그램 파일명 : ${controllerClass}.java
+ *
+ * 프로그램 설명 : $tableName 테이블과 관련된 업무 요청을 받아 처리하는 Controller 클래스
+ *
+ * 작 성 자 : ${writerName}
+ *
+ * 작 성 일 : ${writeDate}
+ *
+ * Copyright(c) 2013 DAEYOON Co. Ltd. All rights reserved.
+ */
+@Controller
+public class ${controllerClass} {
+
+	protected static final Log logger = LogFactory.getLog(${controllerClass}.class);
+
+	@Resource(name = "${service_uncap}")
+	private ${service_cap} ${service_uncap};
+
+	@Resource(name = "messageSourceAccessor")
+	private MessageSourceAccessor messageSourceAccessor;
+
+	/**
+	 * 리스트화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/list.do")
+	public String ${domainName_uncap}List(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}, String searchFlag) throws Exception {
+
+    	/** pagination vo */
+    	PaginationVO paginationVO = (PaginationVO) ${domain_uncap};
+    	//${domainName_uncap}.setPageUnit(10);
+    	//${domainName_uncap}.setPageSize(10);
+
+    	/** paging setting */
+    	PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(paginationVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(paginationVO.getPageUnit());
+		paginationInfo.setPageSize(paginationVO.getPageSize());
+		paginationVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		paginationVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		paginationVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
+		int totCnt = 0;
+		List<${domain_cap}> ${domainName_uncap}List = null;
+
+		if (StringUtils.equals(searchFlag, "Y")) {
+	        totCnt = ${service_uncap}.select${domainName}TotCnt(${domain_uncap});
+			paginationInfo.setTotalRecordCount(totCnt);
+
+			${domainName_uncap}List = ${service_uncap}.select${domainName}List(${domain_uncap});
+		}
+
+		model.addAttribute("searchFlag", searchFlag);
+		model.addAttribute("${domainName_uncap}List", ${domainName_uncap}List);
+        model.addAttribute("paginationInfo", paginationInfo);
+
+		return "${requestPath}/${listJSPName}";
+	}
+
+	/**
+	 * 상세조회화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/view.do")
+	public String ${domainName_uncap}View(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}) throws Exception {
+
+		${domain_cap} data${domain_cap} = ${service_uncap}.select${domainName}(${domain_uncap});
+
+		model.addAttribute("data${domain_cap}", data${domain_cap});
+
+		return "${requestPath}/${viewJSPName}";
+	}
+
+	/**
+	 * 생성화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/createForm.do")
+	public String ${domainName_uncap}CreateForm(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}) throws Exception {
+
+		${domain_cap} data${domain_cap} = new ${domain_cap}();
+
+		model.addAttribute("editMode", "create");
+        model.addAttribute("data${domain_cap}", data${domain_cap});
+		return "${requestPath}/${formJSPName}";
+	}
+
+	/**
+	 * 등록
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/create.do")
+	public String ${domainName_uncap}Create(ModelMap model, @ModelAttribute("search${domain_cap}") ${domain_cap} ${domain_uncap}, ${domain_cap} data${domain_cap}, SessionStatus status) throws Exception {
+
+#if($primaryKeys.size() == 1)
+#if ($pk.type=="INT" || $pk.type=="DOUBLE" || $pk.type=="FLOAT" || $pk.type=="NUMBER" || $pk.type=="int" || $pk.type=="double" || $pk.type=="float" || $pk.type=="number")
+		int nextId = ${service_uncap}.select${domainName}NextId();
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+#elseif($primaryKeys.size() > 1)
+		int nextId = ${service_uncap}.select${domainName}NextId(data${domain_cap});
+		${domain_uncap}.set$pk_cap(nextId);
+#end
+		${service_uncap}.insert${domainName}(data${domain_cap});
+
+		status.setComplete();
+
+		model.addAttribute("message", messageSourceAccessor.getMessage("common.create.success"));
+		model.addAttribute("openerUrl", "${requestPath}/list.do");
+		return "/cmmn/msgClose";
+	}
+
+	/**
+	 * 수정화면
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/modifyForm.do")
+	public String ${domainName_uncap}ModifyForm(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}) throws Exception {
+
+		${domain_cap} data${domain_cap} = ${service_uncap}.select${domainName}(search${domain_cap});
+
+		model.addAttribute("editMode", "modify");
+		model.addAttribute("data${domain_cap}", data${domain_cap});
+		return "${requestPath}/${formJSPName}";
+	}
+
+	/**
+	 * 수정
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/modify.do")
+	public String ${domainName_uncap}Modify(ModelMap model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, ${domain_cap} data${domain_cap}, SessionStatus status) throws Exception {
+
+		${service_uncap}.update${domainName}(data${domain_cap});
+
+		status.setComplete();
+
+		model.addAttribute("message", messageSourceAccessor.getMessage("common.update.success"));
+		return "/cmmn/msgClose";
+	}
+
+	/**
+	 * 삭제
+	 *
+	 * @param model
+	 * @param ${domainName_uncap}
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("${requestPath}/remove.do")
+	public String ${domainName_uncap}Remove(Model model, @ModelAttribute("search${domain_cap}") ${domain_cap} search${domain_cap}, SessionStatus status) throws Exception {
+
+		${service_uncap}.delete${domainName}(search${domain_cap});
+
+		status.setComplete();
+
+		model.addAttribute("message", messageSourceAccessor.getMessage("common.delete.success"));
+		model.addAttribute("openerUrl", "${requestPath}/list.do");
+		return "/cmmn/msgClose";
+	}
+}

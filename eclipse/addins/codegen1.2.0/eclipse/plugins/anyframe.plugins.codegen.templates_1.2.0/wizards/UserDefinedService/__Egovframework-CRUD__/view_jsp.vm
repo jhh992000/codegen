@@ -1,0 +1,122 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("Vo"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ include file="../../common/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${domainName_uncap}.modelName" /> <spring:message code="button.inquire" /></title>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	$(".deleteButton").bind("click", function () {
+		var deleteUrl = $(this).attr("href");
+		jQuery.showConfirm("<spring:message code="common.delete.msg" />", {
+			yesCallback: function() {
+				$("#progressBarDiv").show();
+				window.location = deleteUrl;
+			},
+			noCallback: function() {
+				return;
+			}
+		});
+		return false;
+	});
+});
+//-->
+</script>
+</head>
+<body>
+
+<h4><spring:message code="${domainName_uncap}.modelName" /> <spring:message code="button.inquire" /></h4>
+
+<form:form id="viewForm" name="viewForm" method="post" commandName="${domainName_uncap}" action="${pageContext.request.contextPath}${requestPath}/view.do">
+	<input type="hidden" id="searchCondition" name="searchCondition" value="<c:out value="${ criteria.searchCondition }" />" />
+	<input type="hidden" id="searchKeyword" name="searchKeyword" value="<c:out value="${ criteria.searchKeyword }" />" />
+	<input type="hidden" id="pageIndex" name="pageIndex" value="<c:out value="${ criteria.pageIndex }" />" />
+	<input type="hidden" id="menuNo" name="menuNo" value="<c:out value="${ criteria.menuNo }" />" />
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName"/>
+#end
+	<fieldset>
+		<legend>
+			<spring:message code="${domainName_uncap}.modelName" /> <spring:message code="button.inquire" />
+		</legend>
+			<table class="boardWriteTb">
+			<colgroup>
+				<col style="width:20%;" />
+				<col style="width:80%;" />
+			</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+			<!--
+			<tr>
+				<th class="blt_ess"><spring:message code="${domainName_uncap}.${col.fieldName}" /></th>
+				<td>
+					<c:out value="${ ${domainName_uncap}.${col.fieldName} }" />
+				</td>
+			</tr>
+			-->
+#else
+#if ($col.nullable == false)
+			<tr>
+				<th class="blt_ess"><spring:message code="${domainName_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.type == "DATE")
+					<fmt:formatDate value="${ ${domainName_uncap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+					<c:out value="${ ${domainName_uncap}.${col.fieldName} }" />
+#end
+				</td>
+			</tr>
+#else
+			<tr>
+				<th class="blt_ness"><spring:message code="${domainName_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.type == "DATE")
+					<fmt:formatDate value="${ ${domainName_uncap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+					<c:out value="${ ${domainName_uncap}.${col.fieldName} }" />
+#end
+				</td>
+			</tr>
+#end
+#end
+#end
+		</table>
+		<div class="boardNavigation">
+			<div class="buttonRight">
+				<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="updateForm.do?${ criteria.params }&#foreach($pk in $pks)${pk.fieldName}=${ ${domainName_uncap}.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton updateButton"><span class="ui-icon-gear"><spring:message code="button.update" /></span></a>
+				<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="delete.do?${ criteria.params }&#foreach($pk in $pks)${pk.fieldName}=${ ${domainName_uncap}.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton deleteButton"><span class="ui-icon-trash"><spring:message code="button.delete" /></span></a>
+				<a href="<c:out value="${pageContext.request.contextPath}" />${requestPath}/<spring:url value="list.do?${ criteria.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-clipboard"><spring:message code="button.list" /></span></a>
+			</div>
+		</div>
+	</fieldset>
+</form:form>
+
+</body>
+</html>

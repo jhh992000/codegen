@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.sds.samsung.com/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.sds.samsung.com/schema/service http://www.sds.samsung.com/schema/service/anyframe-service-2.0.xsd">
+	<bean id="${BeanName}" class="anyframe.core.properties.impl.PropertiesServiceImpl">
+		<config:configuration>
+#if($radio == "false")
+			<fileName>classpath:${propPath_dirname}</fileName>
+#else
+			<fileName>classpath:${propPath_dirname}/${name}</fileName>
+#end
+		</config:configuration>				
+	</bean>
+</beans>

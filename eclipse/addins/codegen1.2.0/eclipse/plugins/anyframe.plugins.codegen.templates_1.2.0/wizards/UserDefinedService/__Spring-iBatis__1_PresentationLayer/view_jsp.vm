@@ -1,0 +1,110 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/adm/inc/incTop.jsp"%>
+<script type="text/javascript">
+<!--
+function goUpdateForm() {
+	var f = document.forms['frm'];
+	f.action="${requestPath}/updateForm.do";
+	f.submit();
+}
+function goDelete() {
+	if (confirm("<spring:message code="common.doYouWantDelete" />")) {
+		var f = document.forms['${formName}'];
+		f.action="${requestPath}/delete.do";
+		f.submit();
+	}
+}
+function goList() {
+	var f = document.forms['frm'];
+	f.action="${requestPath}/list.do";
+	f.submit();
+}
+//-->
+</script>
+<form:form name="${formName}" method="post" commandName="model">
+
+#foreach($pk in $pks)
+	<form:hidden path="$pk.fieldName"/>
+#end
+	<form:hidden path="pagerOffset"/>
+	<form:hidden path="maxPageItems"/>
+	<form:hidden path="maxIndexPages"/>
+	<form:hidden path="sc"/>
+	<form:hidden path="sw"/>
+	<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" value="<%=session.getAttribute("org.apache.struts.action.TOKEN")%>">
+	
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td>
+				<table width="100%" border="0" bordercolor="#dddddd" bgcolor="#dddddd" cellspacing="1" cellpadding="0">
+					<tr>
+						<td height="32" bgcolor="#eeeeee" style="padding-left:10px;"><strong><spring:message code="${domain_uncap}.pageTitle" /></strong></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td height="20"></td>
+		</tr>
+	</table>
+
+	<!-- begin of table -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td align="center" valign="top">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<TD bgcolor="#dddddd">
+							<table border="0" cellpadding="0" cellspacing="1" width="100%">
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = "true")
+#end
+#end
+#if ($isPk=="false")
+								<tr height="22">
+									<td bgcolor="#eeeeee" width="15%" style="padding-left:5px;text-align:left;"><spring:message code="${domain_uncap}.${col.fieldName}" /></td>
+									<td bgcolor="#ffffff" width="85%" style="padding-left:5px;text-align:left;">
+										${ model.${col.fieldName} }
+									</td>
+								</tr>
+#end
+#end
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<!-- end of table -->
+	
+	<!-- begin of button -->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td height="10"></td></tr>
+		<tr>
+			<td align="right">
+				<a href="javascript:goUpdateForm();"><img src="/images/adm/btn_style1/btn_modify_long.gif" align="absmiddle" border="0" alt="<spring:message code="common.modify" />" /></a>
+				<a href="javascript:goDelete();"><img src="/images/adm/btn_style1/btn_delete_long.gif" align="absmiddle" border="0" alt="<spring:message code="common.delete" />" /></a>
+				<a href="javascript:goList();"><img src="/images/adm/btn_style1/btn_list_long.gif" align="absmiddle" border="0" alt="<spring:message code="common.list" />" /></a>
+			</td>
+		</tr>
+	</table>
+	<!-- end of button -->
+</form:form>
+

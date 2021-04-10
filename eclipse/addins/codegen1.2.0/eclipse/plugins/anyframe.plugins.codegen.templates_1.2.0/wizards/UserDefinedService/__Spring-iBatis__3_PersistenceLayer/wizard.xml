@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>Set Tables to use.</description>
+		</model-page>
+
+		<component-page>
+			<description>Persistence Layer</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="daoPackage" label="*Dao Package" type="srcPackage" required="true" />
+				<textfield name="daoClass" label="*Dao Class Name" required="true" />
+			</group>
+			<group>
+				<container name="daoImplPackage" label="*Dao Impl Package" type="srcPackage" required="true" />
+				<textfield name="daoImplClass" label="*Dao Impl Class Name" required="true" />
+			</group>
+			<group>
+				<container name="sqlmapPath" label="*Path" type="folder" required="true" />
+				<textfield name="sqlmapFile" label="*Name" required="true" extensions="xml" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="daoOut" expression="$daoClass" velocity="dao.vm" extension="java" container="daoPackage"></template>
+			<template component="daoImplOut" expression="$daoImplClass" velocity="daoImpl.vm" extension="java" container="daoImplPackage"></template>
+			<template component="sqlmapFileOut" expression="$sqlmapFile" velocity="sqlmap.vm" container="sqlmapPath"></template>
+		</output>
+	</wizard>
+</CodeGen>

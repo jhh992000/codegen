@@ -1,0 +1,19 @@
+String basePath = components.get("basePath").getUIValue();
+String DOMAIN_PACKAGE = "com.jejuair.cargo." + components.get("moduleName").getUIValue() + ".service";
+String DAO_PACKAGE = "com.jejuair.cargo." + components.get("moduleName").getUIValue() + ".service";
+String CONTROLLER_PACKAGE = "com.jejuair.cargo." + components.get("moduleName").getUIValue() + ".web";
+String MYBATIS_PATH = "mybatis";
+String JSP_PATH = "WebContent/WEB-INF/jsp/cargo";
+String MESSAGE_RESOURCE_PATH = "WebContent/WEB-INF/src/resources/messages";
+String REQUEST_PATH = "/cargo";
+String JSP_FOLDER = tableName;
+String JSP_FOLDER_PREFIX = "tb";
+JSP_FOLDER = JSP_FOLDER.replaceAll(JSP_FOLDER_PREFIX, "");
+
+components.get("domainPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DOMAIN_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+DAO_PACKAGE);
+components.get("mybatisPath").setUIValue(basePath+"/WebContent/WEB-INF/src/resources/"+MYBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/WebContent/WEB-INF/src/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+JSP_FOLDER);
+components.get("messagePath").setUIValue(basePath+"/"+MESSAGE_RESOURCE_PATH);

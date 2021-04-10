@@ -1,0 +1,244 @@
+#if($beanPath_dirname != "")
+#set( $beanPath_dirname = "/${beanPath_dirname}" )
+#end
+#if($Package_dirname != "")
+#set( $Package_dirname = "/${Package_dirname}" )
+#end
+#if($Package_package != "")
+package ${Package_package};
+
+#end
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import anyframe.core.query.QueryServiceException;
+
+/**
+ *  To run this TestCase, 
+ *  add <filename>..${Package}/test-tx-mapping.xml</filename>
+ *  to applicationContext-query.xml
+ *  
+ *  To use SessionFactory, you must have a
+ * {Anyframe_ROOT}/services/hibernate/conf/applicationContext-hibernate.xml file.
+ * 
+ *  This TestCase uses DataSource which id is 'dataSource'.
+ */
+public class $Class extends
+	AbstractDependencyInjectionSpringContextTests {
+
+    TransactionTestSampleService service = null;
+    PlatformTransactionManager ${id} = null;
+
+    public void setTransactionSample(TransactionTestSampleService service) {
+        this.service = service;
+    }
+
+    public void set${id_cap}(PlatformTransactionManager transactionManager) {
+        this.${id} = transactionManager;
+    }
+    
+    public $Class() {
+		super();
+    }
+
+	protected String[] getConfigLocations() {
+		return new String[] {
+			"classpath*:${beanPath_dirname}/applicationContext-transaction.xml",
+			"classpath*:${Package_dirname}/applicationContext-tx-sample.xml",
+#if($propertyName == "DataSource")
+			"classpath*:${beanPath_dirname}/applicationContext-query.xml",
+#end			
+			"classpath*:${beanPath_dirname}/applicationContext-hibernate.xml",
+			"classpath*:${beanPath_dirname}/applicationContext-datasource.xml",
+			"classpath*:**/applicationContext-common.xml"};
+	}
+    
+    public void onSetUp() throws Exception {
+		super.onSetUp();
+#if($propertyName == "DataSource")				
+		DataSource dataSource = (DataSource) applicationContext.getBean("$refId");
+#else
+		DataSource dataSource = (DataSource) applicationContext.getBean("dataSource");
+#end				
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				// 1. Try to drop the table. It may not exist and throw an
+				// exception.
+				try {
+					statement.executeUpdate("DROP TABLE STMR_TX_TEST");
+				}
+				catch (SQLException e) {
+					// The table was probably just not there. Ignore this.
+				}
+				
+				// 2. Create the table that we will use in this test.
+				// Different depending on the db. Please add new statements as
+				// new databases are
+				// tested.
+				statement.executeUpdate("CREATE TABLE STMR_TX_TEST ( "
+						+ "col1 varchar(16) NOT NULL, "
+						+ "col2 varchar(16) , "
+						+ "col3 DECIMAL(30) NOT NULL) ");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.err.println("Unable to initialize database for test." + e);
+			fail("Unable to initialize database for test. " + e);
+		}
+	}
+	
+	public void onTearDown() throws Exception {
+#if($propertyName == "DataSource")				
+		DataSource dataSource = (DataSource) applicationContext.getBean("$refId");
+#else
+		DataSource dataSource = (DataSource) applicationContext.getBean("dataSource");
+#end	
+		try {
+			Connection conn = dataSource.getConnection();
+			try {
+				Statement statement = conn.createStatement();
+
+				// 1. Delete the table that we will use in this test.
+				statement.executeUpdate("DROP TABLE STMR_TX_TEST");
+			}
+			finally {
+				conn.close();
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("Unable to cleanup database after test." + e);
+			// Want to continue
+		}
+		super.onTearDown();
+	}
+
+    public void testInsertCommit() throws Exception {
+        int prevCommitCount = service.getCommitCount();
+        TransactionVO vo = new TransactionVO();
+        vo.setCol1(Thread.currentThread().getName()+"-col1");
+        vo.setCol2(Thread.currentThread().getName()+"-col2");
+        vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        service.insertData(vo);
+        assertEquals(prevCommitCount + 1, service.getCommitCount());
+    }
+
+    public void testInsertRollback() throws Exception {
+        Thread.sleep(500);
+        int prevCommitCount = service.getCommitCount();
+        int prevRollbackCount = service.getRollbackCount();
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        txDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus txStatus = ${id}.getTransaction(txDefinition);
+        try{
+        	TransactionVO vo = new TransactionVO();
+        	vo.setCol1(Thread.currentThread().getName()+"-col1");
+        	vo.setCol2(Thread.currentThread().getName()+"-col2");
+        	vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        	service.insertData(vo);
+        	service.insertData(vo);
+        	${id}.commit(txStatus);
+        }catch (QueryServiceException e){
+            ${id}.rollback(txStatus);
+        }finally{
+            assertEquals(prevCommitCount, service.getCommitCount());
+            assertEquals(prevRollbackCount + 2, service.getRollbackCount());
+        }
+        
+    }
+
+    public void testUpdateCommit() throws Exception {
+        Thread.sleep(500);
+        int prevCommitCount = service.getCommitCount();
+        TransactionVO vo = new TransactionVO();
+        vo.setCol1(Thread.currentThread().getName()+"-col1");
+        vo.setCol2(Thread.currentThread().getName()+"-col2");
+        vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        service.insertData(vo);
+        vo.setCol2(Thread.currentThread().getName()+"-col2-modified");
+        service.updateData(vo);
+        assertEquals(prevCommitCount + 2, service.getCommitCount());
+    }
+
+    public void testUpdateRollback() throws Exception {
+        Thread.sleep(500);
+        int prevCommitCount = service.getCommitCount();
+        int prevRollbackCount = service.getRollbackCount();
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        txDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus txStatus = ${id}.getTransaction(txDefinition);
+        try{
+        	TransactionVO vo = new TransactionVO();
+        	vo.setCol1(Thread.currentThread().getName()+"-col1");
+        	vo.setCol2(Thread.currentThread().getName()+"-col2");
+        	vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        	service.insertData(vo);
+        	vo.setCol2(Thread.currentThread().getName()+"-col2-modified");
+        	service.updateData(vo);		
+        	service.insertData(vo);
+        	${id}.commit(txStatus);
+        }catch (QueryServiceException e){
+            ${id}.rollback(txStatus);
+        }finally{
+            assertEquals(prevCommitCount, service.getCommitCount());
+            assertEquals(prevRollbackCount + 3, service.getRollbackCount());
+        }
+        
+    }
+
+    public void testRemoveCommit() throws Exception {
+        Thread.sleep(500);
+        int prevCommitCount = service.getCommitCount();
+        TransactionVO vo = new TransactionVO();
+        vo.setCol1(Thread.currentThread().getName()+"-col1");
+        vo.setCol2(Thread.currentThread().getName()+"-col2");
+        vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        service.insertData(vo);
+        service.removeData(vo);
+        assertEquals(prevCommitCount + 2, service.getCommitCount());
+    }
+
+    public void testRemoveRollback() throws Exception {
+        Thread.sleep(500);
+        int prevCommitCount = service.getCommitCount();
+        int prevRollbackCount = service.getRollbackCount();
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        txDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus txStatus = ${id}.getTransaction(txDefinition);
+        try{
+        	TransactionVO vo = new TransactionVO();
+        	vo.setCol1(Thread.currentThread().getName()+"-col1");
+        	vo.setCol2(Thread.currentThread().getName()+"-col2");
+        	vo.setCol3(new BigDecimal(System.currentTimeMillis()));
+        	service.insertData(vo);
+        	service.removeData(vo);
+        	service.insertData(vo);		
+        	service.insertData(vo);
+        	${id}.commit(txStatus);
+        }catch (QueryServiceException e){
+            ${id}.rollback(txStatus);
+        }finally{
+            assertEquals(prevCommitCount, service.getCommitCount());
+            assertEquals(prevRollbackCount + 4, service.getRollbackCount());
+        }
+        
+    }
+
+
+
+}

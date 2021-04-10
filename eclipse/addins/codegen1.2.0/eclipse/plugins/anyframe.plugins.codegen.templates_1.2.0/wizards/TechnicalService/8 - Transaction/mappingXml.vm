@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//TITAN//DTD QUERYSERVICE//EN"
+"http://www.sds.samsung.co.kr/athena/dtds/anyframe_core_query_mapping.dtd">
+<queryservice>
+	<table-mapping>
+		<table name="STMR_TX_TEST"
+			class="${Package_package}.TransactionVO">
+			<field-mapping>
+				<dbms-column>col1</dbms-column>
+				<class-attribute>col1</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>col2</dbms-column>
+				<class-attribute>col2</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>col3</dbms-column>
+				<class-attribute>col3</class-attribute>
+			</field-mapping>
+			<primary-key>
+				<dbms-column>col1</dbms-column>
+				<dbms-column>col3</dbms-column>								
+			</primary-key>
+		</table>
+	</table-mapping>
+	<queries>
+		<query id="insertTR">
+			<statement>
+				insert into transactiontest(col1, col2, col3) values
+				(?,?,?)
+			</statement>
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="NUMERIC" />
+		</query>		
+		<query id="selectTR">
+			<statement>
+				select col1,col2,col3 from transactiontest
+			</statement>
+		</query>
+		<query id="deleteTR">
+			<statement>delete transactiontest where col1 = ?</statement>
+			<param type="VARCHAR" />
+		</query>
+		<query id="updateTR">
+			<statement>
+				update transactiontest set col2= ? , col3 = ? where col1
+				= ?
+			</statement>
+			<param type="VARCHAR" />
+			<param type="NUMERIC" />
+			<param type="VARCHAR" />
+		</query>
+	</queries>
+</queryservice>

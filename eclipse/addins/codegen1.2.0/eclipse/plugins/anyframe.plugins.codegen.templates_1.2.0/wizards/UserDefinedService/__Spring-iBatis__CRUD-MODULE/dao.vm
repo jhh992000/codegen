@@ -1,0 +1,105 @@
+#if($beanId_cap.lastIndexOf("Service") != -1)
+#set($obj = $beanId_cap.substring(0,$beanId_cap.lastIndexOf("Service")))
+#else
+#set($obj = $beanId_cap)
+#end
+##set($domain_cap = "$obj.substring(2)")
+##set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${daoPackage_package} != "")
+package ${daoPackage_package};
+#end
+
+import java.util.List;
+import org.springframework.dao.DataAccessException;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * File Name    : ${daoClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2008 BALHAE Co., Ltd. All rights reserved.
+ */
+
+public interface ${daoClass} {
+
+	/**
+	 * ${domain_cap} 다음고유키를 조회한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int getNextKey(${domain_cap} ${domain_uncap})  throws DataAccessException;
+	
+	/**
+	 * ${domain_cap} 총갯수를 조회한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int getCount(${domain_cap} ${domain_uncap})  throws DataAccessException;
+	
+	/**
+	 * ${domain_cap} 페이징목록을 조회한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public List<${domain_cap}> getPagedList(${domain_cap} ${domain_uncap}) throws DataAccessException;
+	
+	/**
+	 * ${domain_cap} 목록을 조회한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public List<${domain_cap}> getList(${domain_cap} ${domain_uncap}) throws DataAccessException;
+
+	/**
+	 * ${domain_cap} 정보를 조회한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public ${domain_cap} getInfo(${domain_cap} ${domain_uncap}) throws DataAccessException;
+	
+	/**
+	 * ${domain_cap} 정보를 등록한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int insertInfo(${domain_cap} ${domain_uncap}) throws DataAccessException;
+
+	/**
+	 * ${domain_cap} 정보를 수정한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int updateInfo(${domain_cap} ${domain_uncap}) throws DataAccessException;
+
+	/**
+	 * ${domain_cap} 정보를 삭제한다.
+	 * @param ${domain_uncap}
+	 * @return
+	 * @throws DataAccessException
+	 */
+	public int deleteInfoByKey(${domain_cap} ${domain_uncap}) throws DataAccessException;
+	
+}

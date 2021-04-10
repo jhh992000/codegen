@@ -1,0 +1,22 @@
+String basePath = components.get("basePath").getUIValue();
+String moduleName = components.get("moduleName").getUIValue();
+String moduleKorName = components.get("moduleKorName").getUIValue();
+String DOMAIN_PACKAGE = "kr.go.car.domain";
+String DAO_PACKAGE = "kr.go.car.dao";
+String SERVICE_PACKAGE = "kr.go.car.service";
+String SERVICE_IMPL_PACKAGE = "kr.go.car.service.impl";
+String CONTROLLER_PACKAGE = "kr.go.car.controller";
+String IBATIS_PATH = "sqlmap";
+String JSP_PATH = "webapp/WEB-INF/jsp";
+String REQUEST_PATH = "";
+tableName = tableName.replaceAll("tb_", "");
+String JSP_FOLDER = tableName.replaceAll("_", "");
+
+components.get("domainPackage").setUIValue(basePath+"/webapp/WEB-INF/src/java/"+DOMAIN_PACKAGE);
+components.get("servicePackage").setUIValue(basePath+"/webapp/WEB-INF/src/java/"+SERVICE_PACKAGE);
+components.get("serviceImplPackage").setUIValue(basePath+"/webapp/WEB-INF/src/java/"+SERVICE_IMPL_PACKAGE);
+components.get("daoPackage").setUIValue(basePath+"/webapp/WEB-INF/src/java/"+DAO_PACKAGE);
+components.get("ibatisPath").setUIValue(basePath+"/webapp/WEB-INF/src/resource/"+IBATIS_PATH);
+components.get("controllerPackage").setUIValue(basePath+"/webapp/WEB-INF/src/java/"+CONTROLLER_PACKAGE);
+components.get("jspPath").setUIValue(basePath+"/"+JSP_PATH+"/"+JSP_FOLDER);
+components.get("requestPath").setUIValue(REQUEST_PATH+"/"+JSP_FOLDER);

@@ -1,0 +1,122 @@
+#set($fieldName = $model.fieldName)
+#set($javaName = $model.javaName)
+#if($actionPackage_package != "")
+package $actionPackage_package;
+#end
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import kr.go.nts.ie.cm.ex.CmUserMgmtService;
+import kr.go.nts.ie.cm.ex.SearchVO;
+import kr.go.nts.ie.cm.ex.UsersVO;
+import kr.go.nts.ie.cm.search.SearchService;
+import kr.go.nts.ie.cm.web.NtsieDispatchActionSupport;
+import kr.go.nts.ie.cm.web.util.LogUtil;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+import anyframe.common.Page;
+import anyframe.services.utility.IPropertiesService;
+
+public class $actionClass extends $actionSupport.name {
+	
+	public ActionForward create$javaName(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		CmUserMgmtService csUserMgmtService = (CmUserMgmtService)getService("cmUserMgmtService");
+
+		UsersVO usersVO = new UsersVO();
+
+		BeanUtils.copyProperties(usersVO, form);
+
+		csUserMgmtService.createCmUserMgmt(usersVO);
+		
+		LogUtil.bizLogger(mapping, request, form, usersVO, "create");
+		
+		return mapping.findForward("list");
+	}
+	
+	public ActionForward updateCmUserMgmt(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		CmUserMgmtService csUserMgmtService = (CmUserMgmtService)getService("cmUserMgmtService");
+
+		UsersVO usersVO = new UsersVO();
+
+		BeanUtils.copyProperties(usersVO, form);
+
+		csUserMgmtService.updateCmUserMgmt(usersVO);
+		
+		LogUtil.bizLogger(mapping, request, form, usersVO, "update");
+		
+		return mapping.findForward("get");
+	}
+	
+	public ActionForward deleteCmUserMgmt(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		CmUserMgmtService csUserMgmtService = (CmUserMgmtService)getService("cmUserMgmtService");
+
+		UsersVO usersVO = new UsersVO();
+
+		BeanUtils.copyProperties(usersVO, form);
+
+		csUserMgmtService.deleteCmUserMgmt(usersVO);
+		
+		LogUtil.bizLogger(mapping, request, form, usersVO, "delete");
+		
+		return mapping.findForward("list");
+	}
+
+
+	public ActionForward selectCmUserMgmt(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		CmUserMgmtService cmUserMgmtService = (CmUserMgmtService)getService("cmUserMgmtService");
+
+		CmUserValidatorForm cmUserValidatorForm = (CmUserValidatorForm) form;
+		String userId = cmUserValidatorForm.getUserId();
+
+		HttpSession session = request.getSession();
+		if (userId == null) {
+			userId = (String) session.getAttribute("userId");
+		}
+
+		UsersVO usersVO = cmUserMgmtService.selectCmUserMgmt(userId);
+
+		request.setAttribute("usersVO", usersVO);
+		
+		LogUtil.bizLogger(mapping, request, form, usersVO, "select");
+
+		return mapping.findForward("get");
+	}
+
+	public ActionForward selectCmUserMgmtList(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		SearchService searchService = (SearchService)getService("searchService");
+		IPropertiesService propertiesService = (IPropertiesService) getService("propertiesService");
+
+		CmUserValidatorForm cmUserValidatorForm = (CmUserValidatorForm) form;
+		
+		SearchVO searchVO = new SearchVO();
+		BeanUtils.copyProperties(searchVO, cmUserValidatorForm);
+
+		int pageSize = propertiesService.getInt("PAGE_SIZE");
+		int pageUnit = propertiesService.getInt("PAGE_UNIT");
+		int pageIndex = searchVO.getPageIndex();
+		
+		Page resultPage = searchService.search("selectCmUserMgmtList", searchVO, pageIndex, pageSize, pageUnit);
+
+		request.setAttribute("page", resultPage);
+		request.setAttribute("pageSize", new Integer(pageSize));
+		
+		return mapping.findForward("list");
+	}
+
+}

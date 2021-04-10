@@ -1,0 +1,367 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+#if(${actionsPackage_package} != "")
+package ${actionsPackage_package};
+#end
+
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import daeyoon.actions.AbstractAction;
+import daeyoon.common.model.PageInfo;
+import daeyoon.common.utils.ConvertUtil;
+import daeyoon.common.utils.Utility;
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * 업   무   명 :
+ * 프로그램 ID : ${actionClass}.java
+ * 프로그램 명 : 
+ * 개       요 : 
+ * 작   성   자 : ${writerName}
+ * 작   성   일 : ${writeDate}
+ *
+ *   수정일       수정자                              수정내용
+ * ---------   --------   --------------------------------------------------------
+ *
+ * Copyright(c) 2012 DAEYOON Co. Ltd. All rights reserved.
+ */
+
+@SuppressWarnings("serial")
+public class ${domain_cap}Action extends AbstractAction {
+    private ${domain_cap}Dao ${domain_uncap}Dao;
+	private String searchKey;
+	private String searchValue;
+	private List<${domain_cap}> ${domain_uncap}List;
+	private ${domain_cap} ${domain_uncap};
+	
+	/**
+	 * =======================================================================================
+	 * 목록화면 처리
+	 * =======================================================================================
+	 * @return
+	 */
+	public String list() {
+		this.logger.debug("${domain_cap}Action.list() 호출");
+		this.initPage();
+
+		if (!this.returnCode.equals(SUCCESS)) {
+			return this.returnCode;
+		}
+
+		// 페이지 설정 (관련 변수는 AbstractAction 클래스에서 처리)
+		if (Utility.isNull(this.request.getParameter("page"))) {
+			this.page = 1;
+			this.startIdx = 0;
+			this.endIdx = pageCount;
+		} else {
+			this.page = Integer.parseInt(this.request.getParameter("page"));
+			this.startIdx = (this.page - 1) * pageCount;
+			this.endIdx = this.startIdx + pageCount;
+		}
+
+		// 검색파라미터
+		this.searchKey = StringUtils.defaultString(this.searchKey);
+		this.searchValue = StringUtils.defaultString(this.searchValue);
+
+		// 검색용객체
+		this.${domain_uncap} = new ${domain_cap}();
+
+		try {
+			
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = URLDecoder.decode(this.searchValue, request.getCharacterEncoding());
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+			this.pageUrl2 += "&page=" + this.page;
+
+			this.${domain_uncap}List = this.${domain_uncap}Dao.get${domain_cap}PagedList(this.startIdx, this.endIdx, this.searchKey, this.searchValue, this.${domain_uncap});
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			this.returnCode = ERROR;
+			this.errorMsg = "검색어를 처리하는 도중 오류가 발생하였습니다.";
+			return this.returnCode;
+		}
+
+		if (this.${domain_uncap}List.size() > 0) {
+			this.pageInfo = new PageInfo(this.page, (int) this.${domain_uncap}List.get(this.${domain_uncap}List.size() - 1).getTotalCount(), this.pageCount);
+		} else {
+			this.pageInfo = new PageInfo(this.page, 0, this.pageCount);
+		}
+		return this.returnCode;
+	}
+	
+	/**
+	 * =======================================================================================
+	 * 입력화면 처리 (등록/수정)
+	 * =======================================================================================
+	 * @return
+	 */
+	public String form() {
+		this.logger.debug("${domain_cap}Action.form() 호출");
+
+		this.initPage();
+
+		if (this.mode.equals("insert")) {
+			this.${domain_uncap} = new ${domain_cap}();
+		} else {
+			this.${domain_uncap} = new ${domain_cap}();
+			ConvertUtil.fromRequestToVO(this.request, this.${domain_uncap});
+			this.${domain_uncap} = this.${domain_uncap}Dao.get${domain_cap}(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)this.${domain_uncap}.get${primaryKey.javaName}()#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end);
+		}
+
+		// 페이징 값 처리
+		if (!Utility.isNull(this.request.getParameter("page"))) {
+			this.page = Integer.parseInt(this.request.getParameter("page"));
+		}
+
+		// 검색어 처리
+		try {
+			// 검색파라미터
+			this.searchKey = StringUtils.defaultString(this.searchKey);
+			this.searchValue = StringUtils.defaultString(this.searchValue);
+
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = Utility.getSearchText(URLDecoder.decode(this.searchValue, request.getCharacterEncoding()));
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+			this.pageUrl2 += "&page=" + this.page;
+		} catch (Exception ex) {
+		}
+
+		return this.returnCode;
+	}
+	
+	/**
+	 * =======================================================================================
+	 * 상세화면 처리
+	 * =======================================================================================
+	 * @return
+	 */
+	public String view() {
+		this.logger.debug("${domain_cap}Action.view() 호출");
+		this.initPage();
+		
+		// 페이징 값 처리
+		if (!Utility.isNull(this.request.getParameter("page"))) {
+			this.page = Integer.parseInt(this.request.getParameter("page"));
+		}
+
+		// 검색어 처리
+		try {
+			// 검색파라미터
+			this.searchKey = StringUtils.defaultString(this.searchKey);
+			this.searchValue = StringUtils.defaultString(this.searchValue);
+
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = Utility.getSearchText(URLDecoder.decode(this.searchValue, request.getCharacterEncoding()));
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+			this.pageUrl2 += "&page=" + this.page;
+		} catch (Exception ex) {
+		}
+
+		this.${domain_uncap} = new ${domain_cap}();
+		ConvertUtil.fromRequestToVO(this.request, this.${domain_uncap});
+		this.${domain_uncap} = this.${domain_uncap}Dao.get${domain_cap}(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)this.${domain_uncap}.get${primaryKey.javaName}()#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end);
+
+
+		return this.returnCode;
+	}
+	
+	/**
+	 * =======================================================================================
+	 * 저장 처리
+	 * =======================================================================================
+	 * @return
+	 */
+	public String insert() {
+		this.logger.debug("${domain_cap}Action.insert() 호출");
+		this.initVar();
+		if (!this.returnCode.equals(SUCCESS)) {
+			return this.returnCode;
+		}
+		// 검색어 처리
+		try {
+			// 검색파라미터
+			this.searchKey = StringUtils.defaultString(this.searchKey);
+			this.searchValue = StringUtils.defaultString(this.searchValue);
+
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = Utility.getSearchText(URLDecoder.decode(this.searchValue, request.getCharacterEncoding()));
+			
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+		} catch (Exception ex) {
+		}
+
+		this.${domain_uncap} = new ${domain_cap}();
+		ConvertUtil.fromRequestToVO(this.request, this.${domain_uncap});
+		
+		try {
+		
+			//DB저장
+			this.${domain_uncap}Dao.insert${domain_cap}(${domain_uncap});
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.returnCode = ERROR;
+			this.errorMsg = "데이터를 저장하는 도중 오류가 발생하였습니다.";
+			return this.returnCode;
+		}
+
+		// 페이징 값 처리
+		if (!Utility.isNull(this.request.getParameter("page"))) {
+			this.page = Integer.parseInt(this.request.getParameter("page"));
+			if (this.page == 0) {
+				this.page = 1;
+			}
+		}
+
+		return this.returnCode;
+	}
+	
+	/**
+	 * =======================================================================================
+	 * 수정 처리
+	 * =======================================================================================
+	 * @return
+	 */
+	public String update() {
+		this.logger.debug("${domain_cap}Action.insert() 호출");
+		this.initVar();
+		if (!this.returnCode.equals(SUCCESS)) {
+			return this.returnCode;
+		}
+		// 검색어 처리
+		try {
+			// 검색파라미터
+			this.searchKey = StringUtils.defaultString(this.searchKey);
+			this.searchValue = StringUtils.defaultString(this.searchValue);
+
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = Utility.getSearchText(URLDecoder.decode(this.searchValue, request.getCharacterEncoding()));
+			
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+		} catch (Exception ex) {
+		}
+
+		this.${domain_uncap} = new ${domain_cap}();
+		ConvertUtil.fromRequestToVO(this.request, this.${domain_uncap});
+		
+		try {
+		
+			//DB업데이트
+			this.${domain_uncap}Dao.update${domain_cap}(${domain_uncap});
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.returnCode = ERROR;
+			this.errorMsg = "데이터를 저장하는 도중 오류가 발생하였습니다.";
+			return this.returnCode;
+		}
+
+		return this.returnCode;
+	}
+	
+	/**
+	 * =======================================================================================
+	 * 삭제 처리
+	 * =======================================================================================
+	 * @return
+	 */
+	public String delete() {
+		this.logger.debug("${domain_cap}Action.delete() 호출");
+		this.initVar();
+		if (!this.returnCode.equals(SUCCESS)) {
+			return this.returnCode;
+		}
+		// 검색어 처리
+		try {
+			// 검색파라미터
+			this.searchKey = StringUtils.defaultString(this.searchKey);
+			this.searchValue = StringUtils.defaultString(this.searchValue);
+
+			this.searchKey = URLDecoder.decode(this.searchKey, request.getCharacterEncoding());
+			this.searchValue = Utility.getSearchText(URLDecoder.decode(this.searchValue, request.getCharacterEncoding()));
+			
+			this.pageUrl += "&searchKey=" + URLEncoder.encode(this.searchKey, request.getCharacterEncoding());
+			this.pageUrl += "&searchValue=" + URLEncoder.encode(this.searchValue, request.getCharacterEncoding());
+		} catch (Exception ex) {
+		}
+
+		this.${domain_uncap} = new ${domain_cap}();
+		ConvertUtil.fromRequestToVO(this.request, this.${domain_uncap});
+		
+		try {
+		
+			this.${domain_uncap}Dao.delete${domain_cap}(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)this.${domain_uncap}.get${primaryKey.javaName}()#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.returnCode = ERROR;
+			this.errorMsg = "데이터를 삭제하는 도중 오류가 발생하였습니다.";
+			return this.returnCode;
+		}
+
+		return this.returnCode;
+	}
+	
+    
+    public ${domain_cap}Dao get${domain_cap}Dao() {
+		return ${domain_uncap}Dao;
+	}
+    
+	public void set${domain_cap}Dao(${domain_cap}Dao ${domain_uncap}Dao) {
+		this.${domain_uncap}Dao = ${domain_uncap}Dao;
+	}
+
+	public List<${domain_cap}> get${domain_cap}List() {
+		return ${domain_uncap}List;
+	}
+
+	public void set${domain_cap}List(List<${domain_cap}> ${domain_uncap}List) {
+		this.${domain_uncap}List = ${domain_uncap}List;
+	}
+
+	public ${domain_cap} get${domain_cap}() {
+		return ${domain_uncap};
+	}
+
+	public void set${domain_cap}(${domain_cap} ${domain_uncap}) {
+		this.${domain_uncap} = ${domain_uncap};
+	}
+
+	public String getSearchKey() {
+		return searchKey;
+	}
+
+	public void setSearchKey(String searchKey) {
+		this.searchKey = searchKey;
+	}
+
+	public String getSearchValue() {
+		return searchValue;
+	}
+
+	public void setSearchValue(String searchValue) {
+		this.searchValue = searchValue;
+	}
+	
+}

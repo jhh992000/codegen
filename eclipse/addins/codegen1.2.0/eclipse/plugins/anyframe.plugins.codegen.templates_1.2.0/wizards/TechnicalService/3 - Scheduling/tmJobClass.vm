@@ -1,0 +1,25 @@
+#if(${jobPackage_package})
+package ${jobPackage_package};
+#end
+		
+public class ${className} {
+
+#if($CreateTestCase)
+	private int cnt = 0;		//for test
+#end
+
+	public void $method() {
+#if($CreateTestCase)
+	++cnt;						//for test
+#end
+	}
+	
+#if($CreateTestCase)
+	public int getCnt(){		//for test
+		return cnt;
+	}
+#end	
+}		
+
+
+

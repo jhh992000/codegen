@@ -1,0 +1,101 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($cols = $model.fields)
+#set($formClass_cap = "${model.javaName}Form")
+#set($formClass_uncap = "${model.fieldName}Form")
+#set($formName = "frm")
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="../common/include/taglib.jsp" %>
+<html>
+<head>
+<title><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.view" /></title>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	
+});
+//-->
+</script>
+</head>
+<body>
+
+<h4><spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.view" /></h4>
+
+<form:form id="readForm" name="readForm" method="post" commandName="${domain_uncap}" action="${ currentSite.siteContext }${requestPath}/form.do">
+#foreach($pk in $pks)
+<form:hidden path="$pk.fieldName"/>
+#end
+	<fieldset>
+		<legend>
+			<spring:message code="${domain_uncap}.modelName" /> <spring:message code="common.read" />
+		</legend>
+		<input id="menuId" name="menuId" type="hidden" value="${ cri.menuId }" />
+		<input id="pagerOffset" name="pagerOffset" type="hidden" value="${ cri.pagerOffset }" />
+		<input id="searchKey" name="searchKey" type="hidden" value="${ cri.searchKey }" />
+		<input id="searchValue" name="searchValue" type="hidden" value="${ cri.searchValue }" />
+			<table class="boardWriteTb">
+			<colgroup>
+				<col style="width:20%;" />
+				<col style="width:80%;" />
+			</colgroup>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+			<!--
+			<tr>
+				<th class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+					${ ${domain_uncap}.${col.fieldName} }
+				</td>
+			</tr>
+			-->
+#else
+#if ($col.nullable == false)
+			<tr>
+				<th class="blt_ess"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.type == "DATE")
+					<fmt:formatDate value="${ ${domain_uncap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+					${ ${domain_uncap}.${col.fieldName} }
+#end
+				</td>
+			</tr>
+#else
+			<tr>
+				<th class="blt_ness"><spring:message code="${domain_uncap}.${col.fieldName}" /></th>
+				<td>
+#if ($col.type == "DATE")
+					<fmt:formatDate value="${ ${domain_uncap}.${col.fieldName} }" pattern="yyyy-MM-dd" />
+#else
+					${ ${domain_uncap}.${col.fieldName} }
+#end
+				</td>
+			</tr>
+#end
+#end
+#end
+		</table>
+		<div class="boardNavigation">
+			<div class="buttonRight">
+				<a href="${ currentSite.siteContext }${requestPath}/<spring:url value="updateForm.do?${ cri.params }&#foreach($pk in $pks)${pk.fieldName}=${ ${domain_uncap}.${pk.fieldName} }#if($velocityCount<$pks.size())&#end#end" htmlEscape="true" javaScriptEscape="true" />" class="jButton updateButton"><span class="ui-icon-gear"><spring:message code="common.update" /></span></a>
+				<a href="<spring:url value="list.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="jButton"><span class="ui-icon-clipboard"><spring:message code="common.list" /></span></a>
+			</div>
+		</div>
+	</fieldset>
+</form:form>
+
+</body>
+</html>

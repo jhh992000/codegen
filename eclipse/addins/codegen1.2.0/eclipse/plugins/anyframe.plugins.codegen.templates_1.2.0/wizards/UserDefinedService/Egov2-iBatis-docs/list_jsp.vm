@@ -1,0 +1,181 @@
+#set($domain_cap = "$domainClass")
+#set($postfixCutIndex =  $domain_cap.length() - 2)
+#set($postfix = "$domain_cap.substring($postfixCutIndex,$domain_cap.length())")
+#if($postfix.equals("VO"))
+#set($domainName = "$domain_cap.substring(0,$postfixCutIndex)")
+#else
+#set($domainName = "$domain_cap")
+#end
+#set($domainName_uncap = "$domainName.substring(0,1).toLowerCase()$domainName.substring(1)")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tbName = $model.name)
+#set($tbName_cap = $model.javaName)
+#set($tbName_uncap = $model.fieldName)
+#set($pks = $model.primaryKeys)
+#set($pk_column = $listTool.get($pks,0))
+#set($columns = $model.fields)
+#set($cols = $model.fields)
+#set($lineWidth = $cols.size()+$cols.size())
+#set($colspan = $cols.size()+1)
+#set($formName = "frm")
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!doctype html>
+<html lang="ko">
+<head>
+<title>${moduleKorName} 목록</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+//<![CDATA[
+//검색
+function fnSearch() {
+	document.searchForm.pageIndex.value = "1";
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}List.do";
+	document.searchForm.submit();
+}
+//페이지이동
+function fnPage(pageNo) {
+	document.searchForm.pageIndex.value = pageNo;
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}List.do";
+	document.searchForm.submit();
+}
+//상세조회
+function fnView(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)$primaryKey.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end) {
+#foreach($pk in $pks)
+	document.searchForm.${pk.fieldName}.value = ${pk.fieldName};
+#end
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}View.do";
+	document.searchForm.submit();
+}
+//등록화면
+function fnCreate() {
+	document.searchForm.action = "${pageContext.request.contextPath}${requestPath}/${domainName_uncap}CreateForm.do";
+	document.searchForm.submit();
+}
+//]]>
+</script>
+</head>
+<body>
+
+	<form:form id="searchForm" name="searchForm" method="post" commandName="search${domain_cap}" action="${pageContext.request.contextPath}${requestPath}/${domainName_uncap}List.do">
+		<input type="hidden" name="menuNo" value="${ param.menuNo }" />
+		<form:hidden path="pageIndex" />
+#foreach($pk in $pks)
+		<form:hidden path="${pk.fieldName}" />
+#end
+
+		<table class="searchList" summary="검색 테이블입니다." border="0">
+			<colgroup>
+				<col style="width: 6%;">
+				<col style="width: 15%;">
+				<col style="width: 6%;">
+				<col style="width: 15%;">
+				<col style="">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th>검색조건</th>
+					<td>
+						<form:select path="searchCondition">
+#foreach($column in $columns)#set($isPk = "false")#foreach($pk in $pks)#if ($column.fieldName==$pk.fieldName)#set($isPk = "true")#end#end#if ($isPk=="false")
+							<form:option value="$column.fieldName">$column.fieldName</form:option>
+#end#end
+						</form:select>
+					</td>
+					<th>검색어</th>
+					<td>
+						<form:input path="searchKeyword" />
+					</td>
+					<td class="btnArea alignL" style="vertical-align: bottom;">
+						<a class="btn20 bg_blue" href="javascript:fnSearch();">검색</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</form:form>
+
+	<!-- start boardListInfo -->
+	<div class="boardListInfo floatR">
+		<span class="total">총 <em><c:out value="${ paginationInfo.totalRecordCount }"/></em> 건
+		</span> <span class="page">페이지/전체 : <c:out value="${ paginationInfo.currentPageNo }"/>/<c:out value="${ paginationInfo.totalPageCount }"/></span>
+	</div>
+	<!-- end boardListInfo -->
+
+	<table class="tbl_list2 mgt10" summary="목록 테이블입니다.">
+		<colgroup>
+			<col style="width:5%;" />
+#foreach($col in $cols)
+			<col style="" />
+#end
+		</colgroup>
+		<thead>
+		<tr>
+			<th>순번</th>
+#foreach($col in $cols)
+			<th>${col.fieldName}</th>
+#end
+			<th>관리</th>
+		</tr>
+		</thead>
+		<tbody>
+		<c:forEach var="item" items="${ ${domainName_uncap}List }" varStatus="status">
+			<tr>
+				<td><fmt:formatNumber value="${ paginationInfo.totalRecordCount-((paginationInfo.currentPageNo-1)*search${domain_cap}.pageUnit)-(status.index) }" type="number"/></td>
+#foreach($col in $cols)
+#set($isPk = "false")
+#foreach($pk in $pks)
+#if ($col.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+				<td><c:out value="${ item.${col.fieldName} }" /></td>
+#else
+#if ($col.type == "DATE")
+				<td><fmt:formatDate value="${ item.${col.fieldName} }" pattern="yyyy-MM-dd" /></td>
+#elseif ($col.type == "NUMBER" || $col.type == "NUMERIC")
+				<td><fmt:formatNumber value="${ item.${col.fieldName} }" type="number"/></td>
+#else
+				<td><c:out value="${ item.${col.fieldName} }" /></td>
+#end
+#end
+#end
+				<td><a class="btn10 bg_gray" href="#" onclick="fnView(#if($pks.size() > 0)#set($i = 1)#foreach($primaryKey in $pks)'<c:out value="${ item.${primaryKey.fieldName} }" />'#if( $i < $pks.size() ), #end#set($i = $i + 1)#end#end); return false;">보기</a></td>
+			</tr>
+		</c:forEach>
+		<c:if test="${ empty ${domainName_uncap}List }">
+			<tr style="height:35px;">
+				<td colspan="${colspan}">검색된 데이터가 없습니다.</td>
+			</tr>
+		</c:if>
+		</tbody>
+	</table>
+
+	<div class="alignC">
+		<div class="mgt20" style="float:left; display:inline-block">
+			&nbsp;
+		</div>
+
+		<div style="margin: 0 auto; display:inline-block">
+			<div class="pagination mgt30">
+				<ul class="clearfix">
+					<ui:pagination paginationInfo="${ paginationInfo }" type="image" jsFunction="fnPage" />
+				</ul>
+			</div>
+		</div>
+
+		<div class="mgt20" style="float:right; display:inline-block">
+			<a class="btn30 bg_orange mgl10" href="#" onclick="fnCreate(); return false;">등록</a>
+		</div>
+	</div>
+
+	<div class="mgt50"></div>
+
+</body>
+</html>

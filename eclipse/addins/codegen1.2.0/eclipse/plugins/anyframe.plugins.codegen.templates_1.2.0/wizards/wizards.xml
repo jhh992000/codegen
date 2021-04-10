@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+	<category name="UserDefinedService">
+		<wizards>
+			<wizard-def description="egovadt-iBatis" template="UserDefinedService/egovadt-iBatis/wizard.xml" />
+			<wizard-def description="egovadt-Mybatis" template="UserDefinedService/egovadt-Mybatis/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis-egovintra" template="UserDefinedService/Egov3-Mybatis-egovintra/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis-egovportal" template="UserDefinedService/Egov3-Mybatis-egovportal/wizard.xml" />
+			<wizard-def description="__Egovframework-CDCLAB__" template="UserDefinedService/__Egovframework-CDCLAB__/wizard.xml" />
+			<wizard-def description="__Egovframework-CRUD__" template="UserDefinedService/__Egovframework-CRUD__/wizard.xml" />
+			<wizard-def description="__Egovframework-CRUD-original__" template="UserDefinedService/__Egovframework-CRUD-original__/wizard.xml" />
+			<!--
+			<wizard-def description="Egov2-iBatis-NGMS" template="UserDefinedService/Egov2-iBatis-NGMS/wizard.xml" />
+			<wizard-def description="Egov2-iBatis-docs" template="UserDefinedService/Egov2-iBatis-docs/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis" template="UserDefinedService/Egov3-Mybatis/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis-dfc" template="UserDefinedService/Egov3-Mybatis-dfc/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis-dfc-biz" template="UserDefinedService/Egov3-Mybatis-dfc-biz/wizard.xml" />
+			<wizard-def description="Egov3-Mybatis-jejuair" template="UserDefinedService/Egov3-Mybatis-jejuair/wizard.xml" />
+			<wizard-def description="__Egovframework-KODDI_SHOP__" template="UserDefinedService/__Egovframework-KODDI_SHOP__/wizard.xml" />
+			<wizard-def description="__JDBC__DAO-MAP" template="UserDefinedService/__JDBC__DAO-MAP/wizard.xml" />
+			<wizard-def description="__JDBC__DAO-VO" template="UserDefinedService/__JDBC__DAO-VO/wizard.xml" />
+			<wizard-def description="__Spring3-Mybatis__acrc-CMS" template="UserDefinedService/__Spring3-Mybatis__acrc-CMS/wizard.xml" />
+			<wizard-def description="__Spring3-Mybatis__AdrcAdmin" template="UserDefinedService/__Spring3-Mybatis__AdrcAdmin/wizard.xml" />
+			<wizard-def description="__Spring3-Mybatis__Daeyoon-CMS" template="UserDefinedService/__Spring3-Mybatis__Daeyoon-CMS/wizard.xml" />
+			<wizard-def description="__Spring3-Mybatis__etrs_home" template="UserDefinedService/__Spring3-Mybatis__etrs_home/wizard.xml" />
+			<wizard-def description="__Spring-Hibernate__NMSC" template="UserDefinedService/__Spring-Hibernate__NMSC/wizard.xml" />
+			<wizard-def description="__Spring-iBatis__1_PresentationLayer" template="UserDefinedService/__Spring-iBatis__1_PresentationLayer/wizard.xml" />
+			<wizard-def description="__Spring-iBatis__2_BusinessLayer" template="UserDefinedService/__Spring-iBatis__2_BusinessLayer/wizard.xml" />
+			<wizard-def description="__Spring-iBatis__3_PersistenceLayer" template="UserDefinedService/__Spring-iBatis__3_PersistenceLayer/wizard.xml" />
+			<wizard-def description="__Spring-iBatis__CRUD-MODULE" template="UserDefinedService/__Spring-iBatis__CRUD-MODULE/wizard.xml" />
+			<wizard-def description="__Spring-iBatis__ECO-CRUD" template="UserDefinedService/__Spring-iBatis__ECO-CRUD/wizard.xml" />
+			<wizard-def description="__Spring-Struts2-iBatis__Daeyoon-CMS" template="UserDefinedService/__Spring-Struts2-iBatis__Daeyoon-CMS/wizard.xml" />
+			<wizard-def description="__sqlmap__KODDI_SHOP__" template="UserDefinedService/__sqlmap__KODDI_SHOP__/wizard.xml" />
+			 -->
+		</wizards>
+	</category>
+</templates>

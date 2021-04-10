@@ -1,0 +1,79 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+
+#if(${daoImplPackage_package} != "")
+package ${daoImplPackage_package};
+#end
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+import ${daoPackage_package}.$daoClass;
+import ${domainPackage_package}.${domain_cap};
+
+/**
+ * File Name    : ${daoImplClass}.java
+ * Author       :#if($author) $author #else admin #end
+
+ * Created on ${date}
+ *
+ * Copyright(c) 2008 BALHAE Co., Ltd. All rights reserved.
+ */
+
+@Repository("$daoClass_uncap")
+public class ${daoImplClass} extends SqlMapClientDaoSupport implements ${daoClass} {
+
+	@Autowired
+	public ${daoImplClass}(SqlMapClient sqlMapClient) {
+		this.setSqlMapClient(sqlMapClient);
+	}
+
+	public int getNextKey(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ((Integer) getSqlMapClientTemplate().queryForObject("${domain_cap}.getNextKey", ${domain_uncap})).intValue();
+	}
+
+	public int getCount(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ((Integer) getSqlMapClientTemplate().queryForObject("${domain_cap}.getCount", ${domain_uncap})).intValue();
+	}
+
+	public List<${domain_cap}> getPagedList(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getSqlMapClientTemplate().queryForList("${domain_cap}.getPagedList", ${domain_uncap});
+	}
+
+	public List<${domain_cap}> getList(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getSqlMapClientTemplate().queryForList("${domain_cap}.getList", ${domain_uncap});
+	}
+
+	public ${domain_cap} getInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return (${domain_cap}) getSqlMapClientTemplate().queryForObject("${domain_cap}.getInfo", ${domain_uncap});
+	}
+
+	public int insertInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return ((Integer) getSqlMapClientTemplate().insert("${domain_cap}.insertInfo", ${domain_uncap})).intValue();
+	}
+
+	public int updateInfo(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getSqlMapClientTemplate().update("${domain_cap}.updateInfo", ${domain_uncap});
+	}
+
+	public int deleteInfoByKey(${domain_cap} ${domain_uncap}) throws DataAccessException {
+		return getSqlMapClientTemplate().delete("${domain_cap}.deleteInfo", ${domain_uncap});
+	}
+
+}
