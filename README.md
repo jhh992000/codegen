@@ -27,16 +27,7 @@
 <templates>
 	<category name="UserDefinedService">
 		<wizards>
-			<vice/커스텀_템플릿_경로1/커스텀_템플릿_설정_파일1.xml" e 탭에서 generate할 대상 테이블을 찾는다.
-9. 대상테이블을 선택 우클릭 > Connect Codegen DB 를 선택
-10. Codegen 탭에서 본인이 작성한 커스텀 템플릿을 선택하고 우클릭 > Open Wizard 선택  
-    ( 참고 : workspace내에 활성 프로젝트 1개이상 존재해야함, 없으면 예외 발생함 )
-11. 이 후부터는 각 단계를 모두 사용자가 커스터마이징하는 단계가 시작된다.
-12. 최종 Finish를 누르면 템플릿에 정의된 파일들이 주르륵 자동생성된다.  
-    ( vm 파일들의 velocity 문법에 오류가 있을경우 자동 생성이 중단됨 )
-13. 자동 생성된 코드들을 다듬으며 커스터마이징하여 코딩을 마무리한다.
-14. 끝.
-/>
+			<wizard-def description="커스텀_템플릿명1" template="UserDefinedService/커스텀_템플릿_경로1/커스텀_템플릿_설정_파일1.xml" />
 			<wizard-def description="커스텀_템플릿명2" template="UserDefinedService/커스텀_템플릿_경로2/커스텀_템플릿_설정_파일2.xml" />
 		</wizards>
 	</category>
@@ -63,4 +54,13 @@ c:/eclipse/links
 5. SQL Explorer 선택
 6. Connections 탭에서 Create New Connection Profile 을 선택하여 DB에 연결한다. (jdbc 드라이버 설정 필요)
 7. 추가한 Connection Profile 선택 우클릭 > Connect
-8. Database Structurwizard-def description="커스텀_템플릿명1" template="UserDefinedSer
+8. Database Structure 탭에서 generate할 대상 테이블을 찾는다.
+9. 대상테이블을 선택 우클릭 > Connect Codegen DB 를 선택
+10. Codegen 탭에서 본인이 작성한 커스텀 템플릿을 선택하고 우클릭 > Open Wizard 선택  
+    ( 참고 : workspace내에 활성 프로젝트 1개이상 존재해야함, 없으면 예외 발생함 )
+11. 이 후부터는 각 단계를 모두 사용자가 커스터마이징하는 단계가 시작된다.
+12. 최종 Finish를 누르면 템플릿에 정의된 파일들이 주르륵 자동생성된다.  
+    ( vm 파일들의 velocity 문법에 오류가 있을경우 자동 생성이 중단됨 )
+13. 자동 생성된 코드들을 다듬으며 커스터마이징하여 코딩을 마무리한다.
+14. 끝.
+
