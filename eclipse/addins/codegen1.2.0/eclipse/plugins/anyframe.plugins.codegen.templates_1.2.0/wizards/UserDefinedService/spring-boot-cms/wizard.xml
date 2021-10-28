@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeGen>
+	<wizard>
+		<title>Web Application Definition</title>
+
+		<model-page type="jdbc" onCreate="/events/table_created.gv">
+			<description>연관테이블정보</description>
+		</model-page>
+
+		<component-page>
+			<description>기본정보</description>
+			<group>
+				<container name="basePath" label="*BasePath (/projectName)" type="folder" required="true" onChange="/events/basepath_changed.gv"/>
+			</group>
+			<group>
+				<textfield name="basePackage" label="* 기본 패키지" required="true" />
+				<textfield name="moduleName" label="* 모듈명" required="true" />
+			</group>
+			<group>
+				<textfield name="companyName" label="*소속회사명" required="true" />
+				<textfield name="writerName" label="*작성자이름" required="true" />
+				<textfield name="writeDate" label="*작성일자" required="true" />
+			</group>
+		</component-page>
+
+		<component-page>
+			<description>백엔드</description>
+			<group>
+				<container name="domainPackage" label="*Domain Package" type="srcPackage" required="true" />
+				<textfield name="domainClass" label="*Domain ClassName" required="true" />
+			</group>
+			<group>
+				<container name="repositoryPackage" label="*Repository Package" type="srcPackage" required="true" />
+				<textfield name="repositoryFile" label="*Repository File Name" required="true" />
+			</group>
+			<group>
+				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
+				<textfield name="serviceClass" label="*Service Class Name" required="true" />
+			</group>
+			<group>
+				<container name="dtoPackage" label="*Create DTO Package" type="srcPackage" required="true" />
+				<textfield name="createDtoFile" label="*Create DTO File Name" required="true" />
+				<textfield name="updateDtoFile" label="*Update DTO File Name" required="true" />
+			</group>
+			<group>
+				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
+				<textfield name="controllerClass" label="*Controller Class Name" required="true" />
+			</group>
+		</component-page>
+
+		<output>
+			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
+			<template component="repositoryOut" expression="$repositoryFile" velocity="repository.vm" extension="java" container="repositoryPackage"></template>
+			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
+			<template component="createDtoOut" expression="$createDtoFile" velocity="createDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="updateDtoOut" expression="$updateDtoFile" velocity="updateDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
+		</output>
+	</wizard>
+</CodeGen>
