@@ -1,0 +1,107 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($repositoryFile_uncap = "$repositoryFile.substring(0,1).toLowerCase()$repositoryFile.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#set($columns = $model.fields)
+#set ($nonPkColums = [])
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColums.add($column))
+#end
+#end
+##===================================
+#if(${dtoPackage_package} != "")
+package ${dtoPackage_package};
+#end
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ${domainPackage_package}.${domainClass};
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${createDtoFile} {
+
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#if ($column.javaType == "java.lang.String")
+#if ($column.nullable == false)
+    @NotEmpty
+#end
+    public String $column.fieldName;
+#elseif ($column.javaType == "java.lang.Boolean")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public Boolean $column.fieldName;
+#elseif ($column.javaType == "java.lang.Integer")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Long")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public Long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public Double $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public Float $column.fieldName;
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public LocalDateTime $column.fieldName;
+#else
+#if ($column.nullable == false)
+    @NotNull
+#end
+    public String $column.fieldName;
+#end
+#end
+
+#end
+
+    public ${domainClass} to${domainClass}() {
+        return ${domainClass}.builder()
+#foreach($column in $nonPkColums)
+            .${column.fieldName}(${column.fieldName})
+#end
+            .build();
+    }
+
+}
