@@ -3,6 +3,7 @@
 <templates>
 	<category name="UserDefinedService">
 		<wizards>
+			<wizard-def description="spring-boot-cms" template="UserDefinedService/spring-boot-cms/wizard.xml" />
 			<wizard-def description="egovadt-iBatis" template="UserDefinedService/egovadt-iBatis/wizard.xml" />
 			<wizard-def description="egovadt-Mybatis" template="UserDefinedService/egovadt-Mybatis/wizard.xml" />
 			<wizard-def description="Egov3-Mybatis-egovintra" template="UserDefinedService/Egov3-Mybatis-egovintra/wizard.xml" />
