@@ -1,0 +1,16 @@
+String basePath = components.get("basePath").getUIValue();
+String basePackage = "me.hhjeong.springbootcms";
+String moduleName = components.get("moduleName").getUIValue();
+
+String domainPackage = basePackage + "." + moduleName + ".domain";
+String repositoryPackage = basePackage + "." + moduleName + ".domain";
+String servicePackage = basePackage + "." + moduleName + ".service";
+String dtoPackage = basePackage + "." + moduleName + ".dto";
+String controllerPackage = basePackage + "." + moduleName + ".ui";
+
+components.get("basePackage").setUIValue(basePackage);
+components.get("domainPackage").setUIValue(basePath + "/src/main/java/" + domainPackage);
+components.get("repositoryPackage").setUIValue(basePath + "/src/main/java/" + repositoryPackage);
+components.get("servicePackage").setUIValue(basePath + "/src/main/java/" + servicePackage);
+components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackage);
+components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);

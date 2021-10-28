@@ -1,0 +1,44 @@
+String DEFAULT_BASE_PATH = "/spring-boot-cms";
+String TABLE_PREFIX = "";
+String DOMAIN_POSTFIX = "";
+String DOMAIN_PREFIX = "";
+String REPOSITORY_POSTFIX = "Repository";
+String SERVICE_POSTFIX = "Service";
+String DTO_POSTFIX = "Request";
+String CONTROLLER_POSTFIX = "Controller";
+String companyName = "anycompany";
+String writerName = "정훈희";
+
+String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+String tableName = components.get("sqlPage").getUIValue().toLowerCase();
+tableName = tableName.replaceAll(TABLE_PREFIX, "");
+String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
+String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
+beanName = beanName.substring(0,1).toUpperCase() + beanName.substring(1).toLowerCase();
+beanName = beanName.replaceAll(DOMAIN_PREFIX, "");
+
+components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
+components.get("moduleName").setUIValue(beanName.toLowerCase());
+components.get("domainClass").setUIValue(beanName + DOMAIN_POSTFIX);
+components.get("repositoryFile").setUIValue(beanName + REPOSITORY_POSTFIX);
+components.get("serviceClass").setUIValue(beanName + SERVICE_POSTFIX);
+components.get("createDtoFile").setUIValue("Create" + beanName + DTO_POSTFIX);
+components.get("updateDtoFile").setUIValue("Update" + beanName + DTO_POSTFIX);
+components.get("controllerClass").setUIValue(beanName + CONTROLLER_POSTFIX);
+components.get("companyName").setUIValue(companyName);
+components.get("writerName").setUIValue(writerName);
+components.get("writeDate").setUIValue(today);
+
+String moduleName = components.get("moduleName").getUIValue();
+
+String domainPackage = basePackage + "." + moduleName + ".domain";
+String repositoryPackage = basePackage + "." + moduleName + ".domain";
+String servicePackage = basePackage + "." + moduleName + ".service";
+String dtoPackage = basePackage + "." + moduleName + ".dto";
+String controllerPackage = basePackage + "." + moduleName + ".ui";
+
+components.get("domainPackage").setUIValue(basePath + "/src/main/java/" + domainPackage);
+components.get("repositoryPackage").setUIValue(basePath + "/src/main/java/" + repositoryPackage);
+components.get("servicePackage").setUIValue(basePath + "/src/main/java/" + servicePackage);
+components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackage);
+components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);
