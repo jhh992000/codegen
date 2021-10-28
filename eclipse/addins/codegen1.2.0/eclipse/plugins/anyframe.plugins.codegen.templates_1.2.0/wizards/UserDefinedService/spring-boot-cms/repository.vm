@@ -1,0 +1,24 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($repositoryFile_uncap = "$repositoryFile.substring(0,1).toLowerCase()$repositoryFile.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+    #set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+    #set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${repositoryPackage_package} != "")
+package ${repositoryPackage_package};
+#end
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ${repositoryFile} extends JpaRepository<Long, ${domain_cap}> {
+
+}
