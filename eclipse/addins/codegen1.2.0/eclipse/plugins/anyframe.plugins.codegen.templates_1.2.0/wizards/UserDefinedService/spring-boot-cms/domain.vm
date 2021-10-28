@@ -1,0 +1,111 @@
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#if ($domainPackage_package != "")
+package $domainPackage_package;
+#end
+#set($dateCount = 0)
+#foreach($column in $columns)
+#if ($column.type == "DATE" || $column.type == "DATETIME")
+#set($dateCount = $dateCount+1)
+#end
+#end
+##===================================
+#set($varcharCount = 0)
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+#set($varcharCount = $varcharCount+1)
+#end
+#end
+##===================================
+#set($notEmptyCount = 0)
+#set($notNullCount = 0)
+#foreach($column in $columns)
+#if ($column.nullable == false)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE" || $column.type == "DATETIME")
+#set($notNullCount = $notNullCount+1)
+#else
+#set($notEmptyCount = $notEmptyCount+1)
+#end
+#end
+#end
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import ${basePackage}.common.domain.BaseEntity;
+import org.hibernate.annotations.DynamicUpdate;
+#if ($dateCount > 0)
+import java.time.LocalDateTime;
+#end
+
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@DynamicUpdate
+@Builder
+public class $domain_cap extends BaseEntity {
+
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == true)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+#end
+#if ($column.nullable == false)
+    @Column(nullable = false)
+#end
+#if ($column.javaType == "java.lang.String")
+    public String $column.fieldName;
+#elseif ($column.javaType == "java.lang.Integer")
+    public Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Long")
+    public Long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+    public Double $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+    public Float $column.fieldName;
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+    public Date $column.fieldName;
+#else
+    public String $column.fieldName;
+#end
+
+#end
+
+    public void update($domain_cap $domain_uncap) {
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+        this.${column.fieldName} = ${domain_uncap}.${column.fieldName};
+#end
+#end
+    }
+
+}
