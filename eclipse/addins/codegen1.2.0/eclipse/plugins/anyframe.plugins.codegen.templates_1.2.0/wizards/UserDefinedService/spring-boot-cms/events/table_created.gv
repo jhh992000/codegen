@@ -24,6 +24,7 @@ components.get("repositoryFile").setUIValue(beanName + REPOSITORY_POSTFIX);
 components.get("serviceClass").setUIValue(beanName + SERVICE_POSTFIX);
 components.get("createDtoFile").setUIValue("Create" + beanName + DTO_POSTFIX);
 components.get("updateDtoFile").setUIValue("Update" + beanName + DTO_POSTFIX);
+components.get("responseFile").setUIValue(beanName + "Response");
 components.get("controllerClass").setUIValue(beanName + CONTROLLER_POSTFIX);
 components.get("companyName").setUIValue(companyName);
 components.get("writerName").setUIValue(writerName);

@@ -41,6 +41,7 @@
 				<container name="dtoPackage" label="*Create DTO Package" type="srcPackage" required="true" />
 				<textfield name="createDtoFile" label="*Create DTO File Name" required="true" />
 				<textfield name="updateDtoFile" label="*Update DTO File Name" required="true" />
+				<textfield name="responseFile" label="*Response DTO File Name" required="true" />
 			</group>
 			<group>
 				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
@@ -54,6 +55,7 @@
 			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
 			<template component="createDtoOut" expression="$createDtoFile" velocity="createDto.vm" extension="java" container="dtoPackage"></template>
 			<template component="updateDtoOut" expression="$updateDtoFile" velocity="updateDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="responseDtoOut" expression="$responseFile" velocity="responseDto.vm" extension="java" container="dtoPackage"></template>
 			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
 		</output>
 	</wizard>
