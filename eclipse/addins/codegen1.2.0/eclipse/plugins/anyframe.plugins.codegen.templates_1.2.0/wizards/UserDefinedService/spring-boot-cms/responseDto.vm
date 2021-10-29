@@ -8,8 +8,8 @@
 #set($pk_column = $listTool.get($primaryKeys,0))
 #set($domain_cap = "$domainClass")
 #set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
-#if ($domainPackage_package != "")
-package $domainPackage_package;
+#if ($dtoPackage_package != "")
+package $dtoPackage_package;
 #end
 #set($dateCount = 0)
 #foreach($column in $columns)
