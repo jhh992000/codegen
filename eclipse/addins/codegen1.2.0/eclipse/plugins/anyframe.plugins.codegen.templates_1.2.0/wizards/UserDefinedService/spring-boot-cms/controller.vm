@@ -1,0 +1,87 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($responseFile_cap = "$responseFile")
+#set($responseFile_uncap = "$responseFile_cap.substring(0,1).toLowerCase()$responseFile_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import java.net.URI;
+import java.util.List;
+import javax.json.JsonPatch;
+import javax.validation.Valid;
+import ${servicePackage_package}.${serviceClass};
+import ${domainPackage_package}.${domainClass};
+import ${dtoPackage_package}.${createDtoFile};
+import ${dtoPackage_package}.${responseFile};
+import ${dtoPackage_package}.${updateDtoFile};
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/${domain_uncap}s")
+public class ${controllerClass} {
+
+	private final ${serviceClass} ${serviceClass_uncap};
+
+	@PostMapping
+	public ResponseEntity<${responseFile}> create${domain_cap}(@RequestBody @Valid ${createDtoFile} request) {
+		${responseFile} ${responseFile_uncap} = ${serviceClass_uncap}.create${domain_cap}(request);
+		return ResponseEntity.created(URI.create("/api/${domain_uncap}s/" + ${responseFile_uncap}.getId())).build();
+	}
+
+	@GetMapping
+	public ResponseEntity<List<${responseFile}>> get${domain_cap}List(@RequestParam(name = "id", required = false) Long id) {
+		List<${responseFile}> ${domain_uncap}s = ${serviceClass_uncap}.find${domain_cap}s(id);
+		return ResponseEntity.ok().body(${domain_uncap}s);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<${responseFile}> get${domain_cap}(@PathVariable Long id) {
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.findById(id);
+		return ResponseEntity.ok().body(${responseFile}.of(${domain_uncap}));
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<${responseFile}> replace${domain_cap}(@PathVariable Long id, @RequestBody @Valid ${updateDtoFile} request) {
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.replace(id, request);
+		return ResponseEntity.ok().body(${responseFile}.of(${domain_uncap}));
+	}
+
+	@PatchMapping(value = "/{id}", consumes = "application/json-patch+json")
+	public ResponseEntity<${responseFile}> patch${domain_cap}(@PathVariable Long id, @RequestBody JsonPatch patchDocument) {
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.patch${domain_cap}(id, patchDocument);
+		return ResponseEntity.ok().body(${responseFile}.of(${domain_uncap}));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity delete${domain_cap}(@PathVariable Long id) {
+		${serviceClass_uncap}.delete${domain_cap}(id);
+		return ResponseEntity.noContent().build();
+	}
+
+}
