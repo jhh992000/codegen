@@ -1,0 +1,107 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($repositoryFile_uncap = "$repositoryFile.substring(0,1).toLowerCase()$repositoryFile.substring(1)")
+#set($serviceClass_uncap = "$serviceClass.substring(0,1).toLowerCase()$serviceClass.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${servicePackage_package} != "")
+package ${servicePackage_package};
+#end
+
+import static ${basePackage}.common.base.BaseConstants.PAGE_SIZE;
+import static ${basePackage}.common.base.BaseConstants.START_PAGE_NO;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.json.JsonPatch;
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
+import ${domainPackage_package}.${domain_cap};
+import ${domainPackage_package}.${repositoryFile};
+import ${dtoPackage_package}.${createDtoFile};
+import ${dtoPackage_package}.${responseFile};
+import ${dtoPackage_package}.${updateDtoFile};
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+@Transactional
+public class ${serviceClass} {
+
+    private final ${repositoryFile} ${repositoryFile_uncap};
+    private final ObjectMapper objectMapper;
+
+    @Transactional(readOnly = true)
+    public List<${responseFile}> find${domainClass}s(Long lastId) {
+        Pageable pageable = PageRequest.of(START_PAGE_NO, PAGE_SIZE, Sort.by("id").descending());
+
+        if (lastId == null) {
+            lastId = ${repositoryFile_uncap}.findFirstByOrderByIdDesc()
+            .map(${domainClass}::getId)
+            .orElse(0L);
+        }
+
+        List<${domainClass}> ${domain_uncap}s = ${repositoryFile_uncap}.findLatest(lastId, pageable);
+
+        return ${domain_uncap}s.stream()
+        .map(${domain_uncap} -> ${responseFile}.of(${domain_uncap}))
+        .collect(Collectors.toList());
+    }
+
+    public ${responseFile} create${domainClass}(Create${domainClass}Request request) {
+        ${domainClass} ${domain_uncap} = ${repositoryFile_uncap}.save(request.to${domainClass}());
+        return ${responseFile}.of(${domain_uncap});
+    }
+
+    public ${domainClass} findById(Long id) {
+        return ${repositoryFile_uncap}.findById(id)
+            .orElseThrow(RuntimeException::new);
+    }
+
+    public ${domainClass} replace(Long id, Update${domainClass}Request request) {
+        return ${repositoryFile_uncap}.findById(id)
+            .map(${domain_uncap} -> {
+                ${domain_uncap}.update(request.to${domainClass}());
+                return ${domain_uncap};
+            })
+            .orElseGet(() -> {
+                ${domainClass} new${domainClass} = request.to${domainClass}(id);
+                return ${repositoryFile_uncap}.save(new${domainClass});
+            });
+    }
+
+    public void delete${domainClass}(Long id) {
+        ${repositoryFile_uncap}.deleteById(id);
+    }
+
+    public ${domainClass} patch${domainClass}(Long id, JsonPatch jsonPatch) {
+        ${domainClass} original${domainClass} = findById(id);
+        ${domainClass} modified${domainClass} = merge${domainClass}(original${domainClass}, jsonPatch);
+        original${domainClass}.update(modified${domainClass});
+        log.debug("modified ${domain_uncap} : {}", modified${domainClass});
+        return modified${domainClass};
+    }
+
+    private ${domainClass} merge${domainClass}(${domainClass} original${domainClass}, JsonPatch jsonPatch) {
+        JsonStructure target = objectMapper.convertValue(original${domainClass}, JsonStructure.class);
+        JsonValue patched${domainClass} = jsonPatch.apply(target);
+        return objectMapper.convertValue(patched${domainClass}, ${domainClass}.class);
+    }
+
+}
