@@ -17,8 +17,18 @@
 package ${repositoryPackage_package};
 #end
 
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ${repositoryFile} extends JpaRepository<Long, ${domain_cap}> {
+
+    Optional<${domain_cap}> findFirstByOrderByIdDesc();
+
+    @Query("SELECT a FROM ${domain_cap} a WHERE a.id >= :id")
+    List<${domain_cap}> findLatest(@Param("id") Long id, Pageable pageable);
 
 }

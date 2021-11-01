@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import javax.json.JsonPatch;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ${domainPackage_package}.${domain_cap};
 import ${domainPackage_package}.${repositoryFile};
 import ${dtoPackage_package}.${createDtoFile};
@@ -42,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ${serviceClass} {
 
     private final ${repositoryFile} ${repositoryFile_uncap};
