@@ -11,10 +11,16 @@
 #if ($domainPackage_package != "")
 package $domainPackage_package;
 #end
+#set($timeCount = 0)
 #set($dateCount = 0)
+#set($datetimeCount = 0)
 #foreach($column in $columns)
-#if ($column.type == "DATE" || $column.type == "DATETIME")
+#if ($column.type == "TIME")
+#set($timeCount = $timeCount+1)
+#elseif ($column.type == "DATE")
 #set($dateCount = $dateCount+1)
+#elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
+#set($datetimeCount = $datetimeCount+1)
 #end
 #end
 ##===================================
@@ -49,7 +55,13 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import ${basePackage}.common.domain.BaseEntity;
 import org.hibernate.annotations.DynamicUpdate;
+#if ($timeCount > 0)
+import java.time.LocalTime;
+#end
 #if ($dateCount > 0)
+import java.time.LocalDate;
+#end
+#if ($datetimeCount > 0)
 import java.time.LocalDateTime;
 #end
 
@@ -88,8 +100,12 @@ public class $domain_cap extends BaseEntity {
     public Double $column.fieldName;
 #elseif ($column.javaType == "java.lang.Float")
     public Float $column.fieldName;
-#elseif ($column.type == "DATE" || $column.type == "DATETIME")
-    public Date $column.fieldName;
+#elseif ($column.type == "TIME")
+    public LocalTime $column.fieldName;
+#elseif ($column.type == "DATE")
+    public LocalDate $column.fieldName;
+#elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
+    public LocalDateTime $column.fieldName;
 #else
     public String $column.fieldName;
 #end
