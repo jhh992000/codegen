@@ -73,8 +73,10 @@ public class $domain_cap extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 #end
-#if ($column.nullable == false)
-    @Column(nullable = false)
+#if ($column.nullable == true)
+    @Column(name = "$column.name")
+#elseif ($column.nullable == false)
+    @Column(name = "$column.name", nullable = false)
 #end
 #if ($column.javaType == "java.lang.String")
     public String $column.fieldName;
