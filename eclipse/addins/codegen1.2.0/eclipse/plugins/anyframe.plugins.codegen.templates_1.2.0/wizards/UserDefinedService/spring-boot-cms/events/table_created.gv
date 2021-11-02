@@ -6,6 +6,7 @@ String REPOSITORY_POSTFIX = "Repository";
 String SERVICE_POSTFIX = "Service";
 String DTO_POSTFIX = "Request";
 String CONTROLLER_POSTFIX = "Controller";
+String ATDD_POSTFIX = "AcceptanceTest";
 String companyName = "anycompany";
 String writerName = "정훈희";
 
@@ -26,6 +27,7 @@ components.get("createDtoFile").setUIValue("Create" + beanName + DTO_POSTFIX);
 components.get("updateDtoFile").setUIValue("Update" + beanName + DTO_POSTFIX);
 components.get("responseFile").setUIValue(beanName + "Response");
 components.get("controllerClass").setUIValue(beanName + CONTROLLER_POSTFIX);
+components.get("atddClass").setUIValue(beanName + ATDD_POSTFIX);
 components.get("companyName").setUIValue(companyName);
 components.get("writerName").setUIValue(writerName);
 components.get("writeDate").setUIValue(today);
@@ -37,9 +39,11 @@ String repositoryPackage = basePackage + "." + moduleName + ".domain";
 String servicePackage = basePackage + "." + moduleName + ".service";
 String dtoPackage = basePackage + "." + moduleName + ".dto";
 String controllerPackage = basePackage + "." + moduleName + ".ui";
+String atddPackage = basePackage + "." + moduleName + ".acceptance";
 
 components.get("domainPackage").setUIValue(basePath + "/src/main/java/" + domainPackage);
 components.get("repositoryPackage").setUIValue(basePath + "/src/main/java/" + repositoryPackage);
 components.get("servicePackage").setUIValue(basePath + "/src/main/java/" + servicePackage);
 components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackage);
 components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);
+components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + atddPackage);

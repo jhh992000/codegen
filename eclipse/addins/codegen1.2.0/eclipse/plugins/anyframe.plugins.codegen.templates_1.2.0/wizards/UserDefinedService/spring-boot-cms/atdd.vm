@@ -1,0 +1,112 @@
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($createDto_uncap = "$createDtoFile.substring(0,1).toLowerCase()$createDtoFile.substring(1)")
+#set($updateDto_uncap = "$updateDtoFile.substring(0,1).toLowerCase()$updateDtoFile.substring(1)")
+#if ($atddPackage_package != "")
+package $atddPackage_package;
+#end
+#set($timeCount = 0)
+#set($dateCount = 0)
+#set($datetimeCount = 0)
+#foreach($column in $columns)
+#if ($column.type == "TIME")
+#set($timeCount = $timeCount+1)
+#elseif ($column.type == "DATE")
+#set($dateCount = $dateCount+1)
+#elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
+#set($datetimeCount = $datetimeCount+1)
+#end
+#end
+##===================================
+#set($varcharCount = 0)
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+#set($varcharCount = $varcharCount+1)
+#end
+#end
+##===================================
+#set($notEmptyCount = 0)
+#set($notNullCount = 0)
+#foreach($column in $columns)
+#if ($column.nullable == false)
+#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE" || $column.type == "DATETIME")
+#set($notNullCount = $notNullCount+1)
+#else
+#set($notEmptyCount = $notEmptyCount+1)
+#end
+#end
+#end
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import ${basePackage}.AcceptancePerClassTest;
+import ${dtoPackage_package}.${createDtoFile};
+import ${dtoPackage_package}.${updateDtoFile};
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
+public class ${atddClass} extends AcceptancePerClassTest {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    void ${domain_uncap}_인수테스트() {
+        ${createDtoFile} ${createDto_uncap} = new ${createDtoFile}();
+        ExtractableResponse<Response> 등록_응답 = 등록_요청(${createDto_uncap});
+        assertResponseCode(등록_응답, HttpStatus.CREATED);
+
+        Long id = Long.parseLong(등록_응답.header("Location").split("/")[3]);
+
+        ${updateDtoFile} ${updateDto_uncap} = new ${updateDtoFile}();
+        ExtractableResponse<Response> 수정_응답 = 수정_요청(id, ${updateDto_uncap});
+        assertResponseCode(수정_응답, HttpStatus.OK);
+
+        ExtractableResponse<Response> 목록_조회_응답 = 목록_조회_요청();
+        assertThat(목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> 조회_응답 = 조회_요청(id);
+        assertResponseCode(조회_응답, HttpStatus.OK);
+
+        ExtractableResponse<Response> 삭제_응답 = 삭제_요청(id);
+        assertResponseCode(삭제_응답, HttpStatus.NO_CONTENT);
+    }
+
+    public ExtractableResponse<Response> 등록_요청(${createDtoFile} ${createDto_uncap}) {
+        Map params = objectMapper.convertValue(${createDto_uncap}, Map.class);
+        return post(params, "/api/${domain_uncap}s");
+    }
+
+    private ExtractableResponse<Response> 수정_요청(Long id, ${updateDtoFile} ${updateDto_uncap}) {
+        Map params = objectMapper.convertValue(${updateDto_uncap}, Map.class);
+        return put(params, "/api/${domain_uncap}s/" + id);
+    }
+
+    private ExtractableResponse<Response> 목록_조회_요청() {
+        return get("/api/${domain_uncap}s");
+    }
+
+    private ExtractableResponse<Response> 조회_요청(Long id) {
+        return get("/api/${domain_uncap}s/" + id);
+    }
+
+    private ExtractableResponse<Response> 삭제_요청(Long id) {
+        return delete("/api/${domain_uncap}s/" + id);
+    }
+}

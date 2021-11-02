@@ -47,6 +47,10 @@
 				<container name="controllerPackage" label="*Controller Package" type="srcPackage" required="true" />
 				<textfield name="controllerClass" label="*Controller Class Name" required="true" />
 			</group>
+			<group>
+				<container name="atddPackage" label="*ATDD Package" type="srcPackage" required="true" />
+				<textfield name="atddClass" label="*ATDD Class Name" required="true" />
+			</group>
 		</component-page>
 
 		<output>
@@ -57,6 +61,7 @@
 			<template component="updateDtoOut" expression="$updateDtoFile" velocity="updateDto.vm" extension="java" container="dtoPackage"></template>
 			<template component="responseDtoOut" expression="$responseFile" velocity="responseDto.vm" extension="java" container="dtoPackage"></template>
 			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
+			<template component="atddOut" expression="$atddClass" velocity="atdd.vm" extension="java" container="atddPackage"></template>
 		</output>
 	</wizard>
 </CodeGen>

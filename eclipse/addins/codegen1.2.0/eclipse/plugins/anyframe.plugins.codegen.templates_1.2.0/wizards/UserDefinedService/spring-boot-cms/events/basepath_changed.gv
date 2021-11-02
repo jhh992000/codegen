@@ -7,6 +7,7 @@ String repositoryPackage = basePackage + "." + moduleName + ".domain";
 String servicePackage = basePackage + "." + moduleName + ".service";
 String dtoPackage = basePackage + "." + moduleName + ".dto";
 String controllerPackage = basePackage + "." + moduleName + ".ui";
+String atddPackage = basePackage + "." + moduleName + ".acceptance";
 
 components.get("basePackage").setUIValue(basePackage);
 components.get("domainPackage").setUIValue(basePath + "/src/main/java/" + domainPackage);
@@ -14,3 +15,4 @@ components.get("repositoryPackage").setUIValue(basePath + "/src/main/java/" + re
 components.get("servicePackage").setUIValue(basePath + "/src/main/java/" + servicePackage);
 components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackage);
 components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);
+components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + controllerPackage);
