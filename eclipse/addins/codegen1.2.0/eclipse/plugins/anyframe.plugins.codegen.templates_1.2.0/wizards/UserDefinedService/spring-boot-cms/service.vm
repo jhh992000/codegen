@@ -50,6 +50,11 @@ public class ${serviceClass} {
     private final ${repositoryFile} ${repositoryFile_uncap};
     private final ObjectMapper objectMapper;
 
+    public ${responseFile} create${domainClass}(Create${domainClass}Request request) {
+        ${domainClass} ${domain_uncap} = ${repositoryFile_uncap}.save(request.to${domainClass}());
+        return ${responseFile}.of(${domain_uncap});
+    }
+
     @Transactional(readOnly = true)
     public List<${responseFile}> find${domainClass}s(Long lastId) {
         Pageable pageable = PageRequest.of(START_PAGE_NO, PAGE_SIZE, Sort.by("id").descending());
@@ -67,17 +72,12 @@ public class ${serviceClass} {
         .collect(Collectors.toList());
     }
 
-    public ${responseFile} create${domainClass}(Create${domainClass}Request request) {
-        ${domainClass} ${domain_uncap} = ${repositoryFile_uncap}.save(request.to${domainClass}());
-        return ${responseFile}.of(${domain_uncap});
-    }
-
-    public ${domainClass} findById(Long id) {
+    public ${domainClass} find${domainClass}(Long id) {
         return ${repositoryFile_uncap}.findById(id)
             .orElseThrow(RuntimeException::new);
     }
 
-    public ${domainClass} replace(Long id, Update${domainClass}Request request) {
+    public ${domainClass} replace${domainClass}(Long id, Update${domainClass}Request request) {
         return ${repositoryFile_uncap}.findById(id)
             .map(${domain_uncap} -> {
                 ${domain_uncap}.update(request.to${domainClass}());
@@ -89,12 +89,8 @@ public class ${serviceClass} {
             });
     }
 
-    public void delete${domainClass}(Long id) {
-        ${repositoryFile_uncap}.deleteById(id);
-    }
-
     public ${domainClass} patch${domainClass}(Long id, JsonPatch jsonPatch) {
-        ${domainClass} original${domainClass} = findById(id);
+        ${domainClass} original${domainClass} = find${domainClass}(id);
         ${domainClass} modified${domainClass} = merge${domainClass}(original${domainClass}, jsonPatch);
         original${domainClass}.update(modified${domainClass});
         log.debug("modified ${domain_uncap} : {}", modified${domainClass});
@@ -105,6 +101,10 @@ public class ${serviceClass} {
         JsonStructure target = objectMapper.convertValue(original${domainClass}, JsonStructure.class);
         JsonValue patched${domainClass} = jsonPatch.apply(target);
         return objectMapper.convertValue(patched${domainClass}, ${domainClass}.class);
+    }
+
+    public void delete${domainClass}(Long id) {
+        ${repositoryFile_uncap}.deleteById(id);
     }
 
 }

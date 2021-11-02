@@ -55,20 +55,20 @@ public class ${controllerClass} {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<${responseFile}>> get${domain_cap}List(@RequestParam(name = "id", required = false) Long id) {
-		List<${responseFile}> ${domain_uncap}s = ${serviceClass_uncap}.find${domain_cap}s(id);
+	public ResponseEntity<List<${responseFile}>> find${domain_cap}s(@RequestParam(name = "id", required = false) Long lastId) {
+		List<${responseFile}> ${domain_uncap}s = ${serviceClass_uncap}.find${domain_cap}s(lastId);
 		return ResponseEntity.ok().body(${domain_uncap}s);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<${responseFile}> get${domain_cap}(@PathVariable Long id) {
-		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.findById(id);
+	public ResponseEntity<${responseFile}> find${domain_cap}(@PathVariable Long id) {
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.find${domain_cap}(id);
 		return ResponseEntity.ok().body(${responseFile}.of(${domain_uncap}));
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<${responseFile}> replace${domain_cap}(@PathVariable Long id, @RequestBody @Valid ${updateDtoFile} request) {
-		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.replace(id, request);
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.replace${domain_cap}(id, request);
 		return ResponseEntity.ok().body(${responseFile}.of(${domain_uncap}));
 	}
 
