@@ -104,7 +104,8 @@ public class ${updateDtoFile} {
             .build();
     }
 
-    public ${domainClass} to${domainClass}(#set($i = 1)#foreach($column in $pks)$column.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end) {
+    public ${domainClass} to${domainClass}(#set($i = 1)#foreach($column in $pks)#if($column.javaType == "java.lang.String")String #else
+Long #end$column.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end) {
         return ${domainClass}.builder()
 #foreach($column in $pks)
             .${column.fieldName}(${column.fieldName})

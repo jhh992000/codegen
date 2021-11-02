@@ -59,27 +59,27 @@ public class ${responseFile} extends BaseEntity {
 #end
 #end
 #if ($column.javaType == "java.lang.String")
-    public String $column.fieldName;
+    private String $column.fieldName;
 #elseif ($column.javaType == "java.lang.Integer")
-    public Integer $column.fieldName;
+    private Integer $column.fieldName;
 #elseif ($column.javaType == "java.lang.Long")
-    public Long $column.fieldName;
+    private Long $column.fieldName;
 #elseif ($column.javaType == "java.lang.Double")
-    public Double $column.fieldName;
+    private Double $column.fieldName;
 #elseif ($column.javaType == "java.lang.Float")
-    public Float $column.fieldName;
+    private Float $column.fieldName;
 #elseif ($column.type == "DATE" || $column.type == "DATETIME")
-    public Date $column.fieldName;
+    private Date $column.fieldName;
 #else
-    public String $column.fieldName;
+    private String $column.fieldName;
 #end
 
 #end
 
     public ${responseFile} of(${domain_cap} ${domain_uncap}) {
-        return ${domain_uncap}.builder()
+        return ${responseFile}.builder()
 #foreach($column in $columns)
-            .${column.fieldName}(${column.fieldName})
+            .${column.fieldName}(${domain_uncap}.get$column.fieldName.substring(0,1).toUpperCase()$column.fieldName.substring(1)())
 #end
             .build();
     }
