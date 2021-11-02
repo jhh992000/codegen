@@ -55,42 +55,42 @@ public class ${updateDtoFile} {
 #if ($column.nullable == false)
     @NotEmpty
 #end
-    public String $column.fieldName;
+    private String $column.fieldName;
 #elseif ($column.javaType == "java.lang.Boolean")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public Boolean $column.fieldName;
+    private Boolean $column.fieldName;
 #elseif ($column.javaType == "java.lang.Integer")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public Integer $column.fieldName;
+    private Integer $column.fieldName;
 #elseif ($column.javaType == "java.lang.Long")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public Long $column.fieldName;
+    private Long $column.fieldName;
 #elseif ($column.javaType == "java.lang.Double")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public Double $column.fieldName;
+    private Double $column.fieldName;
 #elseif ($column.javaType == "java.lang.Float")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public Float $column.fieldName;
+    private Float $column.fieldName;
 #elseif ($column.type == "DATE" || $column.type == "DATETIME")
 #if ($column.nullable == false)
     @NotNull
 #end
-    public LocalDateTime $column.fieldName;
+    private LocalDateTime $column.fieldName;
 #else
 #if ($column.nullable == false)
     @NotNull
 #end
-    public String $column.fieldName;
+    private String $column.fieldName;
 #end
 #end
 
