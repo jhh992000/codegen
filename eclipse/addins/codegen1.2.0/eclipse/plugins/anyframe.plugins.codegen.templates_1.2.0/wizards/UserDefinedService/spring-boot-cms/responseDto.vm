@@ -76,7 +76,7 @@ public class ${responseFile} extends BaseEntity {
 
 #end
 
-    public ${responseFile} of(${domain_cap} ${domain_uncap}) {
+    public static ${responseFile} of(${domain_cap} ${domain_uncap}) {
         return ${responseFile}.builder()
 #foreach($column in $columns)
             .${column.fieldName}(${domain_uncap}.get$column.fieldName.substring(0,1).toUpperCase()$column.fieldName.substring(1)())
