@@ -24,7 +24,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ${repositoryFile} extends JpaRepository<Long, ${domain_cap}> {
+public interface ${repositoryFile} extends JpaRepository<${domain_cap}, Long> {
 
     Optional<${domain_cap}> findFirstByOrderByIdDesc();
 
