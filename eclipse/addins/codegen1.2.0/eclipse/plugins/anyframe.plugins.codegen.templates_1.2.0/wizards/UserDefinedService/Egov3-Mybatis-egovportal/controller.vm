@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ${servicePackage_package}.${serviceClass};
 import ${domainPackage_package}.${domain_cap};
+import egovframework.portal.service.user.UserVo;
 import egovframework.portal.common.annotation.MenuLoad;
 import egovframework.portal.common.dao.Criteria;
 import egovframework.portal.common.web.FlashMessage;
@@ -43,7 +44,6 @@ import egovframework.portal.common.web.RedirectUrlMaker;
  * @author ${companyName} ${writerName}
  * @version 1.0
  * @since ${writeDate}
- * @see none
  *
  * <pre>
  * << 개정이력(Modification Information) >>
@@ -153,14 +153,13 @@ public class ${controllerClass} {
 	 *
 	 * @param model
 	 * @param ${domain_uncap}
-	 * @param result
 	 * @param cri
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Create.do" })
 	@MenuLoad
-	public String ${moduleName}Create(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, RedirectAttributes redirectAttributes) throws Exception {
+	public String ${moduleName}Create(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, UserVo sessionUser, RedirectAttributes redirectAttributes) throws Exception {
 
 		${serviceClass_uncap}.create(${domain_uncap});
 
@@ -174,14 +173,13 @@ public class ${controllerClass} {
 	 *
 	 * @param model
 	 * @param ${domain_uncap}
-	 * @param result
 	 * @param cri
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Update.do" })
 	@MenuLoad
-	public String ${moduleName}Update(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, RedirectAttributes redirectAttributes) throws Exception {
+	public String ${moduleName}Update(Model model, ${domain_cap} ${domain_uncap}, Criteria cri,  UserVo sessionUser, RedirectAttributes redirectAttributes) throws Exception {
 
 		${serviceClass_uncap}.update(${domain_uncap});
 

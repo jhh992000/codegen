@@ -36,7 +36,6 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
  * @author ${companyName} ${writerName}
  * @version 1.0
  * @since ${writeDate}
- * @see none
  *
  * <pre>
  * << 개정이력(Modification Information) >>

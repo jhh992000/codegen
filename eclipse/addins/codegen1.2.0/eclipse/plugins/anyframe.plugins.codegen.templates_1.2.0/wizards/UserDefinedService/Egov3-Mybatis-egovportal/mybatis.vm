@@ -39,24 +39,24 @@
 		<where>
 #foreach($column in $columns)
 #if ($column.javaType == "java.lang.Integer" || $column.javaType == "java.lang.Long" || $column.javaType == "java.lang.Double" || $column.javaType == "java.lang.Float")
-			<if test="condition.${column.fieldName} != null and condition.${column.fieldName} != ''">
-				AND A.$column.name = #{condition.${column.fieldName}}
+			<if test="param.${column.fieldName} != null and param.${column.fieldName} != ''">
+				AND A.$column.name = #{param.${column.fieldName}}
 			</if>
 #elseif ($column.type == "DATE" || $column.type == "DATETIME")
-			<if test="condition.${column.fieldName} != null and condition.${column.fieldName} != ''">
-				AND DATE_FORMAT(A.$column.name, '%Y-%m-%d') = DATE_FORMAT(STR_TO_DATE(#{condition.${column.fieldName}}, '%Y%m%d'),'%Y-%m-%d')
+			<if test="param.${column.fieldName} != null and param.${column.fieldName} != ''">
+				AND DATE_FORMAT(A.$column.name, '%Y-%m-%d') = DATE_FORMAT(STR_TO_DATE(#{param.${column.fieldName}}, '%Y%m%d'),'%Y-%m-%d')
 			</if>
-			<if test="condition.${column.fieldName}Start != null and condition.${column.fieldName}Start != ''">
-				<if test="condition.${column.fieldName}End != null and condition.${column.fieldName}End != ''">
-					AND DATE_FORMAT(A.$column.name, '%Y-%m-%d') BETWEEN DATE_FORMAT(STR_TO_DATE(#{condition.${column.fieldName}Start}, '%Y%m%d'),'%Y-%m-%d') AND DATE_FORMAT(STR_TO_DATE(#{condition.${column.fieldName}End}, '%Y%m%d'),'%Y-%m-%d')
+			<if test="param.${column.fieldName}Start != null and param.${column.fieldName}Start != ''">
+				<if test="param.${column.fieldName}End != null and param.${column.fieldName}End != ''">
+					AND DATE_FORMAT(A.$column.name, '%Y-%m-%d') BETWEEN DATE_FORMAT(STR_TO_DATE(#{param.${column.fieldName}Start}, '%Y%m%d'),'%Y-%m-%d') AND DATE_FORMAT(STR_TO_DATE(#{param.${column.fieldName}End}, '%Y%m%d'),'%Y-%m-%d')
 				</if>
 			</if>
 #else
-			<if test="condition.${column.fieldName} != null and condition.${column.fieldName} != ''">
+			<if test="param.${column.fieldName} != null and param.${column.fieldName} != ''">
 #if ($column.size == 1)
-				AND A.$column.name = #{condition.${column.fieldName}}
+				AND A.$column.name = #{param.${column.fieldName}}
 #else
-				AND A.$column.name LIKE CONCAT('%', #{condition.${column.fieldName}}, '%')
+				AND A.$column.name LIKE CONCAT('%', #{param.${column.fieldName}}, '%')
 #end
 			</if>
 #end

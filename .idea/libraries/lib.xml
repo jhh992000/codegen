@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/lib/nanoxml.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/lib/squirrel.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/lib/log4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/lib/commons-logging.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/lib/rowset.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sqlexplorer">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer_3.0.0.20060901/sqlexplorer.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

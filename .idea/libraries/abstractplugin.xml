@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="abstractplugin">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.codegen.templates_1.2.0/lib/abstractplugin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

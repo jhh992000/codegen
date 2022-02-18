@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="plugins1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.common_1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.dbio_1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.configeditor_2.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.codegen_1.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/codegen1.2.0/eclipse/plugins/anyframe.plugins.codegen.db_1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

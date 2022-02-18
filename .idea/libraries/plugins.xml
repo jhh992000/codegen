@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="plugins">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer.db2_1.0.0.20060829.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer.oracle_1.0.0.20060829.jar!/" />
+      <root url="jar://$PROJECT_DIR$/eclipse/addins/sqlexplorer3.0.0/eclipse/plugins/net.sourceforge.sqlexplorer.mysql_1.0.0.20060829.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

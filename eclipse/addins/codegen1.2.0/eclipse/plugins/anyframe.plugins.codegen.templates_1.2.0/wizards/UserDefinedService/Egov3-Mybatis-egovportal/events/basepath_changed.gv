@@ -1,9 +1,9 @@
 String basePath = components.get("basePath").getUIValue();
-String DOMAIN_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String DAO_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String SERVICE_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String CONTROLLER_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".web";
-String MYBATIS_PATH = "src/main/resources/egovframework/mapper/admin/";
+String DOMAIN_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String DAO_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String SERVICE_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String CONTROLLER_PACKAGE = "egovframework.portal.controller.admin";
+String MYBATIS_PATH = "src/main/resources/egovframework/mapper/portal/";
 String JSP_PATH = "src/main/webapp/WEB-INF/jsp/admin";
 String MESSAGE_RESOURCE_PATH = "src/main/resources/egovframework/message";
 String REQUEST_PATH = "/admin";
