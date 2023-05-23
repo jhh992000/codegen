@@ -57,10 +57,10 @@ components.get("companyName").setUIValue(companyName);
 components.get("writerName").setUIValue(writerName);
 components.get("writeDate").setUIValue(today);
 
-String DOMAIN_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String DAO_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String SERVICE_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".service";
-String CONTROLLER_PACKAGE = "egovframework.portal.admin." + components.get("moduleName").getUIValue() + ".web";
+String DOMAIN_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String DAO_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String SERVICE_PACKAGE = "egovframework.portal.service." + components.get("moduleName").getUIValue();
+String CONTROLLER_PACKAGE = "egovframework.portal.controller.admin";
 
 components.get("domainPackage").setUIValue(basePath+"/src/main/java/"+DOMAIN_PACKAGE);
 components.get("mapperPackage").setUIValue(basePath+"/src/main/java/"+DAO_PACKAGE);
