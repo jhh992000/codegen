@@ -74,7 +74,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}List.do" })
 	@MenuLoad
-	public String ${moduleName}List(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+	public String ${moduleName}List(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) {
 
 		Integer totalCount = ${serviceClass_uncap}.totalCount(cri);
 		cri.setTotalCount(totalCount);
@@ -99,7 +99,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Read.do" })
 	@MenuLoad
-	public String ${moduleName}Read(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+	public String ${moduleName}Read(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) {
 
 		${domain_uncap} = ${serviceClass_uncap}.read(${domain_uncap});
 
@@ -119,7 +119,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}CreateForm.do" })
 	@MenuLoad
-	public String ${moduleName}CreateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+	public String ${moduleName}CreateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) {
 
 		model.addAttribute("editMode", "${moduleName}Create");
 		model.addAttribute("${domain_uncap}", ${domain_uncap});
@@ -138,7 +138,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}UpdateForm.do" })
 	@MenuLoad
-	public String ${moduleName}UpdateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) throws Exception {
+	public String ${moduleName}UpdateForm(Model model, Criteria cri, ${domain_cap} ${domain_uncap}) {
 
 		${domain_uncap} = ${serviceClass_uncap}.read(${domain_uncap});
 
@@ -159,7 +159,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Create.do" })
 	@MenuLoad
-	public String ${moduleName}Create(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, UserVo sessionUser, RedirectAttributes redirectAttributes) throws Exception {
+	public String ${moduleName}Create(Model model, ${domain_cap} ${domain_uncap}, Criteria cri, UserVo sessionUser, RedirectAttributes redirectAttributes) {
 
 		${serviceClass_uncap}.create(${domain_uncap});
 
@@ -179,7 +179,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Update.do" })
 	@MenuLoad
-	public String ${moduleName}Update(Model model, ${domain_cap} ${domain_uncap}, Criteria cri,  UserVo sessionUser, RedirectAttributes redirectAttributes) throws Exception {
+	public String ${moduleName}Update(Model model, ${domain_cap} ${domain_uncap}, Criteria cri,  UserVo sessionUser, RedirectAttributes redirectAttributes) {
 
 		${serviceClass_uncap}.update(${domain_uncap});
 
@@ -198,7 +198,7 @@ public class ${controllerClass} {
 	 */
 	@RequestMapping({ "${requestPath}/${moduleName}Delete.do" })
 	@MenuLoad
-	public String ${moduleName}Delete(Model model, Criteria cri, ${domain_cap} ${domain_uncap}, RedirectAttributes redirectAttributes) throws Exception {
+	public String ${moduleName}Delete(Model model, Criteria cri, ${domain_cap} ${domain_uncap}, RedirectAttributes redirectAttributes) {
 
 		${serviceClass_uncap}.delete(${domain_uncap});
 

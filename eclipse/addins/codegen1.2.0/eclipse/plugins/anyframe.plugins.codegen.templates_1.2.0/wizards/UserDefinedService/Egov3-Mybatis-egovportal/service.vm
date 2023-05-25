@@ -53,32 +53,32 @@ public class ${serviceClass} {
 	@Resource
 	private ${mapperClass} ${mapperClass_uncap};
 
-	public Integer totalCount(Criteria criteria) throws SQLException, Exception {
+	public Integer totalCount(Criteria criteria) {
 		return ${mapperClass_uncap}.totalCount(criteria);
 	}
 
-	public List<${domain_cap}> pagedList(Criteria criteria) throws SQLException, Exception {
+	public List<${domain_cap}> pagedList(Criteria criteria) {
 		return ${mapperClass_uncap}.pagedList(criteria);
 	}
 
-	public List<${domain_cap}> list(Criteria criteria) throws SQLException, Exception {
+	public List<${domain_cap}> list(Criteria criteria) {
 		return ${mapperClass_uncap}.list(criteria);
 	}
 
-	public ${domain_cap} create(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+	public ${domain_cap} create(${domain_cap} ${domain_uncap}) {
 		${mapperClass_uncap}.create(${domain_uncap});
 		return ${domain_uncap};
 	}
 
-	public ${domain_cap} read(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+	public ${domain_cap} read(${domain_cap} ${domain_uncap}) {
 		return ${mapperClass_uncap}.read(${domain_uncap});
 	}
 
-	public Integer update(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+	public Integer update(${domain_cap} ${domain_uncap}) {
 		return ${mapperClass_uncap}.update(${domain_uncap});
 	}
 
-	public Integer delete(${domain_cap} ${domain_uncap}) throws SQLException, Exception {
+	public Integer delete(${domain_cap} ${domain_uncap}) {
 		return ${mapperClass_uncap}.delete(${domain_uncap});
 	}
 
