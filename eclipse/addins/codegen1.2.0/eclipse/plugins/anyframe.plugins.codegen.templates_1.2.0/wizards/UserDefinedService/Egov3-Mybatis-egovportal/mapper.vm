@@ -48,18 +48,18 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
 @Mapper("${mapperClass_uncap}")
 public interface ${mapperClass} {
 
-	public Integer totalCount(Criteria criteria);
+	Integer totalCount(Criteria criteria);
 
-	public List<${domain_cap}> pagedList(Criteria criteria);
+	List<${domain_cap}> pagedList(Criteria criteria);
 
-	public List<${domain_cap}> list(Criteria criteria);
+	List<${domain_cap}> list(Criteria criteria);
 
-	public Integer create(${domain_cap} ${domain_uncap});
+	Integer create(${domain_cap} ${domain_uncap});
 
-	public ${domain_cap} read(${domain_cap} ${domain_uncap});
+	${domain_cap} read(${domain_cap} ${domain_uncap});
 
-	public int update(${domain_cap} ${domain_uncap});
+	int update(${domain_cap} ${domain_uncap});
 
-	public int delete(${domain_cap} ${domain_uncap});
+	int delete(${domain_cap} ${domain_uncap});
 
 }
