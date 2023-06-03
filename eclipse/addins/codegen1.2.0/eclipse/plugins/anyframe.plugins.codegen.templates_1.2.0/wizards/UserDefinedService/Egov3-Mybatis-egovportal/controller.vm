@@ -58,7 +58,7 @@ public class ${controllerClass} {
 
 	private static Logger logger = Logger.getLogger(${controllerClass}.class);
 
-	@Resource(name = "${serviceClass_uncap}")
+	@Resource
 	private ${serviceClass} ${serviceClass_uncap};
 	@Resource
 	private MessageSourceAccessor messageSourceAccessor;
