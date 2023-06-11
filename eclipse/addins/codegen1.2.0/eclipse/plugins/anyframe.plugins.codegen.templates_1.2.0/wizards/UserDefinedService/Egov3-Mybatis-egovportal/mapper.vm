@@ -54,7 +54,7 @@ public interface ${mapperClass} {
 
 	List<${domain_cap}> list(Criteria criteria);
 
-	Integer create(${domain_cap} ${domain_uncap});
+	void create(${domain_cap} ${domain_uncap});
 
 	${domain_cap} read(${domain_cap} ${domain_uncap});
 
