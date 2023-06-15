@@ -104,7 +104,7 @@ $(document).ready(function(){
 						<label class="col-form-label col-md-3 col-sm-3 label-align" for="${col.fieldName}">
 							${ $titleFieldName } <span class="required">*</span>
 						</label>
-						<div class="col-md-6 col-sm-6 ">
+						<div class="col-md-9 col-sm-9">
 							<form:input path="${col.fieldName}" cssClass="form-control" cssStyle="" maxlength="${col.size}" title="${ $titleFieldName }" placeholder="${ $titleFieldName }" />
 						</div>
 						<div class="clearfix"></div>
@@ -117,7 +117,7 @@ $(document).ready(function(){
 						<label class="col-form-label col-md-3 col-sm-3 label-align" for="${col.fieldName}">
 							${ $titleFieldName } <span class="required">*</span>
 						</label>
-						<div class="col-md-6 col-sm-6 ">
+						<div class="col-md-9 col-sm-9">
 #if ($col.fieldName=="useYn")
 							<form:radiobutton id="useYnY" path="useYn" value="Y" /><label for="useYnY"><s:message code="common.use" /></label>&nbsp;
 							<form:radiobutton id="useYnN" path="useYn" value="N" /><label for="useYnN"><s:message code="common.notUse" /></label>
