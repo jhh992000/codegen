@@ -34,7 +34,7 @@ $(document).ready(function(){
 	<div class="x_panel">
 		<div class="x_title">
 			<h2>
-				<s:message code="${moduleName}.modelName" /> <s:message code="common.search" />
+				<s:message code="${moduleName}.modelName" /> <s:message code="common.list" />
 			</h2>
 			<div class="clearfix"></div>
 		</div>
