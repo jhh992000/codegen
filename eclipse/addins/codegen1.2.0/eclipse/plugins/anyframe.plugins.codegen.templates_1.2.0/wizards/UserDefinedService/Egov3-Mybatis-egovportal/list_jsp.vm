@@ -59,7 +59,7 @@ $(document).ready(function(){
 							<pg:param name="searchValue" value="${ cri.searchValue }" />
 							<pg:param name="menuNo" value="${ cri.menuNo }" />
 
-							<div id="datatable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap no-footer searchBox">
+							<div id="datatable_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap no-footer">
 								<div class="row">
 									<form:form id="searchForm" name="searchForm" method="post" commandName="cri" action="${ pageContext.request.contextPath }${requestPath}/${moduleName}List.do">
 										<fieldset>
