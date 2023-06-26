@@ -11,7 +11,7 @@
 #set($colspan = $cols.size()+2)
 #set($formName = "frm")
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="../../common/include/taglib.jsp" %>
+<%@ include file="../../cmm/include/taglib.jsp" %>
 <html>
 <head>
 <title><s:message code="${moduleName}.modelName" /> <s:message code="common.list" /></title>

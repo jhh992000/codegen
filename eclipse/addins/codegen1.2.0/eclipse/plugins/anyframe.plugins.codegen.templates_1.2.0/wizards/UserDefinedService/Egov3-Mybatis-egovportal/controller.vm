@@ -37,6 +37,7 @@ import egovframework.portal.common.dao.Criteria;
 import egovframework.portal.common.web.FlashMessage;
 import egovframework.portal.common.web.RedirectUrlMaker;
 
+import static egovframework.portal.common.web.FlashMessage.FLASH_MESSAGE;
 
 /**
  * 프로그램 설명 :
@@ -163,7 +164,7 @@ public class ${controllerClass} {
 
 		${serviceClass_uncap}.create(${domain_uncap});
 
-		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.create.success")));
+		redirectAttributes.addFlashAttribute(FLASH_MESSAGE, new FlashMessage(messageSourceAccessor.getMessage("common.create.success")));
 
 		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri, true).getRedirectUrl();
 	}
@@ -183,7 +184,7 @@ public class ${controllerClass} {
 
 		${serviceClass_uncap}.update(${domain_uncap});
 
-		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.update.success")));
+		redirectAttributes.addFlashAttribute(FLASH_MESSAGE, new FlashMessage(messageSourceAccessor.getMessage("common.update.success")));
 
 		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri).getRedirectUrl();
 	}
@@ -202,7 +203,7 @@ public class ${controllerClass} {
 
 		${serviceClass_uncap}.delete(${domain_uncap});
 
-		redirectAttributes.addFlashAttribute("flashMessage", new FlashMessage(messageSourceAccessor.getMessage("common.delete.success")));
+		redirectAttributes.addFlashAttribute(FLASH_MESSAGE, new FlashMessage(messageSourceAccessor.getMessage("common.delete.success")));
 
 		return new RedirectUrlMaker("${requestPath}/${moduleName}List.do", cri).getRedirectUrl();
 	}

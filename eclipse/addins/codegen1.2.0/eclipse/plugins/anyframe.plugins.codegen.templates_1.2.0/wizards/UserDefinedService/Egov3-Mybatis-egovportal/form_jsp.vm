@@ -12,7 +12,7 @@
 #set($formClass_uncap = "${model.fieldName}Form")
 #set($formName = "frm")
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="../../common/include/taglib.jsp" %>
+<%@ include file="../../cmm/include/taglib.jsp" %>
 <html>
 <head>
 <title><s:message code="${moduleName}.modelName" /> <s:message code="common.edit" /></title>
