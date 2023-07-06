@@ -44,7 +44,7 @@ $(document).ready(function(){
 #end
 #end
 #if ($isPk == false && $col.nullable == false)
-			#if ($loopCount > 0),#end${col.fieldName}: { required: true#if ($col.type=="INT" || $col.type=="DOUBLE" || $col.type=="FLOAT" || $col.type=="NUMBER" || $col.type=="int" || $col.type=="double" || $col.type=="float" || $col.type=="number"), number: true#end }
+			${col.fieldName}: { required: true#if ($col.type=="INT" || $col.type=="DOUBLE" || $col.type=="FLOAT" || $col.type=="NUMBER" || $col.type=="int" || $col.type=="double" || $col.type=="float" || $col.type=="number"), number: true#end },
 #set($loopCount = $loopCount+1)
 #end
 #end

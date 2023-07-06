@@ -35,6 +35,10 @@ package $domainPackage_package;
 #end
 #end
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 #if ($dateCount > 0)
 import java.util.Date;
@@ -56,6 +60,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  *   ${writeDate}     ${writerName}          최초 생성
  * </pre>
  */
+ 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class $domainClass implements Serializable {
 
 	public static final long serialVersionUID = 1L;
@@ -77,83 +85,5 @@ public class $domainClass implements Serializable {
 	private String $column.fieldName;
 #end
 #end
-
-#foreach($column in $columns)
-#if ($column.javaType == "java.lang.String")
-	public String get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Integer")
-	public Integer get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Long")
-	public Long get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Double")
-	public Double get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Float")
-	public Float get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#elseif ($column.type == "DATE" || $column.type == "DATETIME")
-	public Date get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#else
-	public String get${column.javaName}() {
-		return $column.fieldName;
-	}
-
-#end
-#if ($column.javaType == "java.lang.String")
-	public void set${column.javaName}(String $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Integer")
-	public void set${column.javaName}(Integer $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Long")
-	public void set${column.javaName}(Long $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Double")
-	public void set${column.javaName}(Double $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#elseif ($column.javaType == "java.lang.Float")
-	public void set${column.javaName}(Float $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#elseif ($column.type == "DATE" || $column.type == "DATETIME")
-	public void set${column.javaName}(Date $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#else
-	public void set${column.javaName}(String $column.fieldName) {
-		this.$column.fieldName = $column.fieldName;
-	}
-
-#end
-#end
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 
 }

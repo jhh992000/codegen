@@ -194,7 +194,7 @@ $(document).ready(function(){
 			</div>
 			<div class="row">
 				<div class="col-sm-12 text-right">
-					<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}CreateForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-info btn-sm mr-3 mt-1" style="min-width: 64px;"><i class="fa fa-pencil"></i><s:message code="common.create" /></a>
+					<a href="${ pageContext.request.contextPath }${requestPath}/<s:url value="${moduleName}CreateForm.do?${ cri.params }" htmlEscape="true" javaScriptEscape="true" />" class="btn btn-info btn-sm mr-3 mt-1" style="min-width: 64px;"><i class="fa fa-pencil mr-1"></i><s:message code="common.create" /></a>
 				</div>
 			</div>
 
