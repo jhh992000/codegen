@@ -85,7 +85,7 @@
 		</where>
 	</sql>
 
-	<select id="totalCount" parameterType="egovframework.portal.common.dao.Criteria" resultType="int">
+	<select id="totalCount" parameterType="cri" resultType="int">
 		/* ${mapperClass}.totalCount */
 		SELECT
 			COUNT(*)
@@ -94,7 +94,7 @@
 		<include refid="searchConditions"/>
 	</select>
 
-	<select id="pagedList" parameterType="egovframework.portal.common.dao.Criteria" resultMap="resultMap-${domain_cap}">
+	<select id="pagedList" parameterType="cri" resultMap="resultMap-${domain_cap}">
 		/* ${mapperClass}.pagedList */
 		SELECT
 			ALL_LIST.*
@@ -119,7 +119,7 @@
 		LIMIT #{pagerOffset}, #{maxPageItems}
 	</select>
 
-	<select id="list" parameterType="egovframework.portal.common.dao.Criteria" resultMap="resultMap-${domain_cap}">
+	<select id="list" parameterType="cri" resultMap="resultMap-${domain_cap}">
 		/* ${mapperClass}.list */
 		SELECT
 			<include refid="selectColumns"/>
