@@ -1,0 +1,71 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($service_cap = "$serviceClass")
+#set($service_uncap = "$service_cap.substring(0,1).toLowerCase()$service_cap.substring(1)")
+#set($responseFile_cap = "$responseFile")
+#set($responseFile_uncap = "$responseFile_cap.substring(0,1).toLowerCase()$responseFile_cap.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+	#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+	#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#if(${controllerPackage_package} != "")
+package ${controllerPackage_package};
+#end
+
+import lombok.RequiredArgsConstructor;
+import me.huneea.springbootcms.common.api.Response;
+import ${servicePackage_package}.${serviceClass};
+import ${domainPackage_package}.${domainClass};
+import ${dtoPackage_package}.${createDtoFile};
+import ${dtoPackage_package}.${responseFile};
+import ${dtoPackage_package}.${updateDtoFile};
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/${domain_uncap}s")
+public class ${controllerClass} {
+
+	private final ${serviceClass} ${serviceClass_uncap};
+
+	@PostMapping
+	public Response create${domain_cap}(@RequestBody @Valid ${createDtoFile} request) {
+        return Response.success(${serviceClass_uncap}.create${domain_cap}(request));
+	}
+
+	@GetMapping
+	public Response find${domain_cap}s(${searchDtoFile} searchCondition, @PageableDefault Pageable pageable) {
+        return Response.success(${serviceClass_uncap}.findPaged${domain_cap}s(searchCondition, pageable));
+	}
+
+	@GetMapping("/{id}")
+	public Response find${domain_cap}(@PathVariable Long id) {
+        return Response.success(${responseFile}.of(${serviceClass_uncap}.find${domain_cap}(id)));
+	}
+
+	@PutMapping("/{id}")
+	public Response update${domain_cap}(@PathVariable Long id, @RequestBody @Valid ${updateDtoFile} request) {
+		${domain_cap} ${domain_uncap} = ${serviceClass_uncap}.update${domain_cap}(id, request);
+        return Response.success(${responseFile}.of(${domain_uncap}));
+	}
+
+	@DeleteMapping("/{id}")
+	public Response delete${domain_cap}(@PathVariable Long id) {
+		${serviceClass_uncap}.delete${domain_cap}(id);
+        return Response.success();
+	}
+
+}

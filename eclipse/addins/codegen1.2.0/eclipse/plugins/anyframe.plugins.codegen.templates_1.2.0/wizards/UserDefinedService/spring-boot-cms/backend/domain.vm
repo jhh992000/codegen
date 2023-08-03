@@ -43,18 +43,11 @@ package $domainPackage_package;
 #end
 #end
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import ${basePackage}.common.domain.BaseEntity;
 import org.hibernate.annotations.DynamicUpdate;
+import javax.persistence.*;
 #if ($timeCount > 0)
 import java.time.LocalTime;
 #end
@@ -69,12 +62,13 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @DynamicUpdate
-@Builder
+@SuperBuilder
 public class $domain_cap extends BaseEntity {
 
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -84,6 +78,7 @@ public class $domain_cap extends BaseEntity {
 #if ($isPk == true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
 #end
 #if ($column.nullable == true)
     @Column(name = "$column.name")
@@ -110,6 +105,7 @@ public class $domain_cap extends BaseEntity {
     public String $column.fieldName;
 #end
 
+#end
 #end
 
     public void update($domain_cap $domain_uncap) {

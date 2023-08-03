@@ -8,6 +8,8 @@
 #set($pk_column = $listTool.get($primaryKeys,0))
 #set($domain_cap = "$domainClass")
 #set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($responseFile_cap = "$responseFile")
+#set($responseFile_uncap = "$responseFile_cap.substring(0,1).toLowerCase()$responseFile_cap.substring(1)")
 #set($createDto_uncap = "$createDtoFile.substring(0,1).toLowerCase()$createDtoFile.substring(1)")
 #set($updateDto_uncap = "$updateDtoFile.substring(0,1).toLowerCase()$updateDtoFile.substring(1)")
 #if ($atddPackage_package != "")
@@ -70,9 +72,10 @@ public class ${atddClass} extends AcceptancePerClassTest {
     void ${domain_uncap}_인수테스트() {
         ${createDtoFile} ${createDto_uncap} = new ${createDtoFile}();
         ExtractableResponse<Response> 등록_응답 = 등록_요청(${createDto_uncap});
-        assertResponseCode(등록_응답, HttpStatus.CREATED);
+        assertResponseCode(등록_응답, HttpStatus.OK);
 
-        Long id = Long.parseLong(등록_응답.header("Location").split("/")[3]);
+        ${responseFile} ${responseFile_uncap} = 등록_응답.jsonPath().getObject("body", ${responseFile}.class);
+        Long id = ${responseFile_uncap}.getId();
 
         ${updateDtoFile} ${updateDto_uncap} = new ${updateDtoFile}();
         ExtractableResponse<Response> 수정_응답 = 수정_요청(id, ${updateDto_uncap});
@@ -85,7 +88,7 @@ public class ${atddClass} extends AcceptancePerClassTest {
         assertResponseCode(조회_응답, HttpStatus.OK);
 
         ExtractableResponse<Response> 삭제_응답 = 삭제_요청(id);
-        assertResponseCode(삭제_응답, HttpStatus.NO_CONTENT);
+        assertResponseCode(삭제_응답, HttpStatus.OK);
     }
 
     public ExtractableResponse<Response> 등록_요청(${createDtoFile} ${createDto_uncap}) {

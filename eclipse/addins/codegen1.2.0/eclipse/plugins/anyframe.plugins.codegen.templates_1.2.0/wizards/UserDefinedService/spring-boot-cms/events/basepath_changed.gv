@@ -1,10 +1,10 @@
 String basePath = components.get("basePath").getUIValue();
-String basePackage = "me.hhjeong.springbootcms";
+String basePackage = "me.huneea.springbootcms";
 String moduleName = components.get("moduleName").getUIValue();
 
 String domainPackage = basePackage + "." + moduleName + ".domain";
 String repositoryPackage = basePackage + "." + moduleName + ".domain";
-String servicePackage = basePackage + "." + moduleName + ".service";
+String servicePackage = basePackage + "." + moduleName + ".application";
 String dtoPackage = basePackage + "." + moduleName + ".dto";
 String controllerPackage = basePackage + "." + moduleName + ".ui";
 String atddPackage = basePackage + "." + moduleName + ".acceptance";
@@ -16,3 +16,14 @@ components.get("servicePackage").setUIValue(basePath + "/src/main/java/" + servi
 components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackage);
 components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);
 components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + controllerPackage);
+
+components.get("typePath").setUIValue(basePath + "/frontends/admin/@types/" + moduleName);
+components.get("typeFile").setUIValue("index.d.ts");
+components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/" + moduleName);
+components.get("apiFile").setUIValue(moduleName + ".ts");
+components.get("componentPath").setUIValue(basePath + "/frontends/admin/components/" + moduleName);
+components.get("compFormFile").setUIValue(beanName + "Form.vue");
+components.get("pagePath").setUIValue(basePath + "/frontends/admin/pages/" + moduleName);
+components.get("pageIndexFile").setUIValue("index.vue");
+components.get("pageCreateFormFile").setUIValue("create.vue");
+components.get("pageUpdateFormFile").setUIValue("_id.vue");

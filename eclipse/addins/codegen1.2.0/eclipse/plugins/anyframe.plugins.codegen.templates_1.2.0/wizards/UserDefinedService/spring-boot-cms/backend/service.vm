@@ -18,26 +18,17 @@
 package ${servicePackage_package};
 #end
 
-import static ${basePackage}.common.base.BaseConstants.PAGE_SIZE;
-import static ${basePackage}.common.base.BaseConstants.START_PAGE_NO;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.json.JsonPatch;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import me.huneea.springbootcms.common.exception.DataNotFoundException;
 import ${domainPackage_package}.${domain_cap};
 import ${domainPackage_package}.${repositoryFile};
 import ${dtoPackage_package}.${createDtoFile};
 import ${dtoPackage_package}.${responseFile};
+import ${dtoPackage_package}.${searchDtoFile};
 import ${dtoPackage_package}.${updateDtoFile};
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,36 +39,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class ${serviceClass} {
 
     private final ${repositoryFile} ${repositoryFile_uncap};
-    private final ObjectMapper objectMapper;
 
-    public ${responseFile} create${domainClass}(Create${domainClass}Request request) {
+    public ${responseFile} create${domainClass}(${createDtoFile} request) {
         ${domainClass} ${domain_uncap} = ${repositoryFile_uncap}.save(request.to${domainClass}());
         return ${responseFile}.of(${domain_uncap});
     }
 
     @Transactional(readOnly = true)
-    public List<${responseFile}> find${domainClass}s(Long lastId) {
-        Pageable pageable = PageRequest.of(START_PAGE_NO, PAGE_SIZE, Sort.by("id").descending());
-
-        if (lastId == null) {
-            lastId = ${repositoryFile_uncap}.findFirstByOrderByIdDesc()
-            .map(${domainClass}::getId)
-            .orElse(0L);
-        }
-
-        List<${domainClass}> ${domain_uncap}s = ${repositoryFile_uncap}.findLatest(lastId, pageable);
-
-        return ${domain_uncap}s.stream()
-        .map(${domain_uncap} -> ${responseFile}.of(${domain_uncap}))
-        .collect(Collectors.toList());
+    public Page<${responseFile}> findPaged${domainClass}s(${searchDtoFile} searchCondition, Pageable pageable) {
+        return ${repositoryFile_uncap}.findPagedDatas(searchCondition, pageable)
+                .map(${responseFile}::of);
     }
 
     public ${domainClass} find${domainClass}(Long id) {
         return ${repositoryFile_uncap}.findById(id)
-            .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new DataNotFoundException(Role.class, id));
     }
 
-    public ${domainClass} replace${domainClass}(Long id, Update${domainClass}Request request) {
+    public ${domainClass} update${domainClass}(Long id, Update${domainClass}Request request) {
         return ${repositoryFile_uncap}.findById(id)
             .map(${domain_uncap} -> {
                 ${domain_uncap}.update(request.to${domainClass}());
@@ -87,20 +66,6 @@ public class ${serviceClass} {
                 ${domainClass} new${domainClass} = request.to${domainClass}(id);
                 return ${repositoryFile_uncap}.save(new${domainClass});
             });
-    }
-
-    public ${domainClass} patch${domainClass}(Long id, JsonPatch jsonPatch) {
-        ${domainClass} original${domainClass} = find${domainClass}(id);
-        ${domainClass} modified${domainClass} = merge${domainClass}(original${domainClass}, jsonPatch);
-        original${domainClass}.update(modified${domainClass});
-        log.debug("modified ${domain_uncap} : {}", modified${domainClass});
-        return modified${domainClass};
-    }
-
-    private ${domainClass} merge${domainClass}(${domainClass} original${domainClass}, JsonPatch jsonPatch) {
-        JsonStructure target = objectMapper.convertValue(original${domainClass}, JsonStructure.class);
-        JsonValue patched${domainClass} = jsonPatch.apply(target);
-        return objectMapper.convertValue(patched${domainClass}, ${domainClass}.class);
     }
 
     public void delete${domainClass}(Long id) {

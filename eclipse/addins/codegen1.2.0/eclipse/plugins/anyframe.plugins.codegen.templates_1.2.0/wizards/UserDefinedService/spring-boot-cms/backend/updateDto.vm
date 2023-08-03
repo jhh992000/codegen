@@ -41,9 +41,10 @@ import ${domainPackage_package}.${domainClass};
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ${createDtoFile} {
+public class ${updateDtoFile} {
 
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -93,15 +94,32 @@ public class ${createDtoFile} {
     private String $column.fieldName;
 #end
 #end
-
+#end
 #end
 
     public ${domainClass} to${domainClass}() {
         return ${domainClass}.builder()
 #foreach($column in $nonPkColums)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
             .${column.fieldName}(${column.fieldName})
+#end
 #end
             .build();
     }
 
+    public ${domainClass} to${domainClass}(#set($i = 1)#foreach($column in $pks)#if($column.javaType == "java.lang.String")String #else
+Long #end$column.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end) {
+        return ${domainClass}.builder()
+#foreach($column in $pks)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+            .${column.fieldName}(${column.fieldName})
+#end
+#end
+#foreach($column in $nonPkColums)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+            .${column.fieldName}(${column.fieldName})
+#end
+#end
+            .build();
+    }
 }

@@ -32,6 +32,7 @@
 			<group>
 				<container name="repositoryPackage" label="*Repository Package" type="srcPackage" required="true" />
 				<textfield name="repositoryFile" label="*Repository File Name" required="true" />
+				<textfield name="repositoryImplFile" label="*Repository Impl File Name" required="true" />
 			</group>
 			<group>
 				<container name="servicePackage" label="*Service Package" type="srcPackage" required="true" />
@@ -39,6 +40,7 @@
 			</group>
 			<group>
 				<container name="dtoPackage" label="*Create DTO Package" type="srcPackage" required="true" />
+				<textfield name="searchDtoFile" label="*Search DTO File Name" required="true" />
 				<textfield name="createDtoFile" label="*Create DTO File Name" required="true" />
 				<textfield name="updateDtoFile" label="*Update DTO File Name" required="true" />
 				<textfield name="responseFile" label="*Response DTO File Name" required="true" />
@@ -53,15 +55,46 @@
 			</group>
 		</component-page>
 
+		<component-page>
+			<description>프론트엔드</description>
+			<group>
+				<container name="typePath" label="* Type 경로" type="folder" required="true"/>
+				<textfield name="typeFile" label="* Type 파일명" required="true" />
+			</group>
+			<group>
+				<container name="apiPath" label="* API 경로" type="folder" required="true" />
+				<textfield name="apiFile" label="* API 파일명" required="true" />
+			</group>
+			<group>
+				<container name="componentPath" label="* 컴포넌트 경로" type="folder" required="true" />
+				<textfield name="compFormFile" label="* 수정화면 컴포넌트 파일명" required="true" />
+			</group>
+			<group>
+				<container name="pagePath" label="* 페이지 경로" type="folder" required="true" />
+				<textfield name="pageIndexFile" label="* 페이지 목록 파일명" required="true" />
+				<textfield name="pageCreateFormFile" label="* 페이지 등록화면 파일명" required="true" />
+				<textfield name="pageUpdateFormFile" label="* 페이지 수정화면 파일명" required="true" />
+			</group>
+		</component-page>
+
 		<output>
-			<template component="domainOut" expression="$domainClass" velocity="domain.vm" extension="java" container="domainPackage"></template>
-			<template component="repositoryOut" expression="$repositoryFile" velocity="repository.vm" extension="java" container="repositoryPackage"></template>
-			<template component="serviceOut" expression="$serviceClass" velocity="service.vm" extension="java" container="servicePackage"></template>
-			<template component="createDtoOut" expression="$createDtoFile" velocity="createDto.vm" extension="java" container="dtoPackage"></template>
-			<template component="updateDtoOut" expression="$updateDtoFile" velocity="updateDto.vm" extension="java" container="dtoPackage"></template>
-			<template component="responseDtoOut" expression="$responseFile" velocity="responseDto.vm" extension="java" container="dtoPackage"></template>
-			<template component="controllerOut" expression="$controllerClass" velocity="controller.vm" extension="java" container="controllerPackage"></template>
-			<template component="atddOut" expression="$atddClass" velocity="atdd.vm" extension="java" container="atddPackage"></template>
+			<template component="domainOut" expression="$domainClass" velocity="backend/domain.vm" extension="java" container="domainPackage"></template>
+			<template component="repositoryOut" expression="$repositoryFile" velocity="backend/repository.vm" extension="java" container="repositoryPackage"></template>
+			<template component="repositoryImplOut" expression="$repositoryImplFile" velocity="backend/repositoryImpl.vm" extension="java" container="repositoryPackage"></template>
+			<template component="serviceOut" expression="$serviceClass" velocity="backend/service.vm" extension="java" container="servicePackage"></template>
+			<template component="searchDtoOut" expression="$searchDtoFile" velocity="backend/searchDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="createDtoOut" expression="$createDtoFile" velocity="backend/createDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="updateDtoOut" expression="$updateDtoFile" velocity="backend/updateDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="responseDtoOut" expression="$responseFile" velocity="backend/responseDto.vm" extension="java" container="dtoPackage"></template>
+			<template component="controllerOut" expression="$controllerClass" velocity="backend/controller.vm" extension="java" container="controllerPackage"></template>
+			<template component="atddOut" expression="$atddClass" velocity="backend/atdd.vm" extension="java" container="atddPackage"></template>
+			
+			<template component="typeOut" expression="$typeFile" velocity="frontend/type.vm" extension="ts" container="typePath"></template>
+			<template component="apiOut" expression="$apiFile" velocity="frontend/api.vm" extension="ts" container="apiPath"></template>
+			<template component="compFormOut" expression="$compFormFile" velocity="frontend/compForm.vm" extension="vue" container="componentPath"></template>
+			<template component="pageIndexOut" expression="$pageIndexFile" velocity="frontend/pageIndex.vm" extension="vue" container="pagePath"></template>
+			<template component="pageCreateFormOut" expression="$pageCreateFormFile" velocity="frontend/pageCreateForm.vm" extension="vue" container="pagePath"></template>
+			<template component="pageUpdateFormOut" expression="$pageUpdateFormFile" velocity="frontend/pageUpdateForm.vm" extension="vue" container="pagePath"></template>
 		</output>
 	</wizard>
 </CodeGen>

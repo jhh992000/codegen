@@ -1,0 +1,68 @@
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+#set($repositoryFile_uncap = "$repositoryFile.substring(0,1).toLowerCase()$repositoryFile.substring(1)")
+#set($tableName = $model.name)
+#set($queryName = $tableName.replaceAll("_",""))
+#set($queryName = "$queryName.substring(0,1).toUpperCase()$queryName.substring(1).toLowerCase()")
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#foreach( $item in $primaryKey.split(":") )
+#set($ret = $pk_cap.add("$item.substring(0,1).toUpperCase()$item.substring(1).toLowerCase()"))
+#set($ret = $pk_uncap.add($item))
+#end
+##===================================
+#set($columns = $model.fields)
+#set ($nonPkColums = [])
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColums.add($column))
+#end
+#end
+##===================================
+#if(${dtoPackage_package} != "")
+package ${dtoPackage_package};
+#end
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ${domainPackage_package}.${domainClass};
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${searchDtoFile} {
+
+#foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.javaType == "java.lang.String")
+    private String $column.fieldName;
+#elseif ($column.javaType == "java.lang.Boolean")
+    private Boolean $column.fieldName;
+#elseif ($column.javaType == "java.lang.Integer")
+    private Integer $column.fieldName;
+#elseif ($column.javaType == "java.lang.Long")
+    private Long $column.fieldName;
+#elseif ($column.javaType == "java.lang.Double")
+    private Double $column.fieldName;
+#elseif ($column.javaType == "java.lang.Float")
+    private Float $column.fieldName;
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+    private LocalDateTime $column.fieldName;
+#else
+    private String $column.fieldName;
+#end
+#end
+#end
+
+}
