@@ -1,1 +1,31 @@
-type
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+declare module '${moduleKebabName}' {
+  export interface ${domain_cap} {
+#foreach($column in $columns)
+#if ($column.javaType == "java.lang.String")
+    $column.fieldName: string;
+#elseif ($column.javaType == "java.lang.Integer")
+    $column.fieldName: number;
+#elseif ($column.javaType == "java.lang.Long")
+    $column.fieldName: number;
+#elseif ($column.javaType == "java.lang.Double")
+    $column.fieldName: number;
+#elseif ($column.javaType == "java.lang.Float")
+    $column.fieldName: number;
+#elseif ($column.type == "DATE" || $column.type == "DATETIME")
+    $column.fieldName: Date;
+#else
+    $column.fieldName: string;
+#end
+#end
+  }
+}

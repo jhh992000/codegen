@@ -1,1 +1,65 @@
-api
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+##===================================
+#set($columns = $model.fields)
+#set ($nonPkColumns = [])
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColumns.add($column))
+#end
+#end
+##===================================
+import { ${domain_cap} } from '${moduleKebabName}';
+import { Page } from 'common';
+import client from './axios';
+
+export const ${domain_uncap}Api = {
+  find${domain_cap}s(searchKey: string, searchKeyword: string, sortBy: string[], sortDesc: string[], page: number, size: number) {
+    const params: Record<string, any> = {
+      sortBy,
+      sortDesc,
+      page,
+      size,
+    };
+    if (searchKey && searchKeyword) {
+      params[searchKey] = searchKeyword;
+    }
+    return client.get<Page<${domain_cap}>>('/api/${moduleKebabName}s', {
+      params,
+    });
+  },
+  find${domain_cap}(id: number) {
+    return client.get<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
+  },
+  create${domain_cap}(#if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")$column.fieldName: number#else$column.fieldName: string#end#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end) {
+    return client.post<${domain_cap}>(`/api/${moduleKebabName}s`, {
+#foreach($column in $nonPkColumns)
+        ${column.fieldName},
+#end
+    });
+  },
+  update${domain_cap}(id: number, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")$column.fieldName: number#else$column.fieldName: string#end#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end) {
+    return client.put<${domain_cap}>(`/api/${moduleKebabName}s/${id}`, {
+#foreach($column in $nonPkColumns)
+        ${column.fieldName},
+#end
+    });
+  },
+  delete${domain_cap}(id: number) {
+    return client.delete<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
+  },
+};

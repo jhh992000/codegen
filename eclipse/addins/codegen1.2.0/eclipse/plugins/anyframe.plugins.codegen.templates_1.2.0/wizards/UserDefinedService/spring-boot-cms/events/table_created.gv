@@ -17,11 +17,13 @@ String tableName = components.get("sqlPage").getUIValue().toLowerCase();
 tableName = tableName.replaceAll(TABLE_PREFIX, "");
 String tableJavaName= anyframe.plugins.codegen.core.util.StringUtil.toJavaName(tableName);
 String beanName = anyframe.plugins.codegen.core.util.StringUtil.capitalize(tableJavaName);
-beanName = beanName.substring(0,1).toUpperCase() + beanName.substring(1).toLowerCase();
+beanName = beanName.substring(0,1).toUpperCase() + beanName.substring(1);
 beanName = beanName.replaceAll(DOMAIN_PREFIX, "");
+String beanKebabName = anyframe.plugins.codegen.core.util.StringUtil.toKebabCase(tableJavaName);
 
 components.get("basePath").setUIValue(DEFAULT_BASE_PATH);
 components.get("moduleName").setUIValue(beanName.toLowerCase());
+components.get("moduleKebabName").setUIValue(beanKebabName);
 components.get("domainClass").setUIValue(beanName + DOMAIN_POSTFIX);
 components.get("repositoryFile").setUIValue(beanName + REPOSITORY_POSTFIX);
 components.get("repositoryImplFile").setUIValue(beanName + REPOSITORY_IMPL_POSTFIX);
@@ -52,13 +54,13 @@ components.get("dtoPackage").setUIValue(basePath + "/src/main/java/" + dtoPackag
 components.get("controllerPackage").setUIValue(basePath + "/src/main/java/" + controllerPackage);
 components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + atddPackage);
 
-components.get("typePath").setUIValue(basePath + "/frontends/admin/@types/" + moduleName);
+components.get("typePath").setUIValue(basePath + "/frontends/admin/@types/" + beanKebabName);
 components.get("typeFile").setUIValue("index.d.ts");
-components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/" + moduleName);
-components.get("apiFile").setUIValue(moduleName + ".ts");
-components.get("componentPath").setUIValue(basePath + "/frontends/admin/components/" + moduleName);
+components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/" + beanKebabName);
+components.get("apiFile").setUIValue(beanKebabName + ".ts");
+components.get("componentPath").setUIValue(basePath + "/frontends/admin/components/" + beanKebabName);
 components.get("compFormFile").setUIValue(beanName + "Form.vue");
-components.get("pagePath").setUIValue(basePath + "/frontends/admin/pages/" + moduleName);
+components.get("pagePath").setUIValue(basePath + "/frontends/admin/pages/" + beanKebabName);
 components.get("pageIndexFile").setUIValue("index.vue");
 components.get("pageCreateFormFile").setUIValue("create.vue");
 components.get("pageUpdateFormFile").setUIValue("_id.vue");

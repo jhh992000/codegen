@@ -36,7 +36,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/${domain_uncap}s")
+@RequestMapping("/api/${moduleKebabName}s")
 public class ${controllerClass} {
 
 	private final ${serviceClass} ${serviceClass_uncap};

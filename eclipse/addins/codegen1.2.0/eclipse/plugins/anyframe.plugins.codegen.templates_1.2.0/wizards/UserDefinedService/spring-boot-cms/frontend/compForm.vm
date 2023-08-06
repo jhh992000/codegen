@@ -1,1 +1,81 @@
-compForm
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+<template>
+  <v-card class="pb-1">
+    <v-card-title>롤 {{ isCreate ? '등록' : '수정' }}</v-card-title>
+    <base-form-progress-bar :loading="$store.state.loading" />
+    <validation-observer ref="observer">
+      <v-form @submit.prevent="submit">
+        <v-card-text>
+          <validation-provider v-slot="{ errors }" name="롤 이름" rules="required|max:20">
+            <v-text-field v-model="form.roleName" :counter="20" label="롤 이름" :error-messages="errors"></v-text-field>
+          </validation-provider>
+          <validation-provider v-slot="{ errors }" name="롤 설명" rules="required|max:255">
+            <v-text-field v-model="form.roleDesc" :counter="255" label="롤 설명" :error-messages="errors"></v-text-field>
+          </validation-provider>
+          <validation-provider v-slot="{ errors }" name="롤 순번" rules="required|numeric">
+            <v-text-field v-model="form.listOrder" label="롤 순번" :error-messages="errors"></v-text-field>
+          </validation-provider>
+        </v-card-text>
+      </v-form>
+      <base-form-edit-buttons :is-create="isCreate" @on-submit="submit" @on-go-list="$goList('/role', $route.query)" />
+    </validation-observer>
+  </v-card>
+</template>
+
+<script lang="ts">
+import { Role } from 'role';
+import { PropType } from 'vue';
+import { assign, cloneDeep } from 'lodash-es';
+
+const defaultForm = {
+  id: null,
+  roleName: '',
+  roleDesc: '',
+  listOrder: 0,
+} as Role;
+
+export default {
+  name: 'RoleForm',
+  props: {
+    isCreate: {
+      type: Boolean,
+      default: true,
+    },
+    formData: {
+      type: Object as PropType<Role>,
+      default: () => {},
+    },
+  },
+  data: () => ({
+    form: cloneDeep(defaultForm),
+  }),
+  mounted() {
+    this.setForm();
+  },
+  methods: {
+    setForm() {
+      this.form = assign(this.form, this.formData);
+    },
+    async submit() {
+      const valid = await this.$refs.observer.validate();
+      if (valid) {
+        const result = await this.$confirm('저장하시겠습니까?');
+        if (result) {
+          this.$emit('on-submit', this.form);
+        }
+      }
+    },
+  },
+};
+</script>
+
+<style scoped></style>

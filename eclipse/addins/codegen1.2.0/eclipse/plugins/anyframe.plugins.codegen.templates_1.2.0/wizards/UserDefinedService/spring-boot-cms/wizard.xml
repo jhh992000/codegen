@@ -15,6 +15,7 @@
 			<group>
 				<textfield name="basePackage" label="* 기본 패키지" required="true" />
 				<textfield name="moduleName" label="* 모듈명" required="true" />
+                <textfield name="moduleKebabName" label="* 모듈명(kebab case)" required="true" />
 			</group>
 			<group>
 				<textfield name="companyName" label="*소속회사명" required="true" />

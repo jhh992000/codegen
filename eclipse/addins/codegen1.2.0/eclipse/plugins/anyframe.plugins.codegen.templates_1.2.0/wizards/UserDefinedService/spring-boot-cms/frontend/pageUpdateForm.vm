@@ -1,1 +1,41 @@
-pageUpdateForm
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+<template>
+  <v-container>
+    <role-form :form-data="form" :is-create="false" @on-submit="submit" />
+  </v-container>
+</template>
+
+<script lang="ts">
+import { Role } from 'role';
+import { roleApi } from '~/apis/role';
+
+export default {
+  async asyncData({ params }) {
+    return {
+      form: await roleApi.findRole(Number(params.id)),
+    };
+  },
+  data: () => ({
+    form: {} as Role,
+  }),
+  methods: {
+    async submit(role: Role) {
+      this.$showProgressbar();
+      await roleApi.updateRole(role.id, role.roleName, role.roleDesc, role.listOrder);
+      this.$hideProgressbar();
+      this.$goList('/role', this.$route.query);
+    },
+  },
+};
+</script>
+
+<style scoped></style>

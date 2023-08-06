@@ -1,1 +1,174 @@
-pageIndex
+#set($tableName = $model.name)
+#set($columns = $model.fields)
+#set($primaryKeys = $model.primaryKeys)
+#set($pks = $model.primaryKeys)
+#set($pk = $listTool.get($pks, 0))
+#set($pk_cap = $pk.javaName)
+#set($pk_uncap = $pk.fieldName)
+#set($pk_column = $listTool.get($primaryKeys,0))
+#set($domain_cap = "$domainClass")
+#set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+<template>
+  <v-container>
+    <v-card class="pb-1">
+      <base-list-search-box
+        title="롤 목록"
+        :search-keys="searchKeys"
+        :search-key="searchCondition.searchKey"
+        :search-keyword="searchCondition.searchKeyword"
+        @on-search="search"
+      />
+
+      <base-list-data-table
+        :headers="headers"
+        :search-condition="searchCondition"
+        :search-result="searchResult"
+        @on-change-search-condition="changeSeachCondition"
+        @on-go-update-form="goUpdateForm"
+        @on-delete-item="deleteItem"
+      />
+
+      <base-list-pagination
+        :page="searchCondition.page"
+        :total-elements="searchResult.totalElements"
+        :total-pages="searchResult.totalPages"
+        :total-visible="7"
+        @on-change-page="
+          page => {
+            searchCondition.page = page;
+          }
+        "
+      />
+      <base-list-create-button @on-go-create-form="goCreateForm" />
+    </v-card>
+  </v-container>
+</template>
+
+<script lang="ts">
+import { DataTableHeader, SearchCondition, SearchKey } from 'common';
+import { Role } from 'role';
+import { assign } from 'lodash-es';
+import { roleApi } from '~/apis/role';
+import com from '~/assets/ts/com';
+
+export default {
+  data() {
+    return {
+      loading: false,
+      searchKeys: [
+        {
+          key: 'roleName',
+          name: '롤 이름',
+        },
+        {
+          key: 'roleDesc',
+          name: '롤 설명',
+        },
+      ] as Array<SearchKey>,
+      searchCondition: com.defaultSearchCondition(),
+      searchResult: com.defaultSearchResult<Role>(),
+
+      headers: [
+        {
+          text: '롤 이름',
+          value: 'roleName',
+          width: '25%',
+          align: 'center',
+          sortable: true,
+        },
+        {
+          text: '롤 설명',
+          value: 'roleDesc',
+          width: '30%',
+          align: 'center',
+          sortable: true,
+        },
+        {
+          text: '롤 순번',
+          value: 'listOrder',
+          width: '25%',
+          align: 'center',
+          sortable: true,
+        },
+        {
+          text: '관리',
+          value: 'manage',
+          width: '20%',
+          align: 'center',
+          sortable: false,
+        },
+      ] as Array<DataTableHeader>,
+    };
+  },
+  computed: {
+    computedSearchCondition() {
+      return assign({}, this.searchCondition);
+    },
+  },
+  watch: {
+    computedSearchCondition: {
+      handler(curr, prev) {
+        if (com.isChangedSearchCondition(curr, prev)) {
+          this.fetch();
+        }
+      },
+      deep: true,
+    },
+  },
+  created() {
+    this.searchCondition = com.convertQueryToSearchCondition(this.$route.query, this.searchCondition);
+  },
+  mounted() {
+    this.fetch();
+  },
+  methods: {
+    search(searchCondition: SearchCondition) {
+      this.searchCondition.page = 1;
+      this.searchCondition.searchKey = searchCondition.searchKey;
+      this.searchCondition.searchKeyword = searchCondition.searchKeyword;
+    },
+    changeSeachCondition(sc) {
+      this.searchCondition = sc;
+    },
+    async fetch(sc?: SearchCondition) {
+      this.loading = true;
+      this.searchCondition = assign(this.searchCondition, sc);
+
+      const result = await roleApi.findRoles(
+        this.searchCondition.searchKey,
+        this.searchCondition.searchKeyword,
+        this.searchCondition.sortBy,
+        this.searchCondition.sortDesc,
+        this.searchCondition.page - 1,
+        this.searchCondition.size
+      );
+      this.searchResult = assign(this.searchResult, result);
+
+      this.loading = false;
+    },
+    goCreateForm() {
+      this.$router.push({
+        path: '/role/create',
+        query: com.convertSearchConditionToQuery(this.searchCondition),
+      });
+    },
+    goUpdateForm(item) {
+      this.$router.push({
+        path: `/role/${item.id}`,
+        query: com.convertSearchConditionToQuery(this.searchCondition),
+      });
+    },
+    async deleteItem(item) {
+      const result = await this.$confirm('정말 삭제하시겠습니까?');
+      if (result) {
+        this.$showProgressbar();
+        await roleApi.deleteRole(item.id);
+        this.$hideProgressbar();
+        await this.fetch(com.defaultSearchCondition());
+      }
+    },
+  },
+};
+</script>
+
+<style scoped></style>
