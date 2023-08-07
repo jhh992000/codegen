@@ -56,7 +56,7 @@ components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + atddPack
 
 components.get("typePath").setUIValue(basePath + "/frontends/admin/@types/" + beanKebabName);
 components.get("typeFile").setUIValue("index.d.ts");
-components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/" + beanKebabName);
+components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/");
 components.get("apiFile").setUIValue(beanKebabName + ".ts");
 components.get("componentPath").setUIValue(basePath + "/frontends/admin/components/" + beanKebabName);
 components.get("compFormFile").setUIValue(beanName + "Form.vue");

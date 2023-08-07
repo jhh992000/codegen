@@ -1,3 +1,4 @@
+#set ($d = "$")
 #set($tableName = $model.name)
 #set($columns = $model.fields)
 #set($primaryKeys = $model.primaryKeys)
@@ -8,56 +9,74 @@
 #set($pk_column = $listTool.get($primaryKeys,0))
 #set($domain_cap = "$domainClass")
 #set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+##===================================
+#set($columns = $model.fields)
+#set ($nonPkColumns = [])
+#foreach($column in $columns)
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColumns.add($column))
+#end
+#end
+##===================================
 <template>
   <v-card class="pb-1">
-    <v-card-title>롤 {{ isCreate ? '등록' : '수정' }}</v-card-title>
-    <base-form-progress-bar :loading="$store.state.loading" />
+    <v-card-title>{{ ${d}t('${domain_uncap}.modelName') }} {{ isCreate ? ${d}t('create') : ${d}t('update') }}</v-card-title>
+    <base-form-progress-bar :loading="${d}store.state.loading" />
     <validation-observer ref="observer">
       <v-form @submit.prevent="submit">
         <v-card-text>
-          <validation-provider v-slot="{ errors }" name="롤 이름" rules="required|max:20">
-            <v-text-field v-model="form.roleName" :counter="20" label="롤 이름" :error-messages="errors"></v-text-field>
+#foreach($column in $nonPkColumns)
+          <validation-provider v-slot="{ errors }" :name="${d}tc('${domain_uncap}.${column.fieldName}')" rules="required#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")|numeric#else|max:$column.size#end">
+            <v-text-field v-model="form.${column.fieldName}" :counter="20" :label="${d}tc('${domain_uncap}.${column.fieldName}')" :error-messages="errors"></v-text-field>
           </validation-provider>
-          <validation-provider v-slot="{ errors }" name="롤 설명" rules="required|max:255">
-            <v-text-field v-model="form.roleDesc" :counter="255" label="롤 설명" :error-messages="errors"></v-text-field>
-          </validation-provider>
-          <validation-provider v-slot="{ errors }" name="롤 순번" rules="required|numeric">
-            <v-text-field v-model="form.listOrder" label="롤 순번" :error-messages="errors"></v-text-field>
-          </validation-provider>
+#end
         </v-card-text>
       </v-form>
-      <base-form-edit-buttons :is-create="isCreate" @on-submit="submit" @on-go-list="$goList('/role', $route.query)" />
+      <base-form-edit-buttons :is-create="isCreate" @on-submit="submit" @on-go-list="${d}goList('/${moduleKebabName}', ${d}route.query)" />
     </validation-observer>
   </v-card>
 </template>
 
 <script lang="ts">
-import { Role } from 'role';
+import { ${domain_cap} } from '${moduleKebabName}';
 import { PropType } from 'vue';
 import { assign, cloneDeep } from 'lodash-es';
 
 const defaultForm = {
   id: null,
-  roleName: '',
-  roleDesc: '',
-  listOrder: 0,
-} as Role;
+#foreach($column in $nonPkColumns)
+#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+  ${column.fieldName}: 0,
+#else
+  ${column.fieldName}: '',
+#end
+#end
+} as ${domain_cap};
 
 export default {
-  name: 'RoleForm',
+  name: '${domain_cap}Form',
   props: {
     isCreate: {
       type: Boolean,
       default: true,
     },
     formData: {
-      type: Object as PropType<Role>,
+      type: Object as PropType<${domain_cap}>,
       default: () => {},
     },
   },
-  data: () => ({
-    form: cloneDeep(defaultForm),
-  }),
+  data() {
+    return {
+      pageTitle: this.${d}t('${domain_uncap}.modelName') + ' ' + this.${d}t('common.update'),
+      form: cloneDeep(defaultForm),
+    };
+  },
   mounted() {
     this.setForm();
   },
@@ -66,11 +85,11 @@ export default {
       this.form = assign(this.form, this.formData);
     },
     async submit() {
-      const valid = await this.$refs.observer.validate();
+      const valid = await this.${d}refs.observer.validate();
       if (valid) {
-        const result = await this.$confirm('저장하시겠습니까?');
+        const result = await this.${d}confirm(this.${d}t('areYouWantSave'));
         if (result) {
-          this.$emit('on-submit', this.form);
+          this.${d}emit('on-submit', this.form);
         }
       }
     },
