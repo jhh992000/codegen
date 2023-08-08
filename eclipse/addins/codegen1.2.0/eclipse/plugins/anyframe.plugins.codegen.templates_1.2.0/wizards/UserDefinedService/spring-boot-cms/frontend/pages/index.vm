@@ -13,6 +13,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -21,6 +22,7 @@
 #end
 #if ($isPk == false)
 #set ($swallow = $nonPkColumns.add($column))
+#end
 #end
 #end
 ##===================================
@@ -78,7 +80,6 @@ export default {
           key: '${column.fieldName}',
           name: this.${d}t('${domain_uncap}.${column.fieldName}'),
         },
-        ,
 #end
       ] as Array<SearchKey>,
       searchCondition: com.defaultSearchCondition(),
@@ -89,11 +90,18 @@ export default {
         {
           text: this.${d}t('${domain_uncap}.${column.fieldName}'),
           value: '${column.fieldName}',
-          width: '10%',
+          width: 'auto',
           align: 'center',
           sortable: true,
         },
 #end
+        {
+          text: this.${d}t('manage'),
+          value: 'manage',
+          width: 'auto',
+          align: 'center',
+          sortable: false,
+        },
       ] as Array<DataTableHeader>,
     };
   },

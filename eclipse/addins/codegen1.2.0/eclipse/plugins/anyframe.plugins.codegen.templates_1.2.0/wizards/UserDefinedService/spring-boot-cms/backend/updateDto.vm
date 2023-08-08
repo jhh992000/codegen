@@ -14,8 +14,9 @@
 #end
 ##===================================
 #set($columns = $model.fields)
-#set ($nonPkColums = [])
+#set ($nonPkColumns = [])
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -23,7 +24,8 @@
 #end
 #end
 #if ($isPk == false)
-#set ($swallow = $nonPkColums.add($column))
+#set ($swallow = $nonPkColumns.add($column))
+#end
 #end
 #end
 ##===================================
@@ -100,9 +102,7 @@ public class ${updateDtoFile} {
     public ${domainClass} to${domainClass}() {
         return ${domainClass}.builder()
 #foreach($column in $nonPkColums)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
             .${column.fieldName}(${column.fieldName})
-#end
 #end
             .build();
     }
@@ -116,9 +116,7 @@ Long #end$column.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end) {
 #end
 #end
 #foreach($column in $nonPkColums)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
             .${column.fieldName}(${column.fieldName})
-#end
 #end
             .build();
     }

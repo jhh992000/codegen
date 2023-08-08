@@ -90,12 +90,12 @@
 			<template component="controllerOut" expression="$controllerClass" velocity="backend/controller.vm" extension="java" container="controllerPackage"></template>
 			<template component="atddOut" expression="$atddClass" velocity="backend/atdd.vm" extension="java" container="atddPackage"></template>
 			
-			<template component="typeOut" expression="$typeFile" velocity="frontend/type.vm" extension="ts" container="typePath"></template>
-			<template component="apiOut" expression="$apiFile" velocity="frontend/api.vm" extension="ts" container="apiPath"></template>
-			<template component="compFormOut" expression="$compFormFile" velocity="frontend/compForm.vm" extension="vue" container="componentPath"></template>
-			<template component="pageIndexOut" expression="$pageIndexFile" velocity="frontend/pageIndex.vm" extension="vue" container="pagePath"></template>
-			<template component="pageCreateFormOut" expression="$pageCreateFormFile" velocity="frontend/pageCreateForm.vm" extension="vue" container="pagePath"></template>
-			<template component="pageUpdateFormOut" expression="$pageUpdateFormFile" velocity="frontend/pageUpdateForm.vm" extension="vue" container="pagePath"></template>
+			<template component="typeOut" expression="$typeFile" velocity="frontend/@types/type.vm" extension="ts" container="typePath"></template>
+			<template component="apiOut" expression="$apiFile" velocity="frontend/apis/api.vm" extension="ts" container="apiPath"></template>
+			<template component="compFormOut" expression="$compFormFile" velocity="frontend/components/compForm.vm" extension="vue" container="componentPath"></template>
+			<template component="pageIndexOut" expression="$pageIndexFile" velocity="frontend/pages/index.vm" extension="vue" container="pagePath"></template>
+			<template component="pageCreateFormOut" expression="$pageCreateFormFile" velocity="frontend/pages/create.vm" extension="vue" container="pagePath"></template>
+			<template component="pageUpdateFormOut" expression="$pageUpdateFormFile" velocity="frontend/pages/_id.vm" extension="vue" container="pagePath"></template>
 		</output>
 	</wizard>
 </CodeGen>

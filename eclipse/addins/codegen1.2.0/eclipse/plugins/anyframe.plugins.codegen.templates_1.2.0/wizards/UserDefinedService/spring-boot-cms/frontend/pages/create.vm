@@ -13,6 +13,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -21,6 +22,7 @@
 #end
 #if ($isPk == false)
 #set ($swallow = $nonPkColumns.add($column))
+#end
 #end
 #end
 ##===================================
@@ -35,7 +37,7 @@ import { ${domain_cap} } from '${moduleKebabName}';
 import { ${domain_uncap}Api } from '~/apis/${moduleKebabName}';
 
 export default {
-  async asyncData() {
+  asyncData() {
     return {
       form: {} as ${domain_cap},
     };

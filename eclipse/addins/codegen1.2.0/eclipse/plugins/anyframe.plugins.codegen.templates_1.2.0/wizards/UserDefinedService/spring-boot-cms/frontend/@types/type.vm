@@ -8,6 +8,23 @@
 #set($pk_column = $listTool.get($primaryKeys,0))
 #set($domain_cap = "$domainClass")
 #set($domain_uncap = "$domain_cap.substring(0,1).toLowerCase()$domain_cap.substring(1)")
+##===================================
+#set($columns = $model.fields)
+#set ($nonPkColumns = [])
+#foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColumns.add($column))
+#end
+#end
+#end
+##===================================
 declare module '${moduleKebabName}' {
   export interface ${domain_cap} {
 #foreach($column in $columns)

@@ -25,6 +25,7 @@ import me.huneea.springbootcms.common.api.Response;
 import ${servicePackage_package}.${serviceClass};
 import ${domainPackage_package}.${domainClass};
 import ${dtoPackage_package}.${createDtoFile};
+import ${dtoPackage_package}.${searchDtoFile};
 import ${dtoPackage_package}.${responseFile};
 import ${dtoPackage_package}.${updateDtoFile};
 import org.springframework.data.domain.Pageable;

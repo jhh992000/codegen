@@ -35,7 +35,7 @@ package $domainPackage_package;
 #set($notNullCount = 0)
 #foreach($column in $columns)
 #if ($column.nullable == false)
-#if ($column.type=="INT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE" || $column.type == "DATETIME")
+#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number" || $column.type == "DATE" || $column.type == "DATETIME")
 #set($notNullCount = $notNullCount+1)
 #else
 #set($notEmptyCount = $notEmptyCount+1)

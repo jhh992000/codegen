@@ -45,30 +45,12 @@ public class ${repositoryImplFile} implements CommonCustomRepository<${domain_ca
     public Page<${domain_cap}> findPagedDatas(${searchDtoFile} condition, Pageable pageable) {
         List<${domain_cap}> content = queryFactory.selectFrom(${domain_uncap})
                 .where(getBooleanBuilder(condition))
-                .orderBy(createOrderSpecifier(condition))
+                .orderBy(createOrderSpecifier(condition, ${domain_uncap}, new OrderSpecifier(Order.DESC, ${domain_uncap}.id)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         return PageableExecutionUtils.getPage(content, pageable, () -> getCount(condition));
-    }
-
-    private OrderSpecifier[] createOrderSpecifier(${searchDtoFile} condition) {
-        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-
-        if (condition.getSortBy() == null) {
-            orderSpecifiers.add(new OrderSpecifier(Order.DESC, ${domain_uncap}.id));
-        } else {
-            String[] arraySortBy = condition.getSortBy();
-            boolean[] arraySortDesc = condition.getSortDesc();
-            for (int i = 0; i < arraySortBy.length; i++) {
-                String sortBy = arraySortBy[i];
-                boolean sortDesc = arraySortDesc[i];
-                orderSpecifiers.add(new OrderSpecifier(sortDesc ? Order.DESC : Order.ASC, Expressions.stringPath(${domain_uncap}, sortBy)));
-            }
-        }
-
-        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
     }
 
     private Long getCount(${searchDtoFile} condition) {
@@ -82,9 +64,17 @@ public class ${repositoryImplFile} implements CommonCustomRepository<${domain_ca
         BooleanBuilder builder = new BooleanBuilder();
         
 #foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+        if (condition.get${column.javaName}() != null) {
+            builder.and(${domain_uncap}.${column.fieldName}.eq(condition.get${column.javaName}()));
+        }
+#else
         if (hasText(condition.get${column.javaName}())) {
             builder.and(${domain_uncap}.${column.fieldName}.contains(condition.get${column.javaName}()));
         }
+#end
+#end
 #end
 
         return builder;
