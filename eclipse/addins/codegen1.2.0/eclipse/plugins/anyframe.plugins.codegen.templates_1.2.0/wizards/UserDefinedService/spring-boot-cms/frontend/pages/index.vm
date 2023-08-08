@@ -66,7 +66,6 @@
 import { DataTableHeader, SearchCondition, SearchKey } from 'common';
 import { ${domain_cap} } from '${moduleKebabName}';
 import { assign } from 'lodash-es';
-import { ${domain_uncap}Api } from '~/apis/${moduleKebabName}';
 import com from '~/assets/ts/com';
 
 export default {
@@ -139,7 +138,7 @@ export default {
       this.loading = true;
       this.searchCondition = assign(this.searchCondition, sc);
 
-      const result = await ${domain_uncap}Api.find${domain_cap}s(
+      const result = await this.${d}${domain_uncap}Api.find${domain_cap}s(
         this.searchCondition.searchKey,
         this.searchCondition.searchKeyword,
         this.searchCondition.sortBy,
@@ -167,7 +166,7 @@ export default {
       const result = await this.${d}confirm(this.${d}t('areYouWantDelete'));
       if (result) {
         this.${d}showProgressbar();
-        await ${domain_uncap}Api.delete${domain_cap}(item.id);
+        await this.${d}${domain_uncap}Api.delete${domain_cap}(item.id);
         this.${d}hideProgressbar();
         await this.fetch(com.defaultSearchCondition());
       }

@@ -27,9 +27,15 @@
 ##===================================
 import { ${domain_cap} } from '${moduleKebabName}';
 import { Page } from 'common';
-import client from './axios';
+import { AxiosInstance } from 'axios';
 
-export const ${domain_uncap}Api = {
+export class ${domain_cap}Api {
+  client: AxiosInstance;
+
+  constructor(client) {
+    this.client = client;
+  }
+
   find${domain_cap}s(searchKey: string, searchKeyword: string, sortBy: string[], sortDesc: string[], page: number, size: number) {
     const params: Record<string, any> = {
       sortBy,
@@ -40,28 +46,32 @@ export const ${domain_uncap}Api = {
     if (searchKey && searchKeyword) {
       params[searchKey] = searchKeyword;
     }
-    return client.get<Page<${domain_cap}>>('/api/${moduleKebabName}s', {
+    return this.client.get<Page<${domain_cap}>>('/api/${moduleKebabName}s', {
       params,
     });
-  },
+  }
+
   find${domain_cap}(id: number) {
-    return client.get<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
-  },
+    return this.client.get<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
+  }
+
   create${domain_cap}(#if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")$column.fieldName: number#elseif ($column.type == "DATE" || $column.type == "DATETIME" || $column.type == "TIMESTAMP")$column.fieldName: date#else$column.fieldName: string#end#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end) {
-    return client.post<${domain_cap}>(`/api/${moduleKebabName}s`, {
+    return this.client.post<${domain_cap}>(`/api/${moduleKebabName}s`, {
 #foreach($column in $nonPkColumns)
         ${column.fieldName},
 #end
     });
-  },
+  }
+
   update${domain_cap}(id: number, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")$column.fieldName: number#elseif ($column.type == "DATE" || $column.type == "DATETIME" || $column.type == "TIMESTAMP")$column.fieldName: date#else$column.fieldName: string#end#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end) {
-    return client.put<${domain_cap}>(`/api/${moduleKebabName}s/${id}`, {
+    return this.client.put<${domain_cap}>(`/api/${moduleKebabName}s/${id}`, {
 #foreach($column in $nonPkColumns)
         ${column.fieldName},
 #end
     });
-  },
+  }
+
   delete${domain_cap}(id: number) {
-    return client.delete<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
-  },
-};
+    return this.client.delete<${domain_cap}>(`/api/${moduleKebabName}s/${id}`);
+  }
+}

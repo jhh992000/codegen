@@ -78,7 +78,6 @@ export default {
   },
   data() {
     return {
-      pageTitle: this.${d}t('${domain_uncap}.modelName') + ' ' + this.${d}t('common.update'),
       form: cloneDeep(defaultForm),
     };
   },

@@ -34,24 +34,22 @@
 
 <script lang="ts">
 import { ${domain_cap} } from '${moduleKebabName}';
-import { ${domain_uncap}Api } from '~/apis/${moduleKebabName}';
 
 export default {
-  async asyncData({ params }) {
+  async asyncData({ app, params }) {
     return {
-      form: await ${domain_uncap}Api.find${domain_cap}(Number(params.id)),
+      form: await app.${d}${domain_uncap}Api.find${domain_cap}(Number(params.id)),
     };
   },
   data() {
     return {
-      pageTitle: this.${d}t('${domain_uncap}.modelName') + ' ' + this.${d}t('update'),
       form: {} as ${domain_cap},
     };
   },
   methods: {
     async submit(${domain_uncap}: ${domain_cap}) {
       this.${d}showProgressbar();
-      await ${domain_uncap}Api.update${domain_cap}(${domain_uncap}.id, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)${domain_uncap}.$column.fieldName#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end);
+      await this.${d}${domain_uncap}Api.update${domain_cap}(${domain_uncap}.id, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)${domain_uncap}.$column.fieldName#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end);
       this.${d}hideProgressbar();
       this.${d}goList('/${moduleKebabName}', this.$route.query);
     },
