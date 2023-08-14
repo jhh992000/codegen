@@ -71,6 +71,8 @@ public class ${responseFile} {
     private Float $column.fieldName;
 #elseif ($column.type == "DATE" || $column.type == "DATETIME")
     private LocalDateTime $column.fieldName;
+#elseif ($column.javaType == "boolean")
+    private Boolean $column.fieldName;
 #else
     private String $column.fieldName;
 #end

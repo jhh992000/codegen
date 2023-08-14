@@ -89,6 +89,11 @@ public class ${createDtoFile} {
     @NotNull
 #end
     private LocalDateTime $column.fieldName;
+#elseif ($column.javaType == "boolean")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    private Boolean $column.fieldName;
 #else
 #if ($column.nullable == false)
     @NotNull
@@ -101,7 +106,7 @@ public class ${createDtoFile} {
 
     public ${domainClass} to${domainClass}() {
         return ${domainClass}.builder()
-#foreach($column in $nonPkColums)
+#foreach($column in $nonPkColumns)
 #if ($column.name != "created_datetime" && $column.name != "modified_datetime")
             .${column.fieldName}(${column.fieldName})
 #end

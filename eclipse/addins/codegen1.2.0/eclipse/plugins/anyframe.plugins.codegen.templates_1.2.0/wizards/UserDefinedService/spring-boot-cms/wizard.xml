@@ -62,6 +62,10 @@
 				<container name="typePath" label="* Type 경로" type="folder" required="true"/>
 				<textfield name="typeFile" label="* Type 파일명" required="true" />
 			</group>
+            <group>
+                <container name="i18nPath" label="* i18n 경로" type="folder" required="true"/>
+                <textfield name="i18nFile" label="* i18n 파일명" required="true" />
+            </group>
 			<group>
 				<container name="apiPath" label="* API 경로" type="folder" required="true" />
 				<textfield name="apiFile" label="* API 파일명" required="true" />
@@ -91,6 +95,7 @@
 			<template component="atddOut" expression="$atddClass" velocity="backend/atdd.vm" extension="java" container="atddPackage"></template>
 			
 			<template component="typeOut" expression="$typeFile" velocity="frontend/@types/type.vm" extension="ts" container="typePath"></template>
+            <template component="i18nOut" expression="$i18nFile" velocity="frontend/i18n/base/en.vm" extension="ts" container="i18nPath"></template>
 			<template component="apiOut" expression="$apiFile" velocity="frontend/apis/api.vm" extension="ts" container="apiPath"></template>
 			<template component="compFormOut" expression="$compFormFile" velocity="frontend/components/compForm.vm" extension="vue" container="componentPath"></template>
 			<template component="pageIndexOut" expression="$pageIndexFile" velocity="frontend/pages/index.vm" extension="vue" container="pagePath"></template>

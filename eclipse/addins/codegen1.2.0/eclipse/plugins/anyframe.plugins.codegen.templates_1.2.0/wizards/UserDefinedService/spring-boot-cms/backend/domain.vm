@@ -46,7 +46,6 @@ package $domainPackage_package;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ${basePackage}.common.domain.BaseEntity;
-import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 #if ($timeCount > 0)
 import java.time.LocalTime;
@@ -63,7 +62,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@DynamicUpdate
 @SuperBuilder
 public class $domain_cap extends BaseEntity {
 
@@ -86,23 +84,25 @@ public class $domain_cap extends BaseEntity {
     @Column(name = "$column.name", nullable = false)
 #end
 #if ($column.javaType == "java.lang.String")
-    public String $column.fieldName;
+    private String $column.fieldName;
 #elseif ($column.javaType == "java.lang.Integer")
-    public Integer $column.fieldName;
+    private Integer $column.fieldName;
 #elseif ($column.javaType == "java.lang.Long")
-    public Long $column.fieldName;
+    private Long $column.fieldName;
 #elseif ($column.javaType == "java.lang.Double")
-    public Double $column.fieldName;
+    private Double $column.fieldName;
 #elseif ($column.javaType == "java.lang.Float")
-    public Float $column.fieldName;
+    private Float $column.fieldName;
 #elseif ($column.type == "TIME")
-    public LocalTime $column.fieldName;
+    private LocalTime $column.fieldName;
 #elseif ($column.type == "DATE")
-    public LocalDate $column.fieldName;
+    private LocalDate $column.fieldName;
 #elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
-    public LocalDateTime $column.fieldName;
+    private LocalDateTime $column.fieldName;
+#elseif ($column.javaType == "boolean")
+    private Boolean $column.fieldName;
 #else
-    public String $column.fieldName;
+    private String $column.fieldName;
 #end
 
 #end

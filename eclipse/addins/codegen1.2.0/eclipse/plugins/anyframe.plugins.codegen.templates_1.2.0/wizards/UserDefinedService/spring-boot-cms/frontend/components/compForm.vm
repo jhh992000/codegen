@@ -58,6 +58,8 @@ const defaultForm = {
 #foreach($column in $nonPkColumns)
 #if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")
   ${column.fieldName}: 0,
+#elseif ($column.javaType=="boolean")
+  ${column.fieldName}: false,
 #else
   ${column.fieldName}: '',
 #end

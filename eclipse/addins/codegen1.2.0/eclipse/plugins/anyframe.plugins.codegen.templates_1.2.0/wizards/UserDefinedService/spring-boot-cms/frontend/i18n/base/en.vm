@@ -25,26 +25,13 @@
 #end
 #end
 ##===================================
-declare module '${moduleKebabName}' {
-  export interface ${domain_cap} {
+  ${domain_uncap}: {
+    modelName: '${domain_uncap}',
 #foreach($column in $columns)
-#if ($column.javaType == "java.lang.String")
-    $column.fieldName: string;
-#elseif ($column.javaType == "java.lang.Integer")
-    $column.fieldName: number;
-#elseif ($column.javaType == "java.lang.Long")
-    $column.fieldName: number;
-#elseif ($column.javaType == "java.lang.Double")
-    $column.fieldName: number;
-#elseif ($column.javaType == "java.lang.Float")
-    $column.fieldName: number;
-#elseif ($column.type == "DATE" || $column.type == "DATETIME")
-    $column.fieldName: Date;
-#elseif ($column.javaType == "boolean")
-    $column.fieldName: boolean;
+#if ($column.fieldName == 'id')
+    $column.fieldName: '${domain_uncap} $column.name',
 #else
-    $column.fieldName: string;
+    $column.fieldName: '$column.name.toLowerCase().replaceAll("_", " ")',
 #end
 #end
-  }
-}
+  },

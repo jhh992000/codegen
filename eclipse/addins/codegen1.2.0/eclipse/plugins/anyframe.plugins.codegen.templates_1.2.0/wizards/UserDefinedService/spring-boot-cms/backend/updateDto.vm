@@ -89,6 +89,11 @@ public class ${updateDtoFile} {
     @NotNull
 #end
     private LocalDateTime $column.fieldName;
+#elseif ($column.javaType == "boolean")
+#if ($column.nullable == false)
+    @NotNull
+#end
+    private Boolean $column.fieldName;
 #else
 #if ($column.nullable == false)
     @NotNull
@@ -101,7 +106,7 @@ public class ${updateDtoFile} {
 
     public ${domainClass} to${domainClass}() {
         return ${domainClass}.builder()
-#foreach($column in $nonPkColums)
+#foreach($column in $nonPkColumns)
             .${column.fieldName}(${column.fieldName})
 #end
             .build();
@@ -115,7 +120,7 @@ Long #end$column.fieldName#if( $i < $pks.size() ), #end#set($i = $i + 1)#end) {
             .${column.fieldName}(${column.fieldName})
 #end
 #end
-#foreach($column in $nonPkColums)
+#foreach($column in $nonPkColumns)
             .${column.fieldName}(${column.fieldName})
 #end
             .build();

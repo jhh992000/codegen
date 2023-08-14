@@ -56,6 +56,8 @@ components.get("atddPackage").setUIValue(basePath + "/src/test/java/" + atddPack
 
 components.get("typePath").setUIValue(basePath + "/frontends/admin/@types/" + beanKebabName);
 components.get("typeFile").setUIValue("index.d.ts");
+components.get("i18nPath").setUIValue(basePath + "/frontends/admin/i18n/" + beanKebabName);
+components.get("i18nFile").setUIValue("en.ts");
 components.get("apiPath").setUIValue(basePath + "/frontends/admin/apis/");
 components.get("apiFile").setUIValue(beanKebabName + ".ts");
 components.get("componentPath").setUIValue(basePath + "/frontends/admin/components/" + beanKebabName);
