@@ -165,9 +165,9 @@ export default {
     async deleteItem(item) {
       const result = await this.${d}confirm(this.${d}t('areYouWantDelete'));
       if (result) {
-        this.${d}showProgressbar();
+        this.${d}showProgressBar();
         await this.${d}${domain_uncap}Api.delete${domain_cap}(item.id);
-        this.${d}hideProgressbar();
+        this.${d}hideProgressBar();
         await this.fetch(com.defaultSearchCondition());
       }
     },

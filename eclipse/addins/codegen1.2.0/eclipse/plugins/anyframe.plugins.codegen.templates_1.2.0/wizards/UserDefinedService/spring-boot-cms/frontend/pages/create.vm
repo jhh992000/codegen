@@ -48,9 +48,9 @@ export default {
   },
   methods: {
     async submit(${domain_uncap}: ${domain_cap}) {
-      this.${d}showProgressbar();
+      this.${d}showProgressBar();
       await this.${d}${domain_uncap}Api.create${domain_cap}(#if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)${domain_uncap}.$column.fieldName#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end);
-      this.${d}hideProgressbar();
+      this.${d}hideProgressBar();
       this.${d}goList('/${moduleKebabName}');
     },
   },
