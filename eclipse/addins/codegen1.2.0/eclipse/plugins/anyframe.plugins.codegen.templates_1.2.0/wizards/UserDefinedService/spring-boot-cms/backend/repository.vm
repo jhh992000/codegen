@@ -20,7 +20,6 @@ package ${repositoryPackage_package};
 import me.huneea.springbootcms.common.domain.CommonCustomRepository;
 import ${dtoPackage_package}.${searchDtoFile};
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 public interface ${repositoryFile} extends JpaRepository<${domain_cap}, Long>, CommonCustomRepository<${domain_cap}, ${searchDtoFile}> {
 

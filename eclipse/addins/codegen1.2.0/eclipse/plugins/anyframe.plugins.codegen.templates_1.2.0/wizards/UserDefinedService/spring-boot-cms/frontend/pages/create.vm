@@ -13,7 +13,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -57,4 +57,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

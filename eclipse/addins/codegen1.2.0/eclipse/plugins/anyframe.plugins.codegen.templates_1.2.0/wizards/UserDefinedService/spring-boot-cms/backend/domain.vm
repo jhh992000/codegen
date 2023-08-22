@@ -66,7 +66,7 @@ import java.time.LocalDateTime;
 public class $domain_cap extends BaseEntity {
 
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -78,11 +78,7 @@ public class $domain_cap extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
 #end
-#if ($column.nullable == true)
-    @Column(name = "$column.name")
-#elseif ($column.nullable == false)
-    @Column(name = "$column.name", nullable = false)
-#end
+    @Column(name = "$column.name"#if ($column.javaType == "java.lang.String"), length = $column.size#end#if ($column.nullable == false), nullable = false#end)
 #if ($column.javaType == "java.lang.String")
     private String $column.fieldName;
 #elseif ($column.javaType == "java.lang.Integer")
@@ -110,7 +106,7 @@ public class $domain_cap extends BaseEntity {
 
     public void update($domain_cap $domain_uncap) {
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)

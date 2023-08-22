@@ -13,7 +13,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -28,7 +28,7 @@
 ##===================================
 <template>
   <v-card class="pb-1">
-    <v-card-title>{{ ${d}t('${domain_uncap}.modelName') }} {{ isCreate ? ${d}t('create') : ${d}t('update') }}</v-card-title>
+    <base-form-title :model-name="${d}tc('${domain_uncap}.modelName')" :is-create="isCreate" />
     <base-form-progress-bar :loading="${d}store.state.loading" />
     <validation-observer ref="observer">
       <v-form @submit.prevent="submit">
@@ -37,8 +37,8 @@
 #set($max = "max")
 #foreach($column in $nonPkColumns)
 #set($ruleCount = 0)
-          <validation-provider v-slot="{ errors }" :name="${d}tc('${domain_uncap}.${column.fieldName}')" rules="#if ($column.nullable == false)required#set($ruleCount = $ruleCount+1)#end#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$numeric#end#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$max:$column.size">
-            <v-text-field v-model="form.${column.fieldName}" :counter="${column.size}" :label="${d}tc('${domain_uncap}.${column.fieldName}')" :error-messages="errors"></v-text-field>
+          <validation-provider v-slot="{ errors, classes }" :name="${d}tc('${domain_uncap}.${column.fieldName}')" rules="#if ($column.nullable == false)required#set($ruleCount = $ruleCount+1)#end#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$numeric#end#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$max:$column.size">
+            <c-text-field v-model="form.${column.fieldName}" :counter="${column.size}" :label="${d}tc('${domain_uncap}.${column.fieldName}')" :error-messages="errors" :class="classes"></c-text-field>
           </validation-provider>
 #end
         </v-card-text>
@@ -103,4 +103,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style></style>

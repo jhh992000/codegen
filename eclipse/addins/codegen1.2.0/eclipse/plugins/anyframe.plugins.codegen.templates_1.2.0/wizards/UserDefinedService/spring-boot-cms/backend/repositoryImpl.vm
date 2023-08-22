@@ -14,6 +14,22 @@
     #set($ret = $pk_uncap.add($item))
 #end
 ##===================================
+#set($columns = $model.fields)
+#set ($nonPkColumns = [])
+#foreach($column in $columns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
+#set($isPk = false)
+#foreach($pk in $pks)
+#if ($column.fieldName==$pk.fieldName)
+#set($isPk = true)
+#end
+#end
+#if ($isPk == false)
+#set ($swallow = $nonPkColumns.add($column))
+#end
+#end
+#end
+##===================================
 #if(${repositoryPackage_package} != "")
 package ${repositoryPackage_package};
 #end
@@ -63,9 +79,17 @@ public class ${repositoryImplFile} implements CommonCustomRepository<${domain_ca
     private static BooleanBuilder getBooleanBuilder(${searchDtoFile} condition) {
         BooleanBuilder builder = new BooleanBuilder();
         
-#foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#foreach($column in $nonPkColumns)
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")
+        if (condition.get${column.javaName}() != null) {
+            builder.and(${domain_uncap}.${column.fieldName}.eq(condition.get${column.javaName}()));
+        }
+#elseif ($column.javaType == "boolean")
+        if (condition.get${column.javaName}() != null) {
+            builder.and(${domain_uncap}.${column.fieldName}.eq(condition.get${column.javaName}()));
+        }
+#elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
         if (condition.get${column.javaName}() != null) {
             builder.and(${domain_uncap}.${column.fieldName}.eq(condition.get${column.javaName}()));
         }

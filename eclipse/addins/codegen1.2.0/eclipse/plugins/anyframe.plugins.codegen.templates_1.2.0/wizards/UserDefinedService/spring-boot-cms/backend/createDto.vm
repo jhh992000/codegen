@@ -16,7 +16,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -46,7 +46,7 @@ import ${domainPackage_package}.${domainClass};
 public class ${createDtoFile} {
 
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -107,7 +107,7 @@ public class ${createDtoFile} {
     public ${domainClass} to${domainClass}() {
         return ${domainClass}.builder()
 #foreach($column in $nonPkColumns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
             .${column.fieldName}(${column.fieldName})
 #end
 #end

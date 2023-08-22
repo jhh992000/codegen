@@ -100,7 +100,7 @@
 			<template component="compFormOut" expression="$compFormFile" velocity="frontend/components/compForm.vm" extension="vue" container="componentPath"></template>
 			<template component="pageIndexOut" expression="$pageIndexFile" velocity="frontend/pages/index.vm" extension="vue" container="pagePath"></template>
 			<template component="pageCreateFormOut" expression="$pageCreateFormFile" velocity="frontend/pages/create.vm" extension="vue" container="pagePath"></template>
-			<template component="pageUpdateFormOut" expression="$pageUpdateFormFile" velocity="frontend/pages/_id.vm" extension="vue" container="pagePath"></template>
+			<template component="pageUpdateFormOut" expression="$pageUpdateFormFile" velocity="frontend/pages/update.vm" extension="vue" container="pagePath"></template>
 		</output>
 	</wizard>
 </CodeGen>

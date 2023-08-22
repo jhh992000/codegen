@@ -16,7 +16,7 @@
 #set($columns = $model.fields)
 #set ($nonPkColumns = [])
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #set($isPk = false)
 #foreach($pk in $pks)
 #if ($column.fieldName==$pk.fieldName)
@@ -29,6 +29,19 @@
 #end
 #end
 ##===================================
+#set($timeCount = 0)
+#set($dateCount = 0)
+#set($datetimeCount = 0)
+#foreach($column in $columns)
+#if ($column.type == "TIME")
+#set($timeCount = $timeCount+1)
+#elseif ($column.type == "DATE")
+#set($dateCount = $dateCount+1)
+#elseif ($column.type == "DATETIME" || $column.type == "TIMESTAMP")
+#set($datetimeCount = $datetimeCount+1)
+#end
+#end
+##===================================
 #if(${dtoPackage_package} != "")
 package ${dtoPackage_package};
 #end
@@ -38,13 +51,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import me.huneea.springbootcms.common.domain.BaseSearchCondition;
 
+#if ($timeCount > 0)
+import java.time.LocalTime;
+#end
+#if ($dateCount > 0)
+import java.time.LocalDate;
+#end
+#if ($datetimeCount > 0)
+import java.time.LocalDateTime;
+#end
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ${searchDtoFile} extends BaseSearchCondition {
 
 #foreach($column in $columns)
-#if ($column.name != "created_datetime" && $column.name != "modified_datetime")
+#if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #if ($column.javaType == "java.lang.String")
     private String $column.fieldName;
 #elseif ($column.javaType == "java.lang.Boolean")
