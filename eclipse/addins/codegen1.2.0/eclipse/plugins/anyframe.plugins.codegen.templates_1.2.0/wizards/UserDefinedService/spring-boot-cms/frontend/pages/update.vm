@@ -27,31 +27,39 @@
 #end
 ##===================================
 <template>
-  <v-container>
-    <${moduleKebabName}-form :form-data="form" :is-create="false" @on-submit="submit" />
-  </v-container>
+  <${moduleKebabName}-form ref="form" :form-data="formData" :is-create="false" @on-submit="submit" />
 </template>
 
 <script lang="ts">
 import { ${domain_cap} } from '${moduleKebabName}';
+import { ApiError } from '~/plugins/auth-axios';
 
 export default {
   async asyncData({ app, query }) {
     return {
-      form: await app.${d}${domain_uncap}Api.find${domain_cap}(Number(query.id)),
+      formData: await app.${d}${domain_uncap}Api.find${domain_cap}(Number(query.id)),
     };
   },
   data() {
     return {
-      form: {} as ${domain_cap},
+      formData: {} as ${domain_cap},
     };
   },
   methods: {
     async submit(${domain_uncap}: ${domain_cap}) {
       this.${d}showProgressBar();
-      await this.${d}${domain_uncap}Api.update${domain_cap}(${domain_uncap}.id, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)${domain_uncap}.$column.fieldName#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end);
-      this.${d}hideProgressBar();
-      this.${d}goList('/${moduleKebabName}', this.$route.query);
+
+      this.${d}${domain_uncap}Api
+        .update${domain_cap}(${domain_uncap}.id, #if($nonPkColumns.size() > 0)#set($i = 1)#foreach($column in $nonPkColumns)${domain_uncap}.$column.fieldName#if( $i < $nonPkColumns.size() ), #end#set($i = $i + 1)#end#end)
+        .then(() => {
+          this.${d}handleSuccessAfter('/${moduleKebabName}', this.${d}route.query);
+        })
+        .catch((error: ApiError) => {
+          this.${d}handleFormErrors(error, this.${d}refs.form.${d}refs.validator);
+        })
+        .finally(() => {
+          this.${d}hideProgressBar();
+        });
     },
   },
 };

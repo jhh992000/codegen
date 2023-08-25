@@ -38,7 +38,11 @@
 #foreach($column in $nonPkColumns)
 #set($ruleCount = 0)
           <validation-provider v-slot="{ errors, classes }" :name="${d}tc('${domain_uncap}.${column.fieldName}')" rules="#if ($column.nullable == false)required#set($ruleCount = $ruleCount+1)#end#if ($column.type=="INT" || $column.type=="BIGINT" || $column.type=="DOUBLE" || $column.type=="FLOAT" || $column.type=="NUMBER" || $column.type=="int" || $column.type=="bigint" || $column.type=="double" || $column.type=="float" || $column.type=="number")#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$numeric#end#if ($ruleCount>0)|#end#set($ruleCount = $ruleCount+1)$max:$column.size">
-            <c-text-field v-model="form.${column.fieldName}" :counter="${column.size}" :label="${d}tc('${domain_uncap}.${column.fieldName}')" :error-messages="errors" :class="classes"></c-text-field>
+            <c-text-field v-model="form.${column.fieldName}" :counter="${column.size}" :label="${d}tc('${domain_uncap}.${column.fieldName}')" :error-messages="errors" :class="classes">
+              <template #prepend>
+                <div class="input-prepend">{{ ${d}tc('${domain_uncap}.${column.fieldName}') }}</div>
+              </template>
+            </c-text-field>
           </validation-provider>
 #end
         </v-card-text>

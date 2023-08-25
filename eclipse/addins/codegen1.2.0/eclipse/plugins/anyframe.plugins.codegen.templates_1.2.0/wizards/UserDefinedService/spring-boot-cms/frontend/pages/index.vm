@@ -27,39 +27,37 @@
 #end
 ##===================================
 <template>
-  <v-container>
-    <v-card class="pb-1">
-      <base-list-search-box
-        :title="pageTitle"
-        :search-keys="searchKeys"
-        :search-key="searchCondition.searchKey"
-        :search-keyword="searchCondition.searchKeyword"
-        @on-search="search"
-      />
+  <v-card class="pb-1">
+    <base-list-search-box
+      :title="pageTitle"
+      :search-keys="searchKeys"
+      :search-key="searchCondition.searchKey"
+      :search-keyword="searchCondition.searchKeyword"
+      @on-search="search"
+    />
 
-      <base-list-data-table
-        :headers="headers"
-        :search-condition="searchCondition"
-        :search-result="searchResult"
-        @on-change-search-condition="changeSeachCondition"
-        @on-go-update-form="goUpdateForm"
-        @on-delete-item="deleteItem"
-      />
+    <base-list-data-table
+      :headers="headers"
+      :search-condition="searchCondition"
+      :search-result="searchResult"
+      @on-change-search-condition="changeSeachCondition"
+      @on-go-update-form="goUpdateForm"
+      @on-delete-item="deleteItem"
+    />
 
-      <base-list-pagination
-        :page="searchCondition.page"
-        :total-elements="searchResult.totalElements"
-        :total-pages="searchResult.totalPages"
-        :total-visible="7"
-        @on-change-page="
-          page => {
-            searchCondition.page = page;
-          }
-        "
-      />
-      <base-list-create-button @on-go-create-form="goCreateForm" />
-    </v-card>
-  </v-container>
+    <base-list-pagination
+      :page="searchCondition.page"
+      :total-elements="searchResult.totalElements"
+      :total-pages="searchResult.totalPages"
+      :total-visible="7"
+      @on-change-page="
+        page => {
+          searchCondition.page = page;
+        }
+      "
+    />
+    <base-list-create-button @on-go-create-form="goCreateForm" />
+  </v-card>
 </template>
 
 <script lang="ts">
