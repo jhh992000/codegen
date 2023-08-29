@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { ${domain_cap} } from '${moduleKebabName}';
+import { ${domain_cap} } from '${domain_uncap}';
 import { ApiError } from '~/plugins/auth-axios';
 
 export default {
@@ -46,7 +46,7 @@ export default {
     };
   },
   methods: {
-    async submit(${domain_uncap}: ${domain_cap}) {
+    submit(${domain_uncap}: ${domain_cap}) {
       this.${d}showProgressBar();
 
       this.${d}${domain_uncap}Api

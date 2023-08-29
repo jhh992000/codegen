@@ -91,23 +91,23 @@ public class ${atddClass} extends AcceptancePerClassTest {
 
     public ExtractableResponse<Response> 등록_요청(${createDtoFile} ${createDto_uncap}) {
         Map params = objectMapper.convertValue(${createDto_uncap}, Map.class);
-        return post(params, "/api/${domain_uncap}s");
+        return post(params, "/api/${moduleKebabName}s");
     }
 
     private ExtractableResponse<Response> 수정_요청(Long id, ${updateDtoFile} ${updateDto_uncap}) {
         Map params = objectMapper.convertValue(${updateDto_uncap}, Map.class);
-        return put(params, "/api/${domain_uncap}s/" + id);
+        return put(params, "/api/${moduleKebabName}s/" + id);
     }
 
     private ExtractableResponse<Response> 목록_조회_요청() {
-        return get("/api/${domain_uncap}s");
+        return get("/api/${moduleKebabName}s");
     }
 
     private ExtractableResponse<Response> 조회_요청(Long id) {
-        return get("/api/${domain_uncap}s/" + id);
+        return get("/api/${moduleKebabName}s/" + id);
     }
 
     private ExtractableResponse<Response> 삭제_요청(Long id) {
-        return delete("/api/${domain_uncap}s/" + id);
+        return delete("/api/${moduleKebabName}s/" + id);
     }
 }

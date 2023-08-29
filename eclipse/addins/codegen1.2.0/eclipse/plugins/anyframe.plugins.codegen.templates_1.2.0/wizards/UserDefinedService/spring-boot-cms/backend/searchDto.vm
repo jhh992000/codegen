@@ -47,8 +47,9 @@ package ${dtoPackage_package};
 #end
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import me.huneea.springbootcms.common.domain.BaseSearchCondition;
 
 #if ($timeCount > 0)
@@ -61,7 +62,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 #end
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ${searchDtoFile} extends BaseSearchCondition {
