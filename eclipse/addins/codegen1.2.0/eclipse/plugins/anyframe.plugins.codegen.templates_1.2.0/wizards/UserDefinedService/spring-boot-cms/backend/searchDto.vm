@@ -72,7 +72,7 @@ public class ${searchDtoFile} extends BaseSearchCondition {
 #if ($column.name != "created_datetime" && $column.name != "modified_datetime" && $column.name != "created_user_id" && $column.name != "modified_user_id")
 #if ($column.javaType == "java.lang.String")
     private String $column.fieldName;
-#elseif ($column.javaType == "java.lang.Boolean")
+#elseif ($column.javaType == "java.lang.Boolean" || $column.javaType == "boolean")
     private Boolean $column.fieldName;
 #elseif ($column.javaType == "java.lang.Integer")
     private Integer $column.fieldName;

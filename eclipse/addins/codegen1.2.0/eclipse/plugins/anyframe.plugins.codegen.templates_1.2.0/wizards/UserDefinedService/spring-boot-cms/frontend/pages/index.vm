@@ -62,8 +62,8 @@
 
 <script lang="ts">
 import { DataTableHeader, SearchCondition, SearchKey } from 'common';
-import { ${domain_cap} } from '${domain_uncap}';
 import { assign } from 'lodash-es';
+import { ${domain_cap} } from '${domain_uncap}';
 import com from '~/assets/ts/com';
 
 export default {

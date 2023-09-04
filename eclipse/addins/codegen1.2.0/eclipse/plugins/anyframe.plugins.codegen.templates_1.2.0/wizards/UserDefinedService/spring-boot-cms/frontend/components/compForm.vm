@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { ${domain_cap} } from '${moduleKebabName}';
+import { ${domain_cap} } from '${domain_uncap}';
 import { PropType } from 'vue';
 import { assign, cloneDeep } from 'lodash-es';
 
